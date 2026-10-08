@@ -730,6 +730,8 @@ ggml_backend_buffer_t alloc_buf(ggml_backend_buffer_type_t buft, size_t size, bo
         return nullptr;
     }
     c->va = c->res->GetGPUVirtualAddress();
+    if (!host)
+        ggml_d3d12_weights_delta_state() += size; // gpu-for-all: placement accounting
     if (size >= (1u << 20)) {
         char msg[128];
         std::snprintf(msg, sizeof(msg), "[xllama] d3d12: %s buffer %.1f MiB\n",

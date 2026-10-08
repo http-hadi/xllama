@@ -14,6 +14,8 @@
 #include "xllama/speculative.h"
 
 #include <cstring>
+#include <cstdio>
+#include <optional>
 #include <string>
 
 namespace xllama {
@@ -101,6 +103,75 @@ inline int apply_gguf_gpu_layers(int requested, llama_model_params& mparams,
     llama_log_set(gguf_gpu_log, nullptr);
     log_output("[xllama] gguf gpu layers: " + std::to_string(requested) + " on D3D12\n");
     return requested;
+}
+
+// --- GPU-only placement verification (gpu-for-all fork) ---
+
+// From the GGUF header only, sum the bytes of every tensor that must sit in
+// D3D12_Weights for the model to genuinely run on the GPU. Exemptions mirror
+// what the fully-GPU gate models (Coder-3B, LFM2.5-1.2B) legitimately keep
+// elsewhere:
+//   - 1-D tensors (norms / biases): live outside D3D12_Weights even on a
+//     fully-GPU model,
+//   - f32 / f16 2-D tensors <= 1 MiB: small aux weights, same exemption,
+//   - token_embd.weight, unless the tied-embedding override places it (no
+//     output.weight and Q6_K — the one copy serves lookup + lm_head).
+// nullopt when the header cannot be read (llama.cpp will fail the load) or
+// when nothing is required on the GPU.
+inline std::optional<std::size_t> gguf_expected_gpu_weight_bytes(const std::string& path) {
+    gguf_init_params gp = {};
+    gp.no_alloc = true;
+    gp.ctx = nullptr;
+    gguf_context* g = gguf_init_from_file(path.c_str(), gp);
+    if (!g)
+        return std::nullopt;
+    const bool has_output = gguf_find_tensor(g, "output.weight") >= 0;
+    std::size_t total = 0;
+    const int64_t n = gguf_get_n_tensors(g);
+    for (int64_t i = 0; i < n; ++i) {
+        const char* name = gguf_get_tensor_name(g, i);
+        const ggml_type type = gguf_get_tensor_type(g, i);
+        const int64_t* ne = gguf_get_tensor_ne(g, i);
+        const std::size_t bytes = gguf_get_tensor_size(g, i);
+        if (std::strcmp(name, "token_embd.weight") == 0 &&
+            !(!has_output && d3d12_get_rows_type_supported(type)))
+            continue; // input lookup stays on the CPU, as on the gate models
+        if (ne[1] <= 1)
+            continue; // 1-D norm / bias
+        if ((type == GGML_TYPE_F32 || type == GGML_TYPE_F16) && bytes <= (std::size_t{1} << 20))
+            continue; // small aux weight
+        total += bytes;
+    }
+    gguf_free(g);
+    if (total == 0)
+        return std::nullopt;
+    return total;
+}
+
+// Verify that a load with requested layers actually placed its weights on the
+// GPU. Returns an error message when too much sits on the CPU — the caller
+// frees the model and fails the load. There is no silent CPU fallback in this
+// build: every model attempts full offload, and a CPU-bound placement refuses
+// to run. LocalState\gguf_gpu_layers.txt containing 0 restores CPU loads.
+inline std::optional<std::string> gguf_gpu_placement_error(const std::string& model_path) {
+    const std::optional<std::size_t> expected = gguf_expected_gpu_weight_bytes(model_path);
+    if (!expected)
+        return std::nullopt;
+    const std::size_t actual = ggml_d3d12_weights_delta();
+    // Slack absorbs 256-byte buffer alignment and the +16 B kernel padding;
+    // real fallbacks are megabytes to gigabytes.
+    if (actual + (std::size_t{1} << 23) < *expected) {
+        char msg[512];
+        std::snprintf(msg, sizeof(msg),
+                      "GPU-only load: %.1f of %.1f MiB of weights placed on D3D12; the rest "
+                      "fell back to the CPU and this build never falls back (no session "
+                      "created). To allow CPU loads, create LocalState\\gguf_gpu_layers.txt "
+                      "containing 0.",
+                      static_cast<double>(actual) / 1048576.0,
+                      static_cast<double>(*expected) / 1048576.0);
+        return std::string(msg);
+    }
+    return std::nullopt;
 }
 
 // Most logits rows a context will request per ubatch, for n_outputs_max: one

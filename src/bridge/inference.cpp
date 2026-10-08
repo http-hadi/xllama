@@ -395,6 +395,7 @@ InferenceResult run_inference_llama(const InferenceParams& params) {
     if (params.on_status)
         params.on_status("loading model");
 
+    ggml_d3d12_weights_delta_reset();
     llama_model* raw_model = llama_model_load_from_file(abs_model_path.c_str(), mparams);
     log_gguf_ws("after model load");
     if (!raw_model) {
@@ -403,6 +404,20 @@ InferenceResult run_inference_llama(const InferenceParams& params) {
         if (params.on_status)
             params.on_status("error: " + res.error_msg);
         return res;
+    }
+
+    // GPU-only fork: the load attempted full offload. If the weights did not
+    // actually land on D3D12, refuse to run — no silent CPU inference.
+    if (gpu_layers > 0) {
+        if (auto placement_err = gguf_gpu_placement_error(abs_model_path)) {
+            llama_model_free(raw_model);
+            res.error_msg = *placement_err;
+            log_output("[xllama] " + *placement_err + "\n");
+            if (params.on_status)
+                params.on_status("error: " + *placement_err);
+            return res;
+        }
+        log_output("[xllama] gpu-only: all required weights on D3D12\n");
     }
     LlamaModelPtr model(raw_model);
     log_output("[xllama] model loaded\n");

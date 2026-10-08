@@ -1223,12 +1223,26 @@ std::unique_ptr<Session> create_llama(const SessionParams& sp, std::string* err)
     llama_model_params mparams = llama_model_default_params();
     const int gpu_layers = apply_gguf_gpu_layers(sp.n_gpu_layers, mparams, abs_path);
 
+    ggml_d3d12_weights_delta_reset();
     llama_model* raw_model = llama_model_load_from_file(abs_path.c_str(), mparams);
     log_gguf_ws("after model load");
     if (!raw_model) {
         if (err)
             *err = "failed to load model: " + abs_path;
         return nullptr;
+    }
+
+    // GPU-only fork: the load attempted full offload. If the weights did not
+    // actually land on D3D12, refuse to run — no silent CPU session.
+    if (gpu_layers > 0) {
+        if (auto placement_err = gguf_gpu_placement_error(abs_path)) {
+            llama_model_free(raw_model);
+            log_output("[xllama] " + *placement_err + "\n");
+            if (err)
+                *err = *placement_err;
+            return nullptr;
+        }
+        log_output("[xllama] gpu-only: all required weights on D3D12\n");
     }
 
     LlamaAdapterLoraPtr adapter;

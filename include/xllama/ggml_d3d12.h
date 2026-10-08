@@ -20,6 +20,7 @@
 // Linux, where ggml_d3d12_register() returns false.
 #pragma once
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -130,6 +131,19 @@ ggml_backend_buffer_type_t ggml_d3d12_weights_buft();
 // Register the backend with ggml (idempotent). False when D3D12 is unavailable
 // (always on non-Windows). The device appears as a GPU device named "D3D12".
 bool ggml_d3d12_register();
+
+// --- GPU-only placement accounting (gpu-for-all fork) ---
+// Bytes handed out by the D3D12_Weights buffer type since the last reset. A
+// load that requested GPU layers must place essentially every large weight
+// here; whatever is missing fell back to the CPU backend.
+inline std::atomic<std::size_t>& ggml_d3d12_weights_delta_state() {
+    static std::atomic<std::size_t> s{0};
+    return s;
+}
+inline void ggml_d3d12_weights_delta_reset() { ggml_d3d12_weights_delta_state().store(0); }
+inline std::size_t ggml_d3d12_weights_delta() {
+    return ggml_d3d12_weights_delta_state().load(std::memory_order_relaxed);
+}
 
 // --- Console selftest (d3d12be.flag) ---
 
