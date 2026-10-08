@@ -91,16 +91,22 @@ inline constexpr int resolve_n_ctx(int requested) {
 }
 
 // GGUF layers on the d3d12 backend for a session (docs/gguf-gpu-decode.md, D3).
-// The catalogue entry carries the per-model default (`gpu_layers`, 0 = CPU),
-// set only for models whose D2-r2 gate passed at their catalogue n_ctx. The
-// operator knob LocalState\gguf_gpu_layers.txt, when present, always wins — 0
-// included, so the CPU can be forced without a catalogue change.
+// GPU-FOR-ALL fork default: every GGUF model attempts FULL offload unless a
+// catalogue entry or the operator knob asks for something else. Placement is
+// per-tensor inside llama.cpp, so weight types without a D3D12 kernel
+// (Q1_0_g128, Q8_0, f16, ...) fall back to the CPU automatically — an
+// unsupported model just loads exactly as on the CPU-only path. The operator
+// knob LocalState\gguf_gpu_layers.txt, when present, always wins — 0 included,
+// so the CPU can still be forced without a catalogue change.
 inline constexpr int kGgufGpuLayersKnobAbsent = -1;
+
+// Layer count requested when nothing more specific was configured: all layers.
+inline constexpr int kGgufGpuLayersAll = 99;
 
 inline constexpr int resolve_gguf_gpu_layers(int catalogue_layers, int knob) {
     if (knob >= 0)
         return knob;
-    return catalogue_layers > 0 ? catalogue_layers : 0;
+    return catalogue_layers > 0 ? catalogue_layers : kGgufGpuLayersAll;
 }
 
 // Estimate ceiling for a session opened at |n_ctx|: the bound the CONTEXT puts on
