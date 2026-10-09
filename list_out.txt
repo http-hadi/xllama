@@ -1,0 +1,3 @@
+Available devices:
+  D3D120: Microsoft Basic Render Driver (7523 MiB, 7519 MiB free)
+  D3D121: Microsoft Basic Render Driver (7523 MiB, 7519 MiB free)

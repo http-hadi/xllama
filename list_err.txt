@@ -1,0 +1,3 @@
+ggml_d3d12: debug layer enabled
+ggml_d3d12: D3D120 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit yes | wave 4-4 | UMA | 8189 MiB | build Oct  7 2026 10:13:48
+ggml_d3d12: D3D121 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit yes | wave 4-4 | UMA | 8189 MiB | build Oct  7 2026 10:13:48
