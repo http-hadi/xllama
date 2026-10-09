@@ -3,17 +3,25 @@ on:
   push:
     branches: ['probe/**']
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   probe:
     runs-on: windows-2022
-    timeout-minutes: 40
+    timeout-minutes: 35
     steps:
       - name: Download third-party D3D12 llama.cpp build
         shell: pwsh
         run: |
-          curl.exe -L -o llama-d3d12.zip https://github.com/koza-coder/llama.cpp-directx12/releases/download/v0.2.7/llama-d3d12-v0.2.7-win-x64.zip
+          New-Item -ItemType Directory -Force logs | Out-Null
+          curl.exe -sL -o llama-d3d12.zip https://github.com/koza-coder/llama.cpp-directx12/releases/download/v0.2.7/llama-d3d12-v0.2.7-win-x64.zip
           Expand-Archive llama-d3d12.zip -DestinationPath d3d12
-          Get-ChildItem d3d12 -Recurse | Select-Object -First 40 FullName,Length | Format-Table -AutoSize
+          Get-ChildItem d3d12 -Recurse -File | ForEach-Object { "$($_.FullName.Replace($PWD.Path,'')) $($_.Length)" } | Tee-Object logs/files.txt
+          $d = (Get-ChildItem d3d12 -Recurse -Filter test-backend-ops.exe | Select-Object -First 1).DirectoryName
+          "TOOLDIR=$d" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          Get-CimInstance Win32_VideoController | Select-Object Name,DriverVersion | Out-String | Tee-Object logs/video.txt
+          (Get-CimInstance Win32_OperatingSystem).Version | Tee-Object logs/os.txt
+          Get-CimInstance Win32_Processor | Select-Object Name,NumberOfCores | Out-String | Tee-Object logs/cpu.txt
       - name: Adapters + caps (WARP)
         shell: pwsh
         continue-on-error: true
@@ -21,40 +29,47 @@ jobs:
           GGML_D3D12_WARP: "1"
           GGML_D3D12_DEBUG: "1"
         run: |
-          $d = (Get-ChildItem d3d12 -Recurse -Filter test-backend-ops.exe | Select-Object -First 1).DirectoryName
-          cd $d
-          ./llama-bench.exe --list-devices 2>&1 | Out-String
-      - name: test-backend-ops GATED_DELTA_NET / SSM_CONV / ROPE
+          cd $env:TOOLDIR
+          $p = Start-Process -FilePath ./llama-bench.exe -ArgumentList "--list-devices" -NoNewWindow -PassThru -RedirectStandardOutput "$env:GITHUB_WORKSPACE/logs/list_out.txt" -RedirectStandardError "$env:GITHUB_WORKSPACE/logs/list_err.txt"
+          if (-not $p.WaitForExit(120000)) { $p.Kill(); "TIMEOUT" | Out-File "$env:GITHUB_WORKSPACE/logs/list_timeout.txt" }
+      - name: test-backend-ops (small op set, WARP)
         shell: pwsh
         continue-on-error: true
         env:
           GGML_D3D12_WARP: "1"
         run: |
-          $d = (Get-ChildItem d3d12 -Recurse -Filter test-backend-ops.exe | Select-Object -First 1).DirectoryName
-          cd $d
-          foreach ($op in "GATED_DELTA_NET","SSM_CONV","ROPE","RMS_NORM","SOLVE_TRI","FLASH_ATTN_EXT") {
-            Write-Host "=== $op"
-            $p = Start-Process -FilePath ./test-backend-ops.exe -ArgumentList "test","-b","D3D120","-o",$op -NoNewWindow -PassThru -RedirectStandardOutput "out_$op.txt" -RedirectStandardError "err_$op.txt"
-            if (-not $p.WaitForExit(240000)) { $p.Kill(); Write-Host "TIMEOUT $op" }
-            Get-Content "out_$op.txt" -Tail 6
-            Get-Content "err_$op.txt" -Tail 4
+          cd $env:TOOLDIR
+          foreach ($op in "SSM_CONV","GATED_DELTA_NET","RMS_NORM","ROPE") {
+            $o = "$env:GITHUB_WORKSPACE/logs/op_$op.out.txt"; $e = "$env:GITHUB_WORKSPACE/logs/op_$op.err.txt"
+            $p = Start-Process -FilePath ./test-backend-ops.exe -ArgumentList "test","-b","D3D120","-o",$op -NoNewWindow -PassThru -RedirectStandardOutput $o -RedirectStandardError $e
+            if (-not $p.WaitForExit(150000)) { $p.Kill(); "TIMEOUT $op" | Out-File -Append "$env:GITHUB_WORKSPACE/logs/timeouts.txt" }
           }
-      - name: test-backend-ops MUL_MAT q1_0
+      - name: MUL_MAT q1_0 / q4_0 (WARP)
         shell: pwsh
         continue-on-error: true
         env:
           GGML_D3D12_WARP: "1"
         run: |
-          $d = (Get-ChildItem d3d12 -Recurse -Filter test-backend-ops.exe | Select-Object -First 1).DirectoryName
-          cd $d
-          $p = Start-Process -FilePath ./test-backend-ops.exe -ArgumentList "test","-b","D3D120","-o","MUL_MAT","-p","q1_0" -NoNewWindow -PassThru -RedirectStandardOutput out_q10.txt -RedirectStandardError err_q10.txt
-          if (-not $p.WaitForExit(600000)) { $p.Kill(); Write-Host "TIMEOUT" }
-          Get-Content out_q10.txt -Tail 25
-          Get-Content err_q10.txt -Tail 10
-      - name: Shader cache produced?
+          cd $env:TOOLDIR
+          foreach ($t in "q1_0","q4_0") {
+            $o = "$env:GITHUB_WORKSPACE/logs/mm_$t.out.txt"; $e = "$env:GITHUB_WORKSPACE/logs/mm_$t.err.txt"
+            $p = Start-Process -FilePath ./test-backend-ops.exe -ArgumentList "test","-b","D3D120","-o","MUL_MAT","-p","type_a=$t" -NoNewWindow -PassThru -RedirectStandardOutput $o -RedirectStandardError $e
+            if (-not $p.WaitForExit(300000)) { $p.Kill(); "TIMEOUT mm_$t" | Out-File -Append "$env:GITHUB_WORKSPACE/logs/timeouts.txt" }
+          }
+      - name: Shader cache
+        if: always()
         shell: pwsh
         continue-on-error: true
         run: |
-          $d = (Get-ChildItem d3d12 -Recurse -Filter test-backend-ops.exe | Select-Object -First 1).DirectoryName
-          $c = Join-Path $d "d3d12-shader-cache"
-          if (Test-Path $c) { $f = Get-ChildItem $c; "files=$($f.Count) bytes=$(($f | Measure-Object Length -Sum).Sum)" } else { "no cache dir" }
+          $c = Join-Path $env:TOOLDIR "d3d12-shader-cache"
+          if (Test-Path $c) { $f = Get-ChildItem $c; "files=$($f.Count) bytes=$(($f | Measure-Object Length -Sum).Sum)" | Tee-Object logs/cache.txt } else { "no cache dir" | Tee-Object logs/cache.txt }
+      - name: Publish logs to branch
+        if: always()
+        shell: bash
+        run: |
+          cd logs
+          for f in *.txt; do tail -c 20000 "$f" > "$f.tail" 2>/dev/null && mv "$f.tail" "$f"; done
+          git init -q . && git checkout -q -b ci-logs-probe
+          git config user.name ci && git config user.email ci@example.com
+          git add -A && git commit -q -m "probe logs ${GITHUB_RUN_ID}"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ci-logs-probe
