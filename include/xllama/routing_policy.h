@@ -103,6 +103,20 @@ inline constexpr int resolve_gguf_gpu_layers(int catalogue_layers, int knob) {
     return catalogue_layers > 0 ? catalogue_layers : 0;
 }
 
+// "As many layers as fit" — the whole-graph d3d12 backend (ggml_d3d12_full.h) sizes the real
+// number itself from the GPU budget, so any large request means "all of them".
+inline constexpr int kGgufGpuLayersAll = 999;
+
+// Same precedence as resolve_gguf_gpu_layers (operator knob > catalogue), but a model with no
+// catalogue/knob choice goes to the GPU when the whole-graph backend is usable (auto_on).
+inline constexpr int resolve_gguf_gpu_layers_auto(int catalogue_layers, int knob, bool auto_on) {
+    if (knob >= 0)
+        return knob;
+    if (catalogue_layers > 0)
+        return catalogue_layers;
+    return auto_on ? kGgufGpuLayersAll : 0;
+}
+
 // Estimate ceiling for a session opened at |n_ctx|: the bound the CONTEXT puts on
 // a prompt, which is what has to stay coherent with token_threshold (#133). Not
 // the reply's budget — that is fit_prompt's, applied exactly and later, and it

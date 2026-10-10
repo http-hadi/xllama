@@ -312,6 +312,28 @@
     </ProjectReference>
   </ItemGroup>
 
+  <!-- Whole-graph D3D12 ggml backend (third_party/ggml-d3d12-full) + its glue. Shaders are NOT compiled
+       on the console: the baked DXIL cache (d3d12-shader-cache\*.dxil, produced in CI by
+       .github/workflows/build-d3d12-full.yml) is packaged next to the executable. -->
+  <ItemGroup Condition="'$(XllamaBackend)' == 'llamacpp' or '$(XllamaBackend)' == 'unified'">
+    <ClCompile Include="..\third_party\ggml-d3d12-full\ggml-d3d12.cpp">
+      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\ggml-d3d12-full;$(ProjectDir)..\llama.cpp\ggml\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>XLLAMA_D3D12_UWP=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <AdditionalOptions>/bigobj /utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\src\bridge\ggml_d3d12_full.cpp">
+      <AdditionalIncludeDirectories>$(ProjectDir)..\third_party\ggml-d3d12-full;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup Condition="'$(XllamaBackend)' == 'llamacpp' or '$(XllamaBackend)' == 'unified'">
+    <None Include="d3d12-shader-cache\*.dxil">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+
   <!-- xllama shared bridge -->
   <ItemGroup>
     <ClCompile Include="..\src\bridge\inference.cpp" />

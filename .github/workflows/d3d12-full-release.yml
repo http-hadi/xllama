@@ -1,0 +1,236 @@
+name: d3d12-full-release
+
+# Whole-graph D3D12 GPU backend for Xbox (third_party/ggml-d3d12-full).
+#  tools  : desktop build of the pinned llama.cpp + the backend (+ DXC) — runs on the runner's software D3D12 adapter
+#  bake   : one job per catalogue model (and Bonsai 27B 1-bit): run real graphs, DXC-compile every shader variant
+#           they request, check GPU output against the CPU, save the DXIL
+#  ops    : test-backend-ops over the ops/types the models use (correctness + extra variant coverage)
+#  merge  : union of all baked DXIL -> d3d12-shader-cache
+#  uwp    : the Xbox package, with the baked shaders inside
+#  release: GitHub pre-release with the MSIX + certificate
+on:
+  push:
+    branches: ['release/d3d12f']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  KOZA_ZIP: https://github.com/koza-coder/llama.cpp-directx12/releases/download/v0.2.7/llama-d3d12-v0.2.7-win-x64.zip
+
+jobs:
+  tools:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+          fetch-depth: 1
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Pristine llama.cpp + inject the backend
+        shell: bash
+        run: |
+          git submodule update --init --depth 1 llama.cpp
+          python scripts/d3d12-full-inject.py llama.cpp
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S llama.cpp -B build -G "Visual Studio 17 2022" -A x64 `
+            -DGGML_D3D12F=ON -DGGML_NATIVE=OFF -DGGML_AVX512=OFF `
+            -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=ON -DLLAMA_BUILD_EXAMPLES=ON -DLLAMA_BUILD_SERVER=OFF `
+            -DLLAMA_BUILD_TOOLS=ON -DBUILD_SHARED_LIBS=OFF
+      - name: Build tools
+        shell: pwsh
+        run: cmake --build build --config Release --parallel --target llama-bench llama-completion llama-embedding test-backend-ops
+      - name: Collect tools + DXC
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force tools | Out-Null
+          Get-ChildItem build -Recurse -Include llama-bench.exe,llama-completion.exe,llama-embedding.exe,test-backend-ops.exe |
+            Where-Object { $_.FullName -match 'Release' } | Copy-Item -Destination tools
+          curl.exe -sL -o koza.zip $env:KOZA_ZIP
+          Expand-Archive koza.zip -DestinationPath koza
+          Get-ChildItem koza -Recurse -Include dxcompiler.dll,dxil.dll | Copy-Item -Destination tools
+          Get-ChildItem tools | Select-Object Name,Length | Format-Table | Out-String
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bake-tools
+          path: tools
+          retention-days: 7
+
+  bake:
+    needs: tools
+    runs-on: windows-2022
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: bonsai-27b-q1_0, url: "https://huggingface.co/prism-ml/Bonsai-27B-gguf/resolve/main/Bonsai-27B-Q1_0.gguf", pp: "16", n: 2, check: true, check_tokens: 4 }
+          - { name: qwen35-0.8b, url: "https://github.com/gianlucamazza/xllama/releases/download/models-v1/Qwen3.5-0.8B-Q4_K_M.gguf", pp: "4,16,64,256", n: 8, check: true }
+          - { name: gemma3-270m, url: "https://huggingface.co/unsloth/gemma-3-270m-it-GGUF/resolve/main/gemma-3-270m-it-Q4_K_M.gguf", pp: "4,16,64,256", n: 8, check: true }
+          - { name: lfm25-350m, url: "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/main/LFM2.5-350M-QAD-Q4_0.gguf", pp: "4,16,64,256", n: 8, check: true }
+          - { name: lfm25-1.2b-thinking, url: "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Thinking-GGUF/resolve/main/LFM2.5-1.2B-Thinking-Q4_K_M.gguf", pp: "4,16,64", n: 8 }
+          - { name: lfm2-2.6b, url: "https://huggingface.co/LiquidAI/LFM2-2.6B-GGUF/resolve/main/LFM2-2.6B-Q4_K_M.gguf", pp: "4,16", n: 4 }
+          - { name: qwen25-coder-0.5b, url: "https://huggingface.co/unsloth/Qwen2.5-Coder-0.5B-Instruct-GGUF/resolve/main/Qwen2.5-Coder-0.5B-Instruct-Q4_K_M.gguf", pp: "4,16,64,256", n: 8, check: true }
+          - { name: qwen3-1.7b, url: "https://huggingface.co/unsloth/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q4_K_M.gguf", pp: "4,16,64", n: 8 }
+          - { name: llama32-3b-q3ks, url: "https://huggingface.co/unsloth/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q3_K_S.gguf", pp: "4,16", n: 4 }
+          - { name: phi4-mini, url: "https://huggingface.co/unsloth/Phi-4-mini-instruct-GGUF/resolve/main/Phi-4-mini-instruct-Q4_K_M.gguf", pp: "4,16", n: 4 }
+          - { name: gemma4-e2b-q3ks, url: "https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF/resolve/main/gemma-4-E2B-it-Q3_K_S.gguf", pp: "4,16", n: 4 }
+          - { name: lfm25-8b-a1b-iq3s, url: "https://huggingface.co/unsloth/LFM2.5-8B-A1B-GGUF/resolve/main/LFM2.5-8B-A1B-UD-IQ3_S.gguf", pp: "4,16", n: 4 }
+          - { name: embed-bge-m3, url: "https://huggingface.co/gpustack/bge-m3-GGUF/resolve/main/bge-m3-Q8_0.gguf", kind: embed }
+          - { name: embed-nomic-v2-moe, url: "https://huggingface.co/ggml-org/Nomic-Embed-Text-V2-GGUF/resolve/main/nomic-embed-text-v2-moe-q8_0.gguf", kind: embed }
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+          fetch-depth: 1
+      - uses: actions/download-artifact@v8
+        with:
+          name: bake-tools
+          path: tools
+      - name: Bake ${{ matrix.name }}
+        shell: pwsh
+        run: |
+          $a = @{ Name = '${{ matrix.name }}'; Url = '${{ matrix.url }}' }
+          if ('${{ matrix.pp }}')   { $a.Pp = '${{ matrix.pp }}' }
+          if ('${{ matrix.n }}')    { $a.N = [int]'${{ matrix.n }}' }
+          if ('${{ matrix.kind }}') { $a.Kind = '${{ matrix.kind }}' }
+          if ('${{ matrix.check }}' -eq 'true') { $a.Check = $true }
+          if ('${{ matrix.check_tokens }}') { $a.CheckTokens = [int]'${{ matrix.check_tokens }}' }
+          ./scripts/ci-d3d12-bake-run.ps1 @a
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cache-${{ matrix.name }}
+          path: cache
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Publish logs
+        if: always()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci-publish-logs.sh "ci-logs-bake-${{ matrix.name }}" logs
+
+  ops:
+    needs: tools
+    runs-on: windows-2022
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+          fetch-depth: 1
+      - uses: actions/download-artifact@v8
+        with:
+          name: bake-tools
+          path: tools
+      - name: test-backend-ops on the runner's software D3D12 adapter
+        shell: pwsh
+        env:
+          GGML_D3D12_WARP: "1"
+          GGML_D3D12_FAKE_VENDOR: "1002"
+          GGML_D3D12_CACHE_DIR: ${{ github.workspace }}\cache
+          GGML_D3D12_MANIFEST: ${{ github.workspace }}\manifest.txt
+        run: |
+          New-Item -ItemType Directory -Force cache, logs | Out-Null
+          $ops = "MUL_MAT","MUL_MAT_ID","GET_ROWS","SET_ROWS","FLASH_ATTN_EXT","SOFT_MAX","ROPE","RMS_NORM","L2_NORM","NORM",
+                 "ADD","SUB","MUL","DIV","SCALE","SILU","UNARY","GLU","CONCAT","CPY","CONT","DUP","PAD","REPEAT","SUM_ROWS",
+                 "CUMSUM","TRI","SOLVE_TRI","SSM_CONV","GATED_DELTA_NET","ARGSORT","TOP_K","CLAMP","DIAG"
+          foreach ($op in $ops) {
+            $o = "logs/op_$op.out.txt"; $e = "logs/op_$op.err.txt"
+            $p = Start-Process -FilePath tools/test-backend-ops.exe -ArgumentList "test","-b","D3D12F0","-o",$op -NoNewWindow -PassThru -RedirectStandardOutput $o -RedirectStandardError $e
+            if (-not $p.WaitForExit(900000)) { $p.Kill(); "TIMEOUT $op" | Out-File -Append logs/timeouts.txt }
+            $res = Select-String -Path $o -Pattern "tests passed|Backend .* (OK|FAIL)" | Select-Object -Last 2 | ForEach-Object { $_.Line.Trim() }
+            "{0,-18} exit={1}  {2}" -f $op, $p.ExitCode, ($res -join " | ") | Tee-Object -Append logs/summary.txt
+          }
+          $n = (Get-ChildItem cache -Filter *.dxil -ErrorAction SilentlyContinue).Count
+          "baked: files=$n" | Tee-Object -Append logs/summary.txt
+          if (Test-Path manifest.txt) { Copy-Item manifest.txt logs/manifest.txt }
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cache-ops
+          path: cache
+          retention-days: 7
+          if-no-files-found: warn
+      - name: Publish logs
+        if: always()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci-publish-logs.sh "ci-logs-bake-ops" logs
+
+  merge:
+    needs: [tools, bake, ops]
+    if: always() && needs.tools.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: cache-*
+          path: parts
+      - name: Union of baked shaders
+        shell: bash
+        run: |
+          mkdir -p d3d12-shader-cache logs
+          find parts -name '*.dxil' -exec cp -n {} d3d12-shader-cache/ \;
+          n=$(ls d3d12-shader-cache | wc -l); b=$(du -sb d3d12-shader-cache | cut -f1)
+          echo "merged: files=$n bytes=$b" | tee logs/summary.txt
+          for d in parts/*; do echo "$(basename $d): $(ls $d | wc -l) files" | tee -a logs/summary.txt; done
+          [ "$n" -gt 0 ] || { echo "no shaders baked"; exit 1; }
+      - uses: actions/upload-artifact@v7
+        with:
+          name: d3d12-shader-cache
+          path: d3d12-shader-cache
+          retention-days: 14
+      - name: Publish logs
+        if: always()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci-publish-logs.sh "ci-logs-merge" logs
+
+  uwp:
+    needs: merge
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+          fetch-depth: 1
+      - uses: actions/download-artifact@v8
+        with:
+          name: d3d12-shader-cache
+          path: uwp/d3d12-shader-cache
+      - uses: ./.github/actions/build-uwp-package
+        with:
+          variant: unified
+          patched: "true"
+          store_sku: "false"
+          artifact: xllama-appx-d3d12f
+          build_revision: ${{ github.run_number + 30000 }}
+
+  release:
+    needs: uwp
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: xllama-appx-d3d12f
+          path: pkg
+      - name: Publish pre-release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="d3d12f-run${{ github.run_number }}"
+          files=$(find pkg -type f \( -name '*.msix' -o -name '*.appx' -o -name '*.cer' \))
+          echo "$files"
+          gh release create "$tag" $files --repo "$GITHUB_REPOSITORY" --prerelease \
+            --title "xllama + whole-graph D3D12 GPU backend (run ${{ github.run_number }})" \
+            --notes "Built from ${GITHUB_SHA}. Install the .cer first (Device Portal), then the package. See docs/d3d12-full.md."

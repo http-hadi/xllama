@@ -6,6 +6,7 @@
 
 #include "llama.h"
 #include "xllama/chat_prompt.h" // apply_stop_sequences
+#include "xllama/ggml_d3d12_full.h" // d3d12_full_note_decode_ok
 #include "xllama/platform.h"    // log_output
 #include "xllama/speculative.h" // prompt_lookup_draft (#210)
 
@@ -56,6 +57,7 @@ inline bool prefill_chunked(llama_context* ctx, const llama_token* tokens, int n
                                                 std::min(n_batch, n_tokens - off));
         if (llama_decode(ctx, batch) != 0)
             return false;
+        d3d12_full_note_decode_ok();
     }
     return true;
 }
@@ -154,7 +156,10 @@ inline bool stops_at_eog(const DecodeLoopParams& p, llama_token token) {
 // Decode one already-sampled token (classic path).
 inline bool decode_one(llama_context* ctx, llama_token token) {
     llama_batch next = llama_batch_get_one(&token, 1);
-    return llama_decode(ctx, next) == 0;
+    const bool ok = llama_decode(ctx, next) == 0;
+    if (ok)
+        d3d12_full_note_decode_ok();
+    return ok;
 }
 
 // Multi-token verify batch: lead sample + draft, all positions request logits

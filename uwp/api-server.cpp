@@ -20,6 +20,7 @@
     #include "inference-bridge.h"
     #include "model-downloader.h"
     #include "xllama/api_policy.h"
+#include "xllama/ggml_d3d12_full.h"
     #include "xllama/api_pull_policy.h"
     #include "xllama/chat_prompt.h"
     #include "xllama/model_provision.h"
@@ -456,8 +457,8 @@ std::string handle_chat_locked(const std::string& body, const char*& status) {
         sp.n_ctx = policy.n_ctx;
         if (policy.gguf) {
             sp.backend = ::xllama::Backend::LlamaCpp;
-            sp.n_gpu_layers = ::xllama::resolve_gguf_gpu_layers(
-                policy.gpu_layers, ::xllama::bridge::gguf_gpu_layers_knob());
+            sp.n_gpu_layers = ::xllama::resolve_gguf_gpu_layers_auto(policy.gpu_layers, ::xllama::bridge::gguf_gpu_layers_knob(),
+                    ::xllama::d3d12_full_default_on());
         }
         session = ::xllama::session_hub().ensure_locked(model, sp, &err);
         if (!session) {
@@ -792,8 +793,8 @@ std::string handle_embedding_locked(const std::string& body, const char*& status
     sp.n_ctx = policy.n_ctx;
     if (policy.gguf) {
         sp.backend = ::xllama::Backend::LlamaCpp;
-        sp.n_gpu_layers = ::xllama::resolve_gguf_gpu_layers(
-            policy.gpu_layers, ::xllama::bridge::gguf_gpu_layers_knob());
+        sp.n_gpu_layers = ::xllama::resolve_gguf_gpu_layers_auto(policy.gpu_layers, ::xllama::bridge::gguf_gpu_layers_knob(),
+                    ::xllama::d3d12_full_default_on());
     }
     if (root.HasKey(L"options") &&
         root.GetNamedValue(L"options").ValueType() != JsonValueType::Object) {
@@ -1307,8 +1308,8 @@ void handle_pull(StreamSocket const& socket, const std::string& body, uint64_t g
         params.n_ctx = ::xllama::resolve_n_ctx(entry->n_ctx);
         if (entry->kind == L"gguf") {
             params.backend = ::xllama::Backend::LlamaCpp;
-            params.n_gpu_layers = ::xllama::resolve_gguf_gpu_layers(
-                entry->gpu_layers, ::xllama::bridge::gguf_gpu_layers_knob());
+            params.n_gpu_layers = ::xllama::resolve_gguf_gpu_layers_auto(entry->gpu_layers, ::xllama::bridge::gguf_gpu_layers_knob(),
+                    ::xllama::d3d12_full_default_on());
         }
         // Recheck after waiting for inference: stop/rebind may have invalidated
         // the listener while this pull was blocked on the resident session.

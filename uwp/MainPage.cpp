@@ -14,6 +14,7 @@
     #include "chat-history.h"
     #include "inference-bridge.h"
     #include "xllama/cancel_policy.h"
+#include "xllama/ggml_d3d12_full.h"
     #include "xllama/chat_prompt.h"
     #include "xllama/json_utils.h"
     #include "xllama/kv_store.h"
@@ -2691,8 +2692,8 @@ bool MainPageController::EnsureSession(const std::string& model, std::string* er
             sp.n_ctx = ::xllama::resolve_n_ctx(entry->n_ctx);
             if (entry->kind == L"gguf") {
                 sp.backend = xllama::Backend::LlamaCpp;
-                sp.n_gpu_layers = ::xllama::resolve_gguf_gpu_layers(
-                    entry->gpu_layers, ::xllama::bridge::gguf_gpu_layers_knob());
+                sp.n_gpu_layers = ::xllama::resolve_gguf_gpu_layers_auto(entry->gpu_layers, ::xllama::bridge::gguf_gpu_layers_knob(),
+                    ::xllama::d3d12_full_default_on());
                 if (!entry->lora.empty()) {
                     // Resolve against LocalState\models\<name>\lora-file (or InstalledPath
                     // after provision). resolve_model_path on a bare name yields the dir.

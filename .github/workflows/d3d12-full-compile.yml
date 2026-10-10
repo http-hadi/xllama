@@ -1,0 +1,60 @@
+name: d3d12-full-compile
+
+# Fast feedback (compile only, no model runs): does the whole-graph D3D12 backend build
+#  (a) as a desktop DXC build injected into the pinned llama.cpp, and (b) inside the UWP package?
+on:
+  push:
+    branches: ['feat/d3d12-full']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  desktop:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+          fetch-depth: 1
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Inject + configure + build the backend and test-backend-ops
+        shell: pwsh
+        run: |
+          git submodule update --init --depth 1 llama.cpp
+          python scripts/d3d12-full-inject.py llama.cpp
+          cmake -S llama.cpp -B build -G "Visual Studio 17 2022" -A x64 `
+            -DGGML_D3D12F=ON -DGGML_NATIVE=OFF -DGGML_AVX512=OFF -DLLAMA_CURL=OFF `
+            -DLLAMA_BUILD_TESTS=ON -DLLAMA_BUILD_EXAMPLES=OFF -DLLAMA_BUILD_SERVER=OFF -DBUILD_SHARED_LIBS=OFF
+          cmake --build build --config Release --parallel --target ggml-d3d12f test-backend-ops 2>&1 | Tee-Object -FilePath build.log
+          exit $LASTEXITCODE
+      - name: Publish build log
+        if: always()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p logs
+          grep -E "error|Error|warning C4(0|1)[0-9][0-9]|fatal|FAILED" build.log | head -200 > logs/errors.txt || true
+          tail -60 build.log > logs/tail.txt || true
+          bash scripts/ci-publish-logs.sh ci-logs-compile-desktop logs
+
+  uwp:
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+          fetch-depth: 1
+      - uses: ./.github/actions/build-uwp-package
+        with:
+          variant: unified
+          patched: "true"
+          store_sku: "false"
+          artifact: xllama-appx-compilecheck
+          build_revision: ${{ github.run_number + 30000 }}

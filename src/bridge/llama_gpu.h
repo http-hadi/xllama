@@ -10,10 +10,17 @@
 #include "gguf.h"
 #include "llama.h"
 #include "xllama/ggml_d3d12.h"
+#include "xllama/ggml_d3d12_full.h"
+#include "xllama/path_utils.h"
 #include "xllama/platform.h"
 #include "xllama/speculative.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <cstdio>
 #include <cstring>
+#include <filesystem>
+#include <fstream>
 #include <string>
 
 namespace xllama {
@@ -25,7 +32,8 @@ inline void gguf_gpu_log(ggml_log_level level, const char* text, void*) {
         return;
     const bool keep = level == GGML_LOG_LEVEL_WARN || level == GGML_LOG_LEVEL_ERROR ||
                       std::strstr(text, "buffer size") || std::strstr(text, "offload") ||
-                      std::strstr(text, "graph splits") || std::strstr(text, "D3D12");
+                      std::strstr(text, "graph splits") || std::strstr(text, "D3D12") ||
+                      std::strstr(text, "ggml_d3d12") || std::strstr(text, "load_tensors");
     if (keep)
         log_output(std::string("[llama] ") + text);
 }
@@ -56,6 +64,95 @@ inline bool gguf_embedding_info(const std::string& path, ggml_type* embd_type, b
     return ok;
 }
 
+
+// True while the whole-graph backend (ggml_d3d12_full.h) owns the offload, so the context must
+// NOT use the legacy workarounds (KV on the CPU, host buffers, tied-embedding override).
+inline bool g_gpu_full_active = false;
+
+// Small text knob from LocalState (trimmed, empty when absent).
+inline std::string read_local_text(const char* name) {
+    std::ifstream f(resolve_local_path(name));
+    std::string s;
+    if (f)
+        std::getline(f, s);
+    while (!s.empty() && (s.back() == '\r' || s.back() == '\n' || s.back() == ' '))
+        s.pop_back();
+    return s;
+}
+
+// block_count of the GGUF (0 when unreadable), from the header only.
+inline int gguf_block_count(const std::string& path) {
+    gguf_init_params gp = {};
+    gp.no_alloc = true;
+    gp.ctx = nullptr;
+    gguf_context* g = gguf_init_from_file(path.c_str(), gp);
+    if (!g)
+        return 0;
+    int n = 0;
+    const int64_t arch = gguf_find_key(g, "general.architecture");
+    if (arch >= 0 && gguf_get_kv_type(g, arch) == GGUF_TYPE_STRING) {
+        const std::string key = std::string(gguf_get_val_str(g, arch)) + ".block_count";
+        const int64_t k = gguf_find_key(g, key.c_str());
+        if (k >= 0) {
+            const gguf_type t = gguf_get_kv_type(g, k);
+            if (t == GGUF_TYPE_UINT32)
+                n = static_cast<int>(gguf_get_val_u32(g, k));
+            else if (t == GGUF_TYPE_INT32)
+                n = gguf_get_val_i32(g, k);
+        }
+    }
+    gguf_free(g);
+    return n;
+}
+
+// Whole-graph path: llama.cpp offloads layers the ordinary way (KV cache, attention, norms and
+// the delta-net all execute on the device). Returns the layers actually offloaded, 0 = CPU.
+inline int apply_gguf_gpu_layers_full(int requested, llama_model_params& mparams,
+                                      const std::string& model_path) {
+    if (!d3d12_full_register()) {
+        log_output("[xllama] gguf gpu layers: full d3d12 backend unavailable, using the CPU\n");
+        return 0;
+    }
+    const char* name = d3d12_full_device_name();
+    ggml_backend_dev_t dev = ggml_backend_dev_by_name(name ? name : "D3D12F0");
+    if (!dev) {
+        log_output("[xllama] gguf gpu layers: no D3D12F device registered, using the CPU\n");
+        return 0;
+    }
+    const int n_layer = gguf_block_count(model_path);
+    std::error_code ec;
+    const std::uint64_t file_bytes = std::filesystem::file_size(model_path, ec);
+    size_t free_b = 0, total_b = 0;
+    ggml_backend_dev_memory(dev, &free_b, &total_b);
+
+    // Room kept for the KV cache, compute buffers and the system's own use of the GPU.
+    std::uint64_t reserve = 1024ull << 20;
+    const std::string rmb = read_local_text("d3d12f_reserve_mb.txt");
+    if (!rmb.empty())
+        reserve = static_cast<std::uint64_t>(std::max(0, std::atoi(rmb.c_str()))) << 20;
+
+    const int layers = d3d12_full_fit_layers(requested, n_layer, ec ? 0 : file_bytes, free_b, reserve);
+    char b[256];
+    std::snprintf(b, sizeof(b),
+                  "[xllama] gguf gpu layers (full d3d12): requested=%d n_layer=%d file=%llu MB "
+                  "gpu_free=%zu MB gpu_total=%zu MB reserve=%llu MB -> %d\n",
+                  requested, n_layer, static_cast<unsigned long long>(ec ? 0 : file_bytes >> 20),
+                  free_b >> 20, total_b >> 20, static_cast<unsigned long long>(reserve >> 20), layers);
+    log_output(b);
+    if (layers <= 0) {
+        log_output("[xllama] gguf gpu layers: the model does not fit the GPU budget, using the CPU\n");
+        return 0;
+    }
+    static ggml_backend_dev_t devs[] = {nullptr, nullptr};
+    devs[0] = dev;
+    mparams.devices = devs;
+    mparams.n_gpu_layers = layers;
+    mparams.split_mode = LLAMA_SPLIT_MODE_NONE;
+    mparams.main_gpu = 0;
+    g_gpu_full_active = true;
+    return layers;
+}
+
 // Sets mparams.devices / n_gpu_layers and returns the layers actually
 // offloaded: 0 when none were asked for or the device is unavailable, in
 // which case the model loads exactly as before (CPU, no GPU device listed).
@@ -64,9 +161,15 @@ inline int apply_gguf_gpu_layers(int requested, llama_model_params& mparams,
     static ggml_backend_dev_t no_devices[] = {nullptr};
     mparams.n_gpu_layers = 0;
     mparams.devices = no_devices;
+    g_gpu_full_active = false;
     if (requested <= 0)
         return 0;
     log_gguf_ws("before d3d12");
+    llama_log_set(gguf_gpu_log, nullptr);
+    // Default: the whole-graph backend. LocalState\d3d12_backend.txt containing "legacy" selects the
+    // older matmul-only backend below (kept for A/B comparison).
+    if (read_local_text("d3d12_backend.txt") != "legacy")
+        return apply_gguf_gpu_layers_full(requested, mparams, model_path);
     if (!ggml_d3d12_register()) {
         log_output("[xllama] gguf gpu layers: d3d12 backend unavailable, using the CPU\n");
         return 0;
@@ -127,6 +230,9 @@ inline uint32_t gguf_gpu_outputs_max(bool embeddings, bool prompt_lookup) {
 // the pages it touches (#309).
 inline void apply_gguf_gpu_context(int applied_layers, llama_context_params& cparams,
                                    uint32_t outputs_max) {
+    // Whole-graph backend: keep llama.cpp's defaults (KV cache on the device, flash attention AUTO).
+    if (g_gpu_full_active)
+        return;
     if (applied_layers > 0) {
         cparams.offload_kqv = false;
         if (cparams.flash_attn_type == LLAMA_FLASH_ATTN_TYPE_AUTO)

@@ -1220,11 +1220,22 @@ std::unique_ptr<Session> create_llama(const SessionParams& sp, std::string* err)
         return nullptr;
     }
 
-    llama_model_params mparams = llama_model_default_params();
-    const int gpu_layers = apply_gguf_gpu_layers(sp.n_gpu_layers, mparams, abs_path);
-
-    llama_model* raw_model = llama_model_load_from_file(abs_path.c_str(), mparams);
-    log_gguf_ws("after model load");
+    // A runtime LoRA adapter is applied by ops the GPU path has not been validated for: CPU.
+    int gpu_request = sp.lora_path.empty() ? sp.n_gpu_layers : 0;
+    int gpu_layers = 0;
+    llama_model* raw_model = nullptr;
+    for (int attempt = 0; attempt < 3; ++attempt) {
+        llama_model_params mparams = llama_model_default_params();
+        gpu_layers = apply_gguf_gpu_layers(gpu_request, mparams, abs_path);
+        raw_model = llama_model_load_from_file(abs_path.c_str(), mparams);
+        log_gguf_ws("after model load");
+        if (raw_model || gpu_layers <= 0)
+            break;
+        // The GPU load failed (typically device memory): retry with half the layers, then the CPU.
+        gpu_request = attempt == 0 && gpu_layers > 8 ? gpu_layers / 2 : 0;
+        log_output("[xllama] gguf gpu layers: load failed with " + std::to_string(gpu_layers) +
+                   " layers on the GPU, retrying with " + std::to_string(gpu_request) + "\n");
+    }
     if (!raw_model) {
         if (err)
             *err = "failed to load model: " + abs_path;

@@ -22,7 +22,9 @@
 #include <windows.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
+#ifndef XLLAMA_D3D12_UWP
 #include <dxcapi.h>
+#endif
 #ifdef GGML_D3D12_FXC_FA
 #include <d3dcompiler.h>
 #endif
@@ -41,6 +43,71 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+
+static std::string ggml_d3d12_wide_to_utf8(const wchar_t * w);
+// ===== xllama port ================================================================================
+static std::wstring g_xllama_shader_dir;   // precompiled-DXIL folder (see xllama_d3d12f_set_shader_dir)
+
+#ifdef XLLAMA_D3D12_UWP
+// Xbox UWP / AppContainer: d3d12.dll is resolved at run time (as xllama's d3d12_dyn.h does) and there
+// is no shader compiler, so every pipeline must come from the precompiled cache.
+typedef void d3d12_compiler_t;
+#define GGML_D3D12_DEV_COMPILER(dev) nullptr
+typedef HRESULT (WINAPI * xllama_pfn_create_device)(IUnknown *, D3D_FEATURE_LEVEL, REFIID, void **);
+typedef HRESULT (WINAPI * xllama_pfn_serialize_rs)(const D3D12_ROOT_SIGNATURE_DESC *, D3D_ROOT_SIGNATURE_VERSION,
+                                                    ID3DBlob **, ID3DBlob **);
+static HMODULE xllama_d3d12_module() {
+    static HMODULE m = LoadLibraryExW(L"d3d12.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    return m;
+}
+static HRESULT WINAPI xllama_d3d12_create_device(IUnknown * adapter, D3D_FEATURE_LEVEL fl, REFIID riid, void ** out) {
+    HMODULE m = xllama_d3d12_module();
+    auto    f = m ? (xllama_pfn_create_device) (void *) GetProcAddress(m, "D3D12CreateDevice") : nullptr;
+    return f ? f(adapter, fl, riid, out) : E_NOTIMPL;
+}
+static HRESULT WINAPI xllama_d3d12_serialize_rs(const D3D12_ROOT_SIGNATURE_DESC * d, D3D_ROOT_SIGNATURE_VERSION v,
+                                                ID3DBlob ** blob, ID3DBlob ** err) {
+    HMODULE m = xllama_d3d12_module();
+    auto    f = m ? (xllama_pfn_serialize_rs) (void *) GetProcAddress(m, "D3D12SerializeRootSignature") : nullptr;
+    return f ? f(d, v, blob, err) : E_NOTIMPL;
+}
+#define D3D12CreateDevice           xllama_d3d12_create_device
+#define D3D12SerializeRootSignature xllama_d3d12_serialize_rs
+#define D3D12GetDebugInterface(...) (E_NOINTERFACE)   // debug layer / DRED do not exist in a retail AppContainer
+#else
+typedef IDxcCompiler3 d3d12_compiler_t;
+#define GGML_D3D12_DEV_COMPILER(dev) (dev).compiler.get()
+#endif
+
+static bool ggml_d3d12_file_exists(const std::wstring & file) {
+    WIN32_FILE_ATTRIBUTE_DATA data;
+    return !file.empty() && GetFileAttributesExW(file.c_str(), GetFileExInfoStandard, &data) != 0;
+}
+
+extern "C" void xllama_d3d12f_set_shader_dir(const wchar_t * dir) {
+    g_xllama_shader_dir = dir ? dir : L"";
+}
+
+#ifdef XLLAMA_D3D12_UWP
+static void ggml_d3d12_manifest_add(const std::wstring &, const std::string &) {}
+#else
+// bake support: GGML_D3D12_MANIFEST=<file> appends "<cache file name>\t<pipeline key>" per pipeline requested
+static void ggml_d3d12_manifest_add(const std::wstring & cache_file, const std::string & key) {
+    static const char * path = getenv("GGML_D3D12_MANIFEST");
+    static std::mutex   mutex;
+    if (!path || cache_file.empty()) {
+        return;
+    }
+    std::lock_guard<std::mutex> lock(mutex);
+    if (FILE * f = fopen(path, "ab")) {
+        const size_t slash = cache_file.find_last_of(L"\\/");
+        const std::string name = ggml_d3d12_wide_to_utf8(cache_file.c_str() + (slash == std::wstring::npos ? 0 : slash + 1));
+        fprintf(f, "%s\t%s\n", name.c_str(), key.c_str());
+        fclose(f);
+    }
+}
+#endif
+// ===== end xllama port ============================================================================
 
 #ifdef GGML_D3D12_DEBUG
 #define D3D12_LOG_DEBUG(...) GGML_LOG_DEBUG("ggml_d3d12: " __VA_ARGS__)
@@ -220,10 +287,13 @@ struct d3d12_device_ctx {
     uint32_t                  submit_batch    = D3D12_DEFAULT_SUBMIT_BATCH;
     uint32_t                  dispatches_in_list = 0;
 
+    bool                    failed = false;   // xllama: a precompiled shader was missing/rejected
+#ifndef XLLAMA_D3D12_UWP
     // shader compiler
     HMODULE                 dxc_module = nullptr;
     com_ptr<IDxcCompiler3>  compiler;
     com_ptr<IDxcUtils>      utils;
+#endif
     std::unordered_map<std::string, d3d12_pipeline> pipelines;
 
     // parallel compilation: a collect pass over a new graph queues the missing pipelines, worker threads build them
@@ -560,16 +630,33 @@ static std::wstring ggml_d3d12_shader_cache_file(const char * source, const std:
     for (const auto & a : args) {
         hash_bytes(a.c_str(), (a.size() + 1) * sizeof(wchar_t));
     }
-    HMODULE module = nullptr;
-    wchar_t path[MAX_PATH];
-    if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                            (LPCWSTR) &ggml_d3d12_shader_cache_file, &module) ||
-        GetModuleFileNameW(module, path, MAX_PATH) - 1 >= MAX_PATH - 1) {   // 0 = error, MAX_PATH = truncated
+#ifdef XLLAMA_D3D12_UWP
+    if (g_xllama_shader_dir.empty()) {
         return L"";
     }
-    std::wstring dir = path;
-    dir = dir.substr(0, dir.find_last_of(L"\\/") + 1) + L"d3d12-shader-cache";
+    std::wstring dir = g_xllama_shader_dir;
+    while (!dir.empty() && (dir.back() == L'\\' || dir.back() == L'/')) {
+        dir.pop_back();
+    }
+#else
+    std::wstring dir;
+    if (!g_xllama_shader_dir.empty()) {
+        dir = g_xllama_shader_dir;
+    } else if (const wchar_t * env = _wgetenv(L"GGML_D3D12_CACHE_DIR")) {
+        dir = env;
+    } else {
+        HMODULE module = nullptr;
+        wchar_t path[MAX_PATH];
+        if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                                (LPCWSTR) &ggml_d3d12_shader_cache_file, &module) ||
+            GetModuleFileNameW(module, path, MAX_PATH) - 1 >= MAX_PATH - 1) {   // 0 = error, MAX_PATH = truncated
+            return L"";
+        }
+        dir = path;
+        dir = dir.substr(0, dir.find_last_of(L"\\/") + 1) + L"d3d12-shader-cache";
+    }
     CreateDirectoryW(dir.c_str(), nullptr);
+#endif
     std::wstring name = L"\\0000000000000000.dxil";
     for (int i = 16; i > 0; i--, h >>= 4) {
         name[i] = L"0123456789abcdef"[h & 0xf];
@@ -599,6 +686,9 @@ static std::vector<uint8_t> ggml_d3d12_read_file(const std::wstring & file) {
     return data;
 }
 
+#ifdef XLLAMA_D3D12_UWP
+static void ggml_d3d12_write_file(const std::wstring &, const void *, size_t) {}
+#else
 // write to a per-process temp name and rename, so concurrent processes never see a partial file
 static void ggml_d3d12_write_file(const std::wstring & file, const void * data, size_t size) {
     if (file.empty()) {
@@ -615,6 +705,7 @@ static void ggml_d3d12_write_file(const std::wstring & file, const void * data, 
         DeleteFileW(tmp.c_str());
     }
 }
+#endif
 
 // counts shaders compiled from source (cache hits are not counted) and says so at most once a second,
 // so a long first run shows it is compiling rather than hung
@@ -669,7 +760,7 @@ static std::vector<std::wstring> ggml_d3d12_compile_args(const std::vector<std::
 
 // builds one pipeline from the disk cache or by compiling; thread safe when each thread passes its own compiler
 static d3d12_pipeline ggml_d3d12_build_pipeline(d3d12_device_ctx &               dev,
-                                               IDxcCompiler3 *                  compiler,
+                                               d3d12_compiler_t *               compiler,
                                                const std::string &              key,
                                                const char *                     source,
                                                const std::vector<std::string> & defines,
@@ -733,7 +824,37 @@ static d3d12_pipeline ggml_d3d12_build_pipeline(d3d12_device_ctx &              
         return pipeline;
     }
 #endif
+#ifdef XLLAMA_D3D12_UWP
+    (void) compiler;
     const std::wstring   cache_file = ggml_d3d12_shader_cache_file(source, args);
+    std::vector<uint8_t> dxil       = ggml_d3d12_read_file(cache_file);
+    d3d12_pipeline       pipeline;
+    pipeline.name = key;
+    if (dxil.empty()) {
+        GGML_LOG_ERROR("ggml_d3d12: precompiled shader missing for [%s] (cache %ls)\n", key.c_str(),
+                       cache_file.empty() ? L"<no dir>" : cache_file.c_str());
+        dev.failed = true;
+        return pipeline;   // null PSO: ggml_d3d12_dispatch refuses it and graph_compute reports failure
+    }
+    D3D12_COMPUTE_PIPELINE_STATE_DESC pso_desc = {};
+    pso_desc.pRootSignature                    = dev.root_sig.get();
+    pso_desc.CS.pShaderBytecode                = dxil.data();
+    pso_desc.CS.BytecodeLength                 = dxil.size();
+    const HRESULT hr = dev.device->CreateComputePipelineState(&pso_desc, IID_PPV_ARGS(pipeline.pso.put()));
+    if (FAILED(hr)) {
+        GGML_LOG_ERROR("ggml_d3d12: CreateComputePipelineState failed for [%s] (HRESULT 0x%08lx)\n", key.c_str(),
+                       (unsigned long) hr);
+        dev.failed = true;
+        return pipeline;   // creation failed, so pso is still null
+    }
+    std::lock_guard<std::mutex> lock(dev.pipelines_mutex);
+    dev.n_compiles++;
+    dev.t_compile_us += ggml_d3d12_time_us() - t_compile0;
+    return pipeline;
+}
+#else
+    const std::wstring   cache_file = ggml_d3d12_shader_cache_file(source, args);
+    ggml_d3d12_manifest_add(cache_file, key);
     for (int attempt = 0;; attempt++) {
         std::vector<uint8_t> dxil   = attempt == 0 ? ggml_d3d12_read_file(cache_file) : std::vector<uint8_t>();
         const bool           cached = !dxil.empty();
@@ -797,6 +918,7 @@ static d3d12_pipeline ggml_d3d12_build_pipeline(d3d12_device_ctx &              
         return pipeline;
     }
 }
+#endif
 
 // defines: list of "NAME" or "NAME=VALUE"
 static d3d12_pipeline & ggml_d3d12_get_pipeline(d3d12_device_ctx &               dev,
@@ -826,7 +948,7 @@ static d3d12_pipeline & ggml_d3d12_get_pipeline(d3d12_device_ctx &              
         }
         return placeholder;
     }
-    d3d12_pipeline pipeline = ggml_d3d12_build_pipeline(dev, dev.compiler.get(), key, source, defines, min_sm);
+    d3d12_pipeline pipeline = ggml_d3d12_build_pipeline(dev, GGML_D3D12_DEV_COMPILER(dev), key, source, defines, min_sm);
     return dev.pipelines.emplace(key, std::move(pipeline)).first->second;
 }
 
@@ -842,6 +964,34 @@ static std::string ggml_d3d12_driver_version(IDXGIAdapter1 * adapter) {
     return buf;
 }
 
+#ifdef XLLAMA_D3D12_UWP
+// builds the queued pipelines from the precompiled cache on worker threads (PSO creation only, no compiler)
+static void ggml_d3d12_build_pipeline_jobs(d3d12_device_ctx & dev) {
+    std::vector<d3d12_device_ctx::pipeline_job> jobs;
+    jobs.swap(dev.pipeline_jobs);
+    if (jobs.empty()) {
+        return;
+    }
+    const size_t        n_threads = std::min<size_t>(jobs.size(), std::max(1u, std::thread::hardware_concurrency()));
+    std::atomic<size_t> next{ 0 };
+    auto worker = [&]() {
+        for (size_t i; (i = next++) < jobs.size();) {
+            const auto &   j = jobs[i];
+            d3d12_pipeline p = ggml_d3d12_build_pipeline(dev, nullptr, j.key, j.source, j.defines, j.min_sm);
+            std::lock_guard<std::mutex> lock(dev.pipelines_mutex);
+            dev.pipelines.emplace(j.key, std::move(p));
+        }
+    };
+    std::vector<std::thread> threads;
+    for (size_t t = 1; t < n_threads; t++) {
+        threads.emplace_back(worker);
+    }
+    worker();
+    for (auto & th : threads) {
+        th.join();
+    }
+}
+#else
 // builds the queued pipelines on worker threads, each with its own compiler instance
 static void ggml_d3d12_build_pipeline_jobs(d3d12_device_ctx & dev) {
     std::vector<d3d12_device_ctx::pipeline_job> jobs;
@@ -852,7 +1002,7 @@ static void ggml_d3d12_build_pipeline_jobs(d3d12_device_ctx & dev) {
     size_t n_missing = 0;
     for (const auto & j : jobs) {
         const std::wstring cf = ggml_d3d12_shader_cache_file(j.source, ggml_d3d12_compile_args(j.defines, j.min_sm));
-        n_missing += GetFileAttributesW(cf.c_str()) == INVALID_FILE_ATTRIBUTES;
+        n_missing += !ggml_d3d12_file_exists(cf);
     }
     ggml_d3d12_note_queued(n_missing);
     auto           create    = (DxcCreateInstanceProc) (void *) GetProcAddress(dev.dxc_module, "DxcCreateInstance");
@@ -877,6 +1027,7 @@ static void ggml_d3d12_build_pipeline_jobs(d3d12_device_ctx & dev) {
         th.join();
     }
 }
+#endif
 
 /* Dispatch encoding */
 
@@ -992,6 +1143,10 @@ static void ggml_d3d12_dispatch(d3d12_device_ctx &                       dev,
     GGML_ASSERT(dev.recording);
     GGML_ASSERT(uavs.size() <= D3D12_MAX_ROOT_UAVS);
     if (dev.collecting) {
+        return;
+    }
+    if (!pipeline.pso) {   // xllama: shader missing or rejected, refuse instead of binding a null PSO
+        dev.failed = true;
         return;
     }
 
@@ -4266,6 +4421,9 @@ static ggml_status ggml_backend_d3d12_graph_compute(ggml_backend_t backend, stru
         i += ggml_d3d12_encode_nodes(dev, cgraph, i);
     }
     ggml_d3d12_submit_and_wait(dev);
+    if (dev.failed) {
+        return GGML_STATUS_FAILED;
+    }
     dev.n_graphs++;
     dev.n_nodes += cgraph->n_nodes;
     dev.t_graph_us += ggml_d3d12_time_us() - t0;
@@ -5108,6 +5266,7 @@ static std::shared_ptr<d3d12_device_ctx> ggml_d3d12_shared_dev(d3d12_device_ctx 
     GGML_ABORT("ggml_d3d12: unknown device context");
 }
 
+#ifndef XLLAMA_D3D12_UWP
 // Loads a DLL from the folder this backend DLL sits in, then from the normal search path. An application
 // that loads the backend from a folder of its own (LM Studio, for one) does not put that folder on the DLL
 // search path, so dxcompiler.dll and dxil.dll next to ggml-d3d12.dll would otherwise not be found.
@@ -5127,6 +5286,7 @@ static HMODULE ggml_d3d12_load_beside(const wchar_t * name) {
     }
     return LoadLibraryW(name);
 }
+#endif
 
 static bool ggml_d3d12_init_device(d3d12_device_ctx & dev, ggml_backend_dev_t ggml_dev) {
     HRESULT hr;
@@ -5302,6 +5462,7 @@ static bool ggml_d3d12_init_device(d3d12_device_ctx & dev, ggml_backend_dev_t gg
     dev.param_ptr = (uint8_t *) ptr;
     dev.param_va  = dev.param_buf->GetGPUVirtualAddress();
 
+#ifndef XLLAMA_D3D12_UWP
     // shader compiler: dxcompiler.dll + dxil.dll next to this DLL, next to the executable or on PATH.
     // dxil.dll goes first so that dxcompiler finds it already loaded instead of searching for it itself.
     const bool have_dxil = GetModuleHandleA("dxil.dll") || ggml_d3d12_load_beside(L"dxil.dll");
@@ -5319,6 +5480,7 @@ static bool ggml_d3d12_init_device(d3d12_device_ctx & dev, ggml_backend_dev_t gg
     if (!have_dxil) {
         GGML_LOG_WARN("ggml_d3d12: dxil.dll not found; shaders will be unsigned and most drivers reject them\n");
     }
+#endif
 
     // stats and GPU timestamp profiling (needs the queue)
     dev.stats   = getenv("GGML_D3D12_STATS") != nullptr;
@@ -5355,11 +5517,9 @@ static bool ggml_d3d12_init_device(d3d12_device_ctx & dev, ggml_backend_dev_t gg
         /* .iface = */ {
             /* .get_name       = */ ggml_backend_d3d12_buffer_type_get_name,
             /* .alloc_buffer   = */ ggml_backend_d3d12_buffer_type_alloc_buffer,
-            /* .alloc_buffer_n = */ NULL,
             /* .get_alignment  = */ ggml_backend_d3d12_buffer_type_get_alignment,
             /* .get_max_size   = */ ggml_backend_d3d12_buffer_type_get_max_size,
             /* .get_alloc_size = */ NULL,
-            /* .get_alloc_size_n = */ NULL,
             /* .is_host        = */ NULL,
         },
         /* .device  = */ ggml_dev,
@@ -5476,6 +5636,9 @@ static void ggml_d3d12_enumerate(ggml_backend_d3d12_reg_context & reg_ctx, ggml_
         dev->dred          = dred_on;
         dev->desc          = ggml_d3d12_wide_to_utf8(desc.Description);
         dev->vendor_id     = desc.VendorId;
+        if (const char * fv = getenv("GGML_D3D12_FAKE_VENDOR")) {   // bake: see port script docstring
+            dev->vendor_id = (uint32_t) strtoul(fv, nullptr, 16);
+        }
         dev->dedicated_mem = desc.DedicatedVideoMemory;
         dev->shared_mem    = desc.SharedSystemMemory;
         dev->name          = GGML_D3D12_NAME + std::to_string(reg_ctx.devs.size());
@@ -5534,7 +5697,7 @@ static const struct ggml_backend_reg_i ggml_backend_d3d12_reg_i = {
     /* .get_proc_address = */ NULL,
 };
 
-ggml_backend_reg_t ggml_backend_d3d12_reg() {
+ggml_backend_reg_t xllama_d3d12f_reg() {
     static std::mutex mutex;
     std::lock_guard<std::mutex> lock(mutex);
 
@@ -5552,22 +5715,22 @@ ggml_backend_reg_t ggml_backend_d3d12_reg() {
     return &reg;
 }
 
-ggml_backend_t ggml_backend_d3d12_init(int device) {
-    ggml_backend_reg_t reg = ggml_backend_d3d12_reg();
+ggml_backend_t xllama_d3d12f_init(int device) {
+    ggml_backend_reg_t reg = xllama_d3d12f_reg();
     if (device < 0 || (size_t) device >= ggml_backend_reg_dev_count(reg)) {
         return nullptr;
     }
     return ggml_backend_d3d12_device_init_backend(ggml_backend_reg_dev_get(reg, device), nullptr);
 }
 
-GGML_BACKEND_DL_IMPL(ggml_backend_d3d12_reg)
+GGML_BACKEND_DL_IMPL(xllama_d3d12f_reg)
 
 #ifdef GGML_D3D12_VK_ALIAS
 // Drop-in for applications linked against ggml-vulkan.dll (LM Studio's engine imports only this symbol):
 // built with -DGGML_D3D12_VK_ALIAS and renamed to ggml-vulkan.dll, this DLL serves D3D12 in Vulkan's place.
 extern "C" {
 GGML_BACKEND_API ggml_backend_reg_t ggml_backend_vk_reg(void) {
-    return ggml_backend_d3d12_reg();
+    return xllama_d3d12f_reg();
 }
 }
 #endif
