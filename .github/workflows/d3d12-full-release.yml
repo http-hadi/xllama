@@ -207,13 +207,16 @@ jobs:
         with:
           name: d3d12-shader-cache
           path: uwp/d3d12-shader-cache
+      - name: Package revision (always above the released 1.6.0.x)
+        shell: bash
+        run: echo "XLLAMA_REV=$((GITHUB_RUN_NUMBER + 30000))" >> "$GITHUB_ENV"
       - uses: ./.github/actions/build-uwp-package
         with:
           variant: unified
           patched: "true"
           store_sku: "false"
           artifact: xllama-appx-d3d12f
-          build_revision: ${{ github.run_number + 30000 }}
+          build_revision: ${{ env.XLLAMA_REV }}
 
   release:
     needs: uwp
