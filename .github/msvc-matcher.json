@@ -1,0 +1,30 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "msvc-compile",
+      "pattern": [
+        {
+          "regexp": "^(?:\\s*\\d+>)?\\s*(.+?)\\((\\d+)(?:,(\\d+))?\\)\\s*:\\s+(error|warning)\\s+([A-Za-z]+\\d+)\\s*:\\s*(.*?)(?:\\s+\\[[^\\]]*\\])?$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        }
+      ]
+    },
+    {
+      "owner": "msvc-link",
+      "pattern": [
+        {
+          "regexp": "^(?:\\s*\\d+>)?\\s*(.+?)\\s*:\\s+(?:fatal\\s+)?(error)\\s+(LNK\\d+)\\s*:\\s*(.*?)(?:\\s+\\[[^\\]]*\\])?$",
+          "file": 1,
+          "severity": 2,
+          "code": 3,
+          "message": 4
+        }
+      ]
+    }
+  ]
+}

@@ -207,6 +207,9 @@ jobs:
         with:
           name: d3d12-shader-cache
           path: uwp/d3d12-shader-cache
+      - name: Surface MSVC/linker errors as annotations
+        shell: bash
+        run: echo "::add-matcher::.github/msvc-matcher.json"
       - name: Package revision (always above the released 1.6.0.x)
         shell: bash
         run: echo "XLLAMA_REV=$((GITHUB_RUN_NUMBER + 30000))" >> "$GITHUB_ENV"
