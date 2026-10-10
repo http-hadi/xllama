@@ -3,6 +3,7 @@
 
 #include <doctest/doctest.h>
 
+#include "xllama/ggml_d3d12_full.h" // d3d12_full_fit_layers
 #include "xllama/inference_params.h" // kDefaultNCtx (#171)
 #include "xllama/routing_policy.h"
 
@@ -252,4 +253,36 @@ TEST_CASE("resolve_gguf_gpu_layers: operator knob overrides the catalogue defaul
     CHECK(resolve_gguf_gpu_layers(99, 12) == 12);
     // A negative catalogue value is a bad entry, not a request.
     CHECK(resolve_gguf_gpu_layers(-5, kGgufGpuLayersKnobAbsent) == 0);
+}
+
+TEST_CASE("resolve_gguf_gpu_layers_auto: knob > catalogue > auto default (whole-graph d3d12)") {
+    // The pinned resolver is unchanged: with no knob and no catalogue value it stays on the CPU.
+    CHECK(resolve_gguf_gpu_layers(0, kGgufGpuLayersKnobAbsent) == 0);
+    // Auto: a model with no choice goes to the GPU only when the backend is usable.
+    CHECK(resolve_gguf_gpu_layers_auto(0, kGgufGpuLayersKnobAbsent, true) == kGgufGpuLayersAll);
+    CHECK(resolve_gguf_gpu_layers_auto(0, kGgufGpuLayersKnobAbsent, false) == 0);
+    // Catalogue and operator knob keep their precedence, and the knob can force the CPU.
+    CHECK(resolve_gguf_gpu_layers_auto(24, kGgufGpuLayersKnobAbsent, true) == 24);
+    CHECK(resolve_gguf_gpu_layers_auto(24, 0, true) == 0);
+    CHECK(resolve_gguf_gpu_layers_auto(0, 7, false) == 7);
+    CHECK(resolve_gguf_gpu_layers_auto(-5, kGgufGpuLayersKnobAbsent, false) == 0);
+}
+
+TEST_CASE("d3d12_full_fit_layers: size the offload to the GPU budget") {
+    constexpr std::uint64_t MB = 1024ull * 1024ull;
+    // Nothing requested -> CPU.
+    CHECK(d3d12_full_fit_layers(0, 32, 2000 * MB, 8000 * MB, 1000 * MB) == 0);
+    // Plenty of room: all layers, +1 for the output layer, never more than asked for.
+    CHECK(d3d12_full_fit_layers(999, 32, 2000 * MB, 8000 * MB, 1000 * MB) == 33);
+    CHECK(d3d12_full_fit_layers(10, 32, 2000 * MB, 8000 * MB, 1000 * MB) == 10);
+    // Unknown architecture or unknown budget: trust the request.
+    CHECK(d3d12_full_fit_layers(999, 0, 2000 * MB, 8000 * MB, 1000 * MB) == 999);
+    CHECK(d3d12_full_fit_layers(999, 32, 2000 * MB, 0, 1000 * MB) == 33);
+    // Budget no larger than the reserve: CPU.
+    CHECK(d3d12_full_fit_layers(999, 32, 2000 * MB, 1000 * MB, 1000 * MB) == 0);
+    CHECK(d3d12_full_fit_layers(999, 32, 2000 * MB, 500 * MB, 1000 * MB) == 0);
+    // Partial: 3300 MB over 33 "layers" = 100 MB each; 1000 MB usable -> 10 layers.
+    CHECK(d3d12_full_fit_layers(999, 32, 3300 * MB, 2000 * MB, 1000 * MB) == 10);
+    // Exactly fits.
+    CHECK(d3d12_full_fit_layers(999, 32, 1000 * MB, 2000 * MB, 1000 * MB) == 33);
 }
