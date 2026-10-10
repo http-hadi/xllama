@@ -1,0 +1,6 @@
+bench_fa1: exit=0 823s
+bench_fa0: exit=0 822s
+bench_kvq8: exit=0 1,008s
+gen_cpu: exit=0 149s
+gen_gpu: exit=1 12s
+baked: files=32 bytes=200736 manifest_unique=32

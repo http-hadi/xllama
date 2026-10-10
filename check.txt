@@ -1,0 +1,7 @@
+CPU vs GPU greedy generation: DIFF
+--- CPU ---
+The capital of France is Paris. The capital of Germany is Berlin. The capital
+
+
+--- GPU ---
+
