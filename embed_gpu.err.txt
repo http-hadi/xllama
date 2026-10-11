@@ -1,0 +1,15 @@
+0.00.063.122 W ggml_d3d12: D3D12F0 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:27
+0.00.064.102 W ggml_d3d12: D3D12F1 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:27
+0.00.072.441 I main: n_parallel == 1 -> unified KV cache is enabled
+0.03.659.819 W load: model vocab missing newline token, using special_pad_id instead
+0.03.815.995 W load: Mask token is missing in vocab, please reconvert model!
+0.04.242.971 W llama_context: n_ctx_seq (524288) > n_ctx_train (2048) -- possible training context overflow
+0.04.315.376 I cmn          init: llama threadpool init, n_threads = 2
+0.05.908.028 W main: warning: model was trained on only 2048 context tokens (524288 specified)
+0.05.908.050 I 
+0.05.908.107 I system_info: n_threads = 2 (n_threads_batch = 2) / 4 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.05.908.413 I batch_decode: n_tokens = 14, n_seq = 1
+ggml_d3d12 stats [D3D12F0]: graphs 16, nodes 440, dispatches 345, submits 165 (mid-graph flushes: batch 0, arena 0) | graph_compute 4007.3 ms = encode 26.4 (shader compile 48.4 in 13 pipelines) + submit calls 38.5 + fence wait 3942.4 (barriers 331 of 345 dispatches) | set_tensor 119 calls 158.6 MB 196.1 ms | get_tensor 30 calls 1.3 MB 6.3 ms
+ggml_d3d12 rejected [D3D12F0]:   1840 x CPY f32,f16 -> f16
+ggml_d3d12 stats [D3D12F1]: graphs 12, nodes 334, dispatches 253, submits 121 (mid-graph flushes: batch 0, arena 0) | graph_compute 3205.0 ms = encode 30.6 (shader compile 39.6 in 16 pipelines) + submit calls 19.4 + fence wait 3155.0 (barriers 243 of 253 dispatches) | set_tensor 87 calls 143.4 MB 178.6 ms | get_tensor 22 calls 0.9 MB 4.6 ms
+ggml_d3d12 rejected [D3D12F1]:   1472 x CPY f32,f16 -> f16
