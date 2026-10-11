@@ -1,0 +1,40 @@
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+025efa76384e96fe.dxil	norm
+e3a676a881460974.dxil	binary -DTYPE_F32 -DOP_MUL
+6a22106fef0a956c.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=32 -DN_MATS=1 -DFUSE_ADD
+b706b51cac573bc5.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+45a60ff36d6d6494.dxil	flash_attn -DDV=64 -DCOMBINE -DWG_SIZE=64
+bac1f2698f989167.dxil	unary -DTYPE_F32 -DGELU
+30bff1d233d9808e.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=128 -DN_MATS=1 -DFUSE_ADD
+6a22106fef0a956c.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=32 -DN_MATS=1 -DFUSE_ADD
+b706b51cac573bc5.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+45a60ff36d6d6494.dxil	flash_attn -DDV=64 -DCOMBINE -DWG_SIZE=64
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+025efa76384e96fe.dxil	norm
+e3a676a881460974.dxil	binary -DTYPE_F32 -DOP_MUL
+bac1f2698f989167.dxil	unary -DTYPE_F32 -DGELU
+30bff1d233d9808e.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=128 -DN_MATS=1 -DFUSE_ADD
+f1dd2fc27ec110c5.dxil	get_rows -DSRC_F32
+c8a47a7f18b0f31e.dxil	cpy -DSRC_F32 -DDST_F32
+bce4e801a9909cd7.dxil	mul_mat_scalar -DSRC0_F32
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+025efa76384e96fe.dxil	norm
+e3a676a881460974.dxil	binary -DTYPE_F32 -DOP_MUL
+6a22106fef0a956c.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=32 -DN_MATS=1 -DFUSE_ADD
+b706b51cac573bc5.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+45a60ff36d6d6494.dxil	flash_attn -DDV=64 -DCOMBINE -DWG_SIZE=64
+bac1f2698f989167.dxil	unary -DTYPE_F32 -DGELU
+30bff1d233d9808e.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=128 -DN_MATS=1 -DFUSE_ADD
+6a22106fef0a956c.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=32 -DN_MATS=1 -DFUSE_ADD
+b706b51cac573bc5.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+45a60ff36d6d6494.dxil	flash_attn -DDV=64 -DCOMBINE -DWG_SIZE=64
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+025efa76384e96fe.dxil	norm
+e3a676a881460974.dxil	binary -DTYPE_F32 -DOP_MUL
+bac1f2698f989167.dxil	unary -DTYPE_F32 -DGELU
+30bff1d233d9808e.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=128 -DN_MATS=1 -DFUSE_ADD
+f1dd2fc27ec110c5.dxil	get_rows -DSRC_F32
+c8a47a7f18b0f31e.dxil	cpy -DSRC_F32 -DDST_F32
+bce4e801a9909cd7.dxil	mul_mat_scalar -DSRC0_F32
+f787799cd14fc8d6.dxil	mul_mat_tiled -DSRC0_Q8_0
+f787799cd14fc8d6.dxil	mul_mat_tiled -DSRC0_Q8_0

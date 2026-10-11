@@ -1,0 +1,13 @@
+0.00.023.295 W ggml_d3d12: D3D12F0 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+0.00.023.843 W ggml_d3d12: D3D12F1 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+0.00.028.006 I main: n_parallel == 1 -> unified KV cache is enabled
+0.01.891.139 W load: model vocab missing newline token, using special_pad_id instead
+0.02.448.533 W llama_init_from_model: model default pooling_type is [2], but [1] was specified
+0.02.477.603 I cmn          init: llama threadpool init, n_threads = 2
+0.05.913.912 I 
+0.05.913.966 I system_info: n_threads = 2 (n_threads_batch = 2) / 4 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.05.914.107 I batch_decode: n_tokens = 122, n_seq = 1
+ggml_d3d12 stats [D3D12F0]: graphs 28, nodes 764, dispatches 530, submits 352 (mid-graph flushes: batch 0, arena 0) | graph_compute 11476.9 ms = encode 339.6 (shader compile 342.6 in 9 pipelines) + submit calls 15.9 + fence wait 11121.4 (barriers 459 of 530 dispatches) | set_tensor 270 calls 182.2 MB 202.1 ms | get_tensor 54 calls 13.7 MB 13.1 ms
+ggml_d3d12 rejected [D3D12F0]:   2432 x CPY f32,f16 -> f16
+ggml_d3d12 stats [D3D12F1]: graphs 24, nodes 648, dispatches 448, submits 298 (mid-graph flushes: batch 0, arena 0) | graph_compute 9503.7 ms = encode 30.9 (shader compile 32.8 in 12 pipelines) + submit calls 15.8 + fence wait 9456.9 (barriers 390 of 448 dispatches) | set_tensor 228 calls 153.8 MB 168.0 ms | get_tensor 46 calls 11.2 MB 10.9 ms
+ggml_d3d12 rejected [D3D12F1]:   2176 x CPY f32,f16 -> f16
