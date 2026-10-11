@@ -1,0 +1,13 @@
+0.00.023.981 W ggml_d3d12: D3D12F0 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+0.00.024.920 W ggml_d3d12: D3D12F1 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+0.00.649.478 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.01.240.481 W llama_context: n_ctx is not divisible by n_seq_max - rounding down to 4096
+0.01.295.956 I cmn          init: llama threadpool init, n_threads = 2
+0.05.354.059 I 
+0.05.354.148 I system_info: n_threads = 2 (n_threads_batch = 2) / 4 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.05.354.155 I perplexity: tokenizing the input ..
+0.05.364.283 I perplexity: tokenization took 10.12 ms
+0.05.364.419 I perplexity: calculating perplexity over 3 chunks, n_ctx=128, batch_size=2048, n_seq=16
+1.20.034.975 I perplexity: 74.67 seconds per pass - ETA 1.20.103.378 I Final estimate: PPL = 8.0215 +/- 1.92086
+ggml_d3d12 stats [D3D12F0]: graphs 2, nodes 1738, dispatches 1116, submits 461 (mid-graph flushes: batch 149, arena 0) | graph_compute 78547.6 ms = encode 44.0 (shader compile 118.9 in 22 pipelines) + submit calls 63.6 + fence wait 78440.1 (barriers 1002 of 1116 dispatches) | set_tensor 302 calls 393.4 MB 512.7 ms | get_tensor 2 calls 117.3 MB 65.9 ms
+ggml_d3d12 stats [D3D12F1]: graphs 0, nodes 0, dispatches 0, submits 0 (mid-graph flushes: batch 0, arena 0) | graph_compute 0.0 ms = encode 0.0 (shader compile 0.0 in 0 pipelines) + submit calls 0.0 + fence wait 0.0 (barriers 0 of 0 dispatches) | set_tensor 0 calls 0.0 MB 0.0 ms | get_tensor 0 calls 0.0 MB 0.0 ms

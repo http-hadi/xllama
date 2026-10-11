@@ -1,0 +1,1 @@
+PPL cpu=8.0138 gpu=8.0215 rel_diff=0.0961% -> OK
