@@ -1,0 +1,60 @@
+  
+  unicode.cpp
+  unicode-data.cpp
+  llama.vcxproj -> D:\a\xllama\xllama\build\src\Release\llama.lib
+  Building Custom Rule D:/a/xllama/xllama/llama.cpp/common/CMakeLists.txt
+  functionary-v3-2.cpp
+  parsers.cpp
+  deepseek.cpp
+  cohere2moe.cpp
+  gemma4.cpp
+  kimi-k2.cpp
+  gpt-oss.cpp
+  gigachat-v3.cpp
+  kimi-k3.cpp
+  lfm2.cpp
+  minicpm5.cpp
+  ling3.cpp
+  minimax-m3.cpp
+  qwen3-coder.cpp
+  muse-glimmer.cpp
+  ministral3.cpp
+  arg.cpp
+  chat-auto-parser-generator.cpp
+  chat-diff-analyzer.cpp
+  chat-auto-parser-helpers.cpp
+  chat-peg-parser.cpp
+  chat.cpp
+  common.cpp
+  console.cpp
+  debug.cpp
+  download.cpp
+  fit.cpp
+  hf-cache.cpp
+  imatrix-loader.cpp
+  json-schema.cpp
+  json-schema-to-grammar.cpp
+  json.cpp
+  llguidance.cpp
+  log.cpp
+  ngram-cache.cpp
+  ngram-map.cpp
+  ngram-mod.cpp
+  peg-parser.cpp
+  preset.cpp
+  reasoning-budget.cpp
+  sampling.cpp
+  speculative.cpp
+  subproc.cpp
+  trie.cpp
+  unicode.cpp
+  lexer.cpp
+  parser.cpp
+  runtime.cpp
+  value.cpp
+  string.cpp
+  caps.cpp
+  llama-common.vcxproj -> D:\a\xllama\xllama\build\common\Release\llama-common.lib
+  Building Custom Rule D:/a/xllama/xllama/llama.cpp/tests/CMakeLists.txt
+  test-backend-ops.cpp
+  test-backend-ops.vcxproj -> D:\a\xllama\xllama\build\bin\Release\test-backend-ops.exe
