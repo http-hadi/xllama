@@ -1,0 +1,10 @@
+bench_fa1: exit=0 160s
+bench_fa0: exit=0 158s
+bench_kvq8: exit=0 22s
+gen_cpu: exit=0 2s
+gen_gpu: exit=0 51s
+ppl_cpu: exit=0 7s
+ppl_gpu: exit=0 93s
+PPL cpu=6.4538 gpu=6.377 rel_diff=1.19% -> MISMATCH
+rejected ops (CPU fallback): none
+verify: no missing shaders
