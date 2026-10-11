@@ -179,6 +179,7 @@ jobs:
         env:
           GGML_D3D12_WARP: "1"
           GGML_D3D12_FAKE_VENDOR: "1002"
+          GGML_D3D12_FORCE_NO16: "1"
           GGML_D3D12_CACHE_DIR: ${{ github.workspace }}\cache
           GGML_D3D12_MANIFEST: ${{ github.workspace }}\manifest.txt
         run: |

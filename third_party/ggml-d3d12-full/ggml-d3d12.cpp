@@ -1511,7 +1511,8 @@ static void ggml_d3d12_set_rows(d3d12_device_ctx & dev, ggml_tensor * src, ggml_
         defines.push_back("SRC_F16");
     }
     if (dst->type == GGML_TYPE_F16 || dst->type == GGML_TYPE_BF16 || src->type == GGML_TYPE_F16) {
-        defines.push_back("USE_16BIT");
+        // no native 16-bit ops (Xbox): f16 is read as words and written with two atomics (see common.hlsli)
+        defines.push_back(dev.caps.native_16bit ? "USE_16BIT" : "NO16");
     }
     if (idx->type == GGML_TYPE_I64) {
         defines.push_back("I64_IDX");
@@ -4739,8 +4740,8 @@ static bool ggml_d3d12_supports_op(d3d12_device_ctx * ctx, const ggml_tensor * o
                        ggml_nbytes(op) < (1ull << 31);
             }
             // f32 or f16 rows into f32, f16 or bf16; the 16-bit types need native 16-bit shader ops
-            return (op->type == GGML_TYPE_F32 || ((op->type == GGML_TYPE_F16 || op->type == GGML_TYPE_BF16) && ctx->caps.native_16bit)) &&
-                   (src0->type == GGML_TYPE_F32 || (src0->type == GGML_TYPE_F16 && ctx->caps.native_16bit)) &&
+            return (op->type == GGML_TYPE_F32 || op->type == GGML_TYPE_F16 || (op->type == GGML_TYPE_BF16 && ctx->caps.native_16bit)) &&
+                   (src0->type == GGML_TYPE_F32 || src0->type == GGML_TYPE_F16) &&
                    (src1->type == GGML_TYPE_I64 || src1->type == GGML_TYPE_I32);
         case GGML_OP_MUL_MAT:
             {
@@ -5325,6 +5326,10 @@ static bool ggml_d3d12_init_device(d3d12_device_ctx & dev, ggml_backend_dev_t gg
     D3D12_FEATURE_DATA_D3D12_OPTIONS4 o4 = {};
     if (SUCCEEDED(dev.device->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS4, &o4, sizeof(o4)))) {
         dev.caps.native_16bit = o4.Native16BitShaderOpsSupported && dev.caps.shader_model >= D3D_SHADER_MODEL_6_2;
+    }
+    if (getenv("GGML_D3D12_FORCE_NO16") != nullptr) {
+        // CI bake/verify: the Xbox reports no native 16-bit shader ops, WARP does; run the console's kernel set
+        dev.caps.native_16bit = false;
     }
     D3D12_FEATURE_DATA_ARCHITECTURE arch = {};
     if (SUCCEEDED(dev.device->CheckFeatureSupport(D3D12_FEATURE_ARCHITECTURE, &arch, sizeof(arch)))) {

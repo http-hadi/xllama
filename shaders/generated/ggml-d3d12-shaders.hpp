@@ -73,8 +73,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -215,8 +216,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -352,8 +354,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -489,8 +492,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -608,8 +612,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -764,8 +769,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -910,8 +916,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -1067,8 +1074,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -1252,8 +1260,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -1425,8 +1434,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -1643,8 +1653,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -1829,8 +1840,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -2022,8 +2034,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -2224,8 +2237,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -2380,8 +2394,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -2577,8 +2592,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -2733,8 +2749,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -2926,8 +2943,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -3108,8 +3126,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -3287,8 +3306,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -3454,8 +3474,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -3613,8 +3634,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -3751,8 +3773,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -3880,8 +3903,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -4080,8 +4104,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -4241,8 +4266,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -4390,8 +4416,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -4638,12 +4665,12 @@ float4 load_v4(uint i) {
 #elif defined(V_Q4_0)
     r = load_q4_0_4(v_buf, i);
 #elif defined(V_Q4_1)
-    r = load_q4_1_4(v_buf, i);
+)hlsl",
+R"hlsl(    r = load_q4_1_4(v_buf, i);
 #elif defined(V_Q5_0)
     r = load_q5_0_4(v_buf, i);
 #elif defined(V_Q5_1)
-)hlsl",
-R"hlsl(    r = load_q5_1_4(v_buf, i);
+    r = load_q5_1_4(v_buf, i);
 #elif defined(V_IQ4_NL)
     r = load_iq4_nl_4(v_buf, i);
 #elif defined(V_BF16)
@@ -5017,8 +5044,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -5258,8 +5286,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -5425,8 +5454,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -5552,8 +5582,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -5715,8 +5746,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -5852,8 +5884,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -5987,10 +6020,10 @@ static const uint IQ3S_GRID[512] = {
     0x0b01090fu, 0x0b010b05u, 0x0b010d0du, 0x0b010f09u, 0x0b030103u, 0x0b030107u, 0x0b03010bu, 0x0b030305u,
     0x0b030503u, 0x0b030705u, 0x0b030f05u, 0x0b050101u, 0x0b050303u, 0x0b050507u, 0x0b050701u, 0x0b05070du,
     0x0b050b07u, 0x0b070105u, 0x0b07010fu, 0x0b070301u, 0x0b07050fu, 0x0b070909u, 0x0b070b03u, 0x0b070d0bu,
-    0x0b070f07u, 0x0b090103u, 0x0b090109u, 0x0b090501u, 0x0b090705u, 0x0b09090du, 0x0b0b0305u, 0x0b0b050du,
-    0x0b0b0b03u, 0x0b0b0b07u, 0x0b0d0905u, 0x0b0f0105u, 0x0b0f0109u, 0x0b0f0505u, 0x0d010303u, 0x0d010307u,
 )hlsl",
-R"hlsl(    0x0d01030bu, 0x0d010703u, 0x0d010707u, 0x0d010d01u, 0x0d030101u, 0x0d030501u, 0x0d03050fu, 0x0d030d09u,
+R"hlsl(    0x0b070f07u, 0x0b090103u, 0x0b090109u, 0x0b090501u, 0x0b090705u, 0x0b09090du, 0x0b0b0305u, 0x0b0b050du,
+    0x0b0b0b03u, 0x0b0b0b07u, 0x0b0d0905u, 0x0b0f0105u, 0x0b0f0109u, 0x0b0f0505u, 0x0d010303u, 0x0d010307u,
+    0x0d01030bu, 0x0d010703u, 0x0d010707u, 0x0d010d01u, 0x0d030101u, 0x0d030501u, 0x0d03050fu, 0x0d030d09u,
     0x0d050305u, 0x0d050709u, 0x0d050905u, 0x0d050b0bu, 0x0d050d05u, 0x0d050f01u, 0x0d070101u, 0x0d070309u,
     0x0d070503u, 0x0d070901u, 0x0d09050bu, 0x0d090907u, 0x0d090d05u, 0x0d0b0101u, 0x0d0b0107u, 0x0d0b0709u,
     0x0d0b0d01u, 0x0d0d010bu, 0x0d0d0901u, 0x0d0f0303u, 0x0d0f0307u, 0x0f010101u, 0x0f010109u, 0x0f01010fu,
@@ -6102,10 +6135,10 @@ static const uint IQ2S_GRID_LO[1024] = {
     0x19082b08u, 0x19190819u, 0x19191908u, 0x192b0808u, 0x2b081908u, 0x2b190808u, 0x08080808u, 0x0808082bu,
     0x08081919u, 0x08082b08u, 0x08190819u, 0x08191908u, 0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u,
     0x2b080808u, 0x2b192b19u, 0x08081908u, 0x08190808u, 0x19080808u, 0x1919192bu, 0x2b2b0819u, 0x08080808u,
-    0x08081919u, 0x08082b08u, 0x08190819u, 0x08191908u, 0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u,
-    0x2b080808u, 0x08080819u, 0x08081908u, 0x08190808u, 0x19080808u, 0x19082b2bu, 0x192b2b08u, 0x2b19082bu,
 )hlsl",
-R"hlsl(    0x08080808u, 0x2b191908u, 0x08080819u, 0x08081908u, 0x08190808u, 0x192b1919u, 0x2b192b08u, 0x08080808u,
+R"hlsl(    0x08081919u, 0x08082b08u, 0x08190819u, 0x08191908u, 0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u,
+    0x2b080808u, 0x08080819u, 0x08081908u, 0x08190808u, 0x19080808u, 0x19082b2bu, 0x192b2b08u, 0x2b19082bu,
+    0x08080808u, 0x2b191908u, 0x08080819u, 0x08081908u, 0x08190808u, 0x192b1919u, 0x2b192b08u, 0x08080808u,
     0x082b2b2bu, 0x1908082bu, 0x2b2b0819u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u, 0x08190819u,
     0x08191908u, 0x08192b19u, 0x082b0808u, 0x082b1919u, 0x19080819u, 0x19081908u, 0x19190808u, 0x1919082bu,
     0x19191919u, 0x19192b08u, 0x192b0819u, 0x2b080808u, 0x2b081919u, 0x2b190819u, 0x2b191908u, 0x08080819u,
@@ -6215,10 +6248,10 @@ static const uint IQ2S_GRID_HI[1024] = {
     0x19082b08u, 0x19082b08u, 0x19082b19u, 0x19082b19u, 0x19082b19u, 0x19082b19u, 0x19082b19u, 0x19082b19u,
     0x19082b19u, 0x19082b19u, 0x19082b19u, 0x19082b19u, 0x19082b19u, 0x19082b19u, 0x19082b2bu, 0x19082b2bu,
     0x19082b2bu, 0x19082b2bu, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u,
-    0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u,
-    0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u,
 )hlsl",
-R"hlsl(    0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190819u, 0x19190819u,
+R"hlsl(    0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u,
+    0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u,
+    0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190819u, 0x19190819u,
     0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u,
     0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u,
     0x19190819u, 0x19190819u, 0x1919082bu, 0x1919082bu, 0x1919082bu, 0x1919082bu, 0x1919082bu, 0x1919082bu,
@@ -6332,12 +6365,12 @@ static const uint IQ2XXS_GRID_HI[256] = {
     0x2b080819u, 0x2b080819u, 0x2b08082bu, 0x2b081908u, 0x2b081908u, 0x2b081908u, 0x2b081908u, 0x2b081908u,
     0x2b081908u, 0x2b081919u, 0x2b081919u, 0x2b081919u, 0x2b08192bu, 0x2b08192bu, 0x2b08192bu, 0x2b082b08u,
     0x2b082b19u, 0x2b082b2bu, 0x2b190808u, 0x2b190808u, 0x2b190808u, 0x2b190808u, 0x2b190808u, 0x2b190819u,
-    0x2b190819u, 0x2b19082bu, 0x2b191908u, 0x2b191908u, 0x2b191908u, 0x2b191919u, 0x2b192b08u, 0x2b192b19u,
+)hlsl",
+R"hlsl(    0x2b190819u, 0x2b19082bu, 0x2b191908u, 0x2b191908u, 0x2b191908u, 0x2b191919u, 0x2b192b08u, 0x2b192b19u,
     0x2b2b0808u, 0x2b2b0808u, 0x2b2b0808u, 0x2b2b0819u, 0x2b2b082bu, 0x2b2b1908u, 0x2b2b2b08u, 0x2b2b2b19u,
 };
 #endif
-)hlsl",
-R"hlsl(#if defined(SRC0_IQ2_XS)
+#if defined(SRC0_IQ2_XS)
 // iq2xs_grid from ggml-common.h: 8 grid bytes per entry, split into the low and high 32 bits
 static const uint IQ2XS_GRID_LO[512] = {
     0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u, 0x08082b2bu, 0x08190819u, 0x08191908u, 0x0819192bu,
@@ -6449,10 +6482,10 @@ static const uint IQ2XS_GRID_HI[512] = {
     0x19082b08u, 0x19082b08u, 0x19082b08u, 0x19082b08u, 0x19082b08u, 0x19082b19u, 0x19082b19u, 0x19082b19u,
     0x19082b19u, 0x19082b19u, 0x19082b2bu, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u,
     0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190808u, 0x19190819u,
-    0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x1919082bu, 0x1919082bu, 0x1919082bu,
-    0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u,
 )hlsl",
-R"hlsl(    0x19191919u, 0x19191919u, 0x19191919u, 0x19191919u, 0x1919192bu, 0x1919192bu, 0x1919192bu, 0x19192b08u,
+R"hlsl(    0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x19190819u, 0x1919082bu, 0x1919082bu, 0x1919082bu,
+    0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u, 0x19191908u,
+    0x19191919u, 0x19191919u, 0x19191919u, 0x19191919u, 0x1919192bu, 0x1919192bu, 0x1919192bu, 0x19192b08u,
     0x19192b08u, 0x19192b08u, 0x19192b08u, 0x19192b08u, 0x19192b19u, 0x19192b19u, 0x19192b19u, 0x19192b2bu,
     0x192b0808u, 0x192b0808u, 0x192b0808u, 0x192b0808u, 0x192b0808u, 0x192b0808u, 0x192b0808u, 0x192b0808u,
     0x192b0819u, 0x192b082bu, 0x192b082bu, 0x192b082bu, 0x192b1908u, 0x192b1908u, 0x192b1919u, 0x192b1919u,
@@ -6568,10 +6601,10 @@ static const uint IQ1S_GRID_LO[2048] = {
     0x0100ff01u, 0x01000000u, 0x010001ffu, 0x0101ff00u, 0x01010001u, 0x01010100u, 0xffff0100u, 0xff000001u,
     0xff0100ffu, 0xff010001u, 0x00ff00ffu, 0x00ff0001u, 0x00ff0100u, 0x0000ffffu, 0x0000ff01u, 0x00000000u,
     0x000001ffu, 0x0001ff00u, 0x00010001u, 0x00010100u, 0x01ff0000u, 0x0100ff00u, 0x01000001u, 0x01000101u,
-    0xffffffffu, 0xffffff01u, 0xffff01ffu, 0xffff0101u, 0xff000000u, 0xff01ffffu, 0xff01ff01u, 0xff010000u,
-    0xff0101ffu, 0xff010101u, 0x00ff0000u, 0x0000ff00u, 0x00000100u, 0x0001ff00u, 0x00010000u, 0x01ffffffu,
 )hlsl",
-R"hlsl(    0x01ffff01u, 0x01ff01ffu, 0x01ff0101u, 0x01000000u, 0x0101ffffu, 0x0101ff01u, 0x01010000u, 0x010101ffu,
+R"hlsl(    0xffffffffu, 0xffffff01u, 0xffff01ffu, 0xffff0101u, 0xff000000u, 0xff01ffffu, 0xff01ff01u, 0xff010000u,
+    0xff0101ffu, 0xff010101u, 0x00ff0000u, 0x0000ff00u, 0x00000100u, 0x0001ff00u, 0x00010000u, 0x01ffffffu,
+    0x01ffff01u, 0x01ff01ffu, 0x01ff0101u, 0x01000000u, 0x0101ffffu, 0x0101ff01u, 0x01010000u, 0x010101ffu,
     0x01010101u, 0xffff0000u, 0xff00ff00u, 0xff0000ffu, 0xff000100u, 0xff010000u, 0x00ffff01u, 0x00ff00ffu,
     0x00ff0100u, 0x00000000u, 0x000001ffu, 0x00000101u, 0x0001ff00u, 0x000100ffu, 0x00010000u, 0x00010001u,
     0x01ff0000u, 0x0100ffffu, 0x01000001u, 0x01000100u, 0x01010000u, 0xffffff00u, 0xffff01ffu, 0xffff0101u,
@@ -6680,10 +6713,10 @@ R"hlsl(    0x01ffff01u, 0x01ff01ffu, 0x01ff0101u, 0x01000000u, 0x0101ffffu, 0x01
     0xffff0101u, 0xff00ff00u, 0xff000000u, 0xff000001u, 0xff000100u, 0x00ff00ffu, 0x00ff0000u, 0x00ff0001u,
     0x00ff0100u, 0x0000ffffu, 0x0000ff00u, 0x000000ffu, 0x00000000u, 0x00000001u, 0x00000100u, 0x0001ff00u,
     0x000100ffu, 0x00010000u, 0x00010001u, 0x00010100u, 0x01ff0001u, 0x01ff0100u, 0x01ff0101u, 0x0100ff00u,
-    0x01000000u, 0x01000001u, 0x01000100u, 0x01000101u, 0x0101ff01u, 0x01010000u, 0x01010001u, 0x010101ffu,
-    0xffffff01u, 0xffff0100u, 0xff000000u, 0xff01ffffu, 0xff010001u, 0xff0101ffu, 0xff010100u, 0x00ffffffu,
 )hlsl",
-R"hlsl(    0x00ff0000u, 0x00ff01ffu, 0x00ff0101u, 0x0000ff00u, 0x000000ffu, 0x00000000u, 0x00000001u, 0x000001ffu,
+R"hlsl(    0x01000000u, 0x01000001u, 0x01000100u, 0x01000101u, 0x0101ff01u, 0x01010000u, 0x01010001u, 0x010101ffu,
+    0xffffff01u, 0xffff0100u, 0xff000000u, 0xff01ffffu, 0xff010001u, 0xff0101ffu, 0xff010100u, 0x00ffffffu,
+    0x00ff0000u, 0x00ff01ffu, 0x00ff0101u, 0x0000ff00u, 0x000000ffu, 0x00000000u, 0x00000001u, 0x000001ffu,
     0x00000101u, 0x0001ffffu, 0x00010000u, 0x000101ffu, 0x01ffffffu, 0x01ffff01u, 0x01ff0000u, 0x01ff0101u,
     0x010000ffu, 0x01000001u, 0x010001ffu, 0x01000100u, 0x0101ffffu, 0x010100ffu, 0x01010001u, 0x01010101u,
     0xff000001u, 0xff000100u, 0xff010000u, 0x00ffff00u, 0x0000ff01u, 0x00000000u, 0x00000101u, 0x0001ff00u,
@@ -6793,10 +6826,10 @@ static const uint IQ1S_GRID_HI[2048] = {
     0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu,
     0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu,
     0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff01ffu, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u,
-    0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u,
-    0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0101u, 0xffff0101u,
 )hlsl",
-R"hlsl(    0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u,
+R"hlsl(    0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u,
+    0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0100u, 0xffff0101u, 0xffff0101u,
+    0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u,
     0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u,
     0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xff00ffffu, 0xff00ffffu,
     0xff00ffffu, 0xff00ffffu, 0xff00ffffu, 0xff00ffffu, 0xff00ffffu, 0xff00ffffu, 0xff00ffffu, 0xff00ffffu,
@@ -6905,10 +6938,10 @@ R"hlsl(    0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xffff0101u, 0xff
     0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
     0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
     0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-    0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
-    0x00000000u, 0x00000000u, 0x00000000u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u,
 )hlsl",
-R"hlsl(    0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u,
+R"hlsl(    0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u,
+    0x00000000u, 0x00000000u, 0x00000000u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u,
+    0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u,
     0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u,
     0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u,
     0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u,
@@ -7017,10 +7050,10 @@ R"hlsl(    0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00
     0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u,
     0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u, 0x0101ff01u,
     0x0101ff01u, 0x0101ff01u, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu,
-    0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu,
-    0x010100ffu, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u,
 )hlsl",
-R"hlsl(    0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u,
+R"hlsl(    0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu, 0x010100ffu,
+    0x010100ffu, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u,
+    0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u,
     0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u, 0x01010000u,
     0x01010000u, 0x01010000u, 0x01010001u, 0x01010001u, 0x01010001u, 0x01010001u, 0x01010001u, 0x01010001u,
     0x01010001u, 0x01010001u, 0x01010001u, 0x01010001u, 0x01010001u, 0x01010001u, 0x01010001u, 0x01010001u,
@@ -7240,12 +7273,12 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
     }
 #elif defined(SRC0_MXFP4)
     // block: e8m0 scale byte, 16 bytes of nibbles indexing the e2m1 table
-    for (uint blk = lane; blk < k / 32; blk += TPR) {
+)hlsl",
+R"hlsl(    for (uint blk = lane; blk < k / 32; blk += TPR) {
         const uint base = (src0_base + blk) * 17;
         uint ebits;
         LOAD_U16_UNALIGNED(src0, base & ~1u, ebits);
-)hlsl",
-R"hlsl(        const float d = e8m0_to_f32_half((base & 1u) != 0 ? (ebits >> 8) : (ebits & 0xFFu));
+        const float d = e8m0_to_f32_half((base & 1u) != 0 ? (ebits >> 8) : (ebits & 0xFFu));
         [unroll] for (uint j = 0; j < 4; j++) {
             uint q;
             LOAD_U32_UNALIGNED(src0, base + 1 + 4 * j, q);
@@ -7491,11 +7524,11 @@ R"hlsl(        const float d = e8m0_to_f32_half((base & 1u) != 0 ? (ebits >> 8) 
         const uint  shift = 2u * (s % 4u);
         const uint  qbase = base + 16 + 32 * (s / 4);
         const uint4 q0   = src0.Load4(qbase);
-        const uint4 q1   = src0.Load4(qbase + 16);
+)hlsl",
+R"hlsl(        const uint4 q1   = src0.Load4(qbase + 16);
         const uint  Q[8] = { q0.x, q0.y, q0.z, q0.w, q1.x, q1.y, q1.z, q1.w };
         const uint  ys   = (src1_base[0] + blk * 256 + s * 32) * 4;
-)hlsl",
-R"hlsl(        float sqa = 0.0f, sya = 0.0f, sqb = 0.0f, syb = 0.0f;
+        float sqa = 0.0f, sya = 0.0f, sqb = 0.0f, syb = 0.0f;
         [unroll] for (uint j = 0; j < 8; j++) {
             const float4 y = asfloat(src1.Load4(ys + 16 * j));
             const uint   v = (Q[j] >> shift) & 0x03030303u;
@@ -7717,11 +7750,11 @@ R"hlsl(        float sqa = 0.0f, sya = 0.0f, sqb = 0.0f, syb = 0.0f;
             LOAD_U16_UNALIGNED(src0, base + 2 + 2 * (4 * s + l), q);
             const uint  gi = q & 511u;
             const uint  sg = KSIGNS[(q >> 9) & 127u];
-            const float dl = l < 2 ? db0 : db1;
+)hlsl",
+R"hlsl(            const float dl = l < 2 ? db0 : db1;
             [unroll] for (uint j = 0; j < 8; j++) {
                 const uint  gv  = j < 4 ? byte_of(IQ2XS_GRID_LO[gi], j) : byte_of(IQ2XS_GRID_HI[gi], j - 4);
-)hlsl",
-R"hlsl(                const float sgn = ((sg >> j) & 1u) != 0 ? -1.0f : 1.0f;
+                const float sgn = ((sg >> j) & 1u) != 0 ? -1.0f : 1.0f;
                 ACC(dl * (float) gv * sgn, blk * 256 + s * 32 + l * 8 + j);
             }
         }
@@ -7968,12 +8001,12 @@ R"hlsl(                const float sgn = ((sg >> j) & 1u) != 0 ? -1.0f : 1.0f;
 
 // copy the parameters of matrix M into the working set
 #define SELECT_MAT(M) { \
-    mrows = m_##M; o_src0 = offset_src0_##M; o_dst = offset_dst_##M; \
+)hlsl",
+R"hlsl(    mrows = m_##M; o_src0 = offset_src0_##M; o_dst = offset_dst_##M; \
     s01 = stride_01_##M; s02 = stride_02_##M; s03 = stride_03_##M; \
     add_flag = add_flag_##M; o_add = offset_add_##M; \
     add_ne1 = add_ne1_##M; add_ne2 = add_ne2_##M; add_ne3 = add_ne3_##M; \
-)hlsl",
-R"hlsl(    add_s1 = add_s1_##M; add_s2 = add_s2_##M; add_s3 = add_s3_##M; \
+    add_s1 = add_s1_##M; add_s2 = add_s2_##M; add_s3 = add_s3_##M; \
 }
 
 
@@ -8069,8 +8102,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -8265,8 +8299,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -8455,8 +8490,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -8612,8 +8648,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -8782,8 +8819,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -8951,8 +8989,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -9087,8 +9126,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -9322,8 +9362,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -9465,8 +9506,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -9635,8 +9677,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -9808,8 +9851,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -9981,8 +10025,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -10133,9 +10178,9 @@ static const uint IQ3S_GRID[512] = {
     0x05050f03u, 0x05050f09u, 0x05070101u, 0x05070105u, 0x0507010bu, 0x05070303u, 0x05070505u, 0x05070509u,
     0x05070703u, 0x05070707u, 0x05070905u, 0x05070b01u, 0x05070d0du, 0x05090103u, 0x0509010fu, 0x05090501u,
     0x05090507u, 0x05090705u, 0x0509070bu, 0x05090903u, 0x05090f05u, 0x05090f0bu, 0x050b0109u, 0x050b0303u,
-    0x050b0505u, 0x050b070fu, 0x050b0901u, 0x050b0b07u, 0x050b0f01u, 0x050d0101u, 0x050d0105u, 0x050d010fu,
 )hlsl",
-R"hlsl(    0x050d0503u, 0x050d0b0bu, 0x050d0d03u, 0x050f010bu, 0x050f0303u, 0x050f050du, 0x050f0701u, 0x050f0907u,
+R"hlsl(    0x050b0505u, 0x050b070fu, 0x050b0901u, 0x050b0b07u, 0x050b0f01u, 0x050d0101u, 0x050d0105u, 0x050d010fu,
+    0x050d0503u, 0x050d0b0bu, 0x050d0d03u, 0x050f010bu, 0x050f0303u, 0x050f050du, 0x050f0701u, 0x050f0907u,
     0x050f0b01u, 0x07010105u, 0x07010303u, 0x07010307u, 0x0701030bu, 0x0701030fu, 0x07010505u, 0x07010703u,
     0x07010707u, 0x0701070bu, 0x07010905u, 0x07010909u, 0x0701090fu, 0x07010b03u, 0x07010d07u, 0x07010f03u,
     0x07030103u, 0x07030107u, 0x0703010bu, 0x07030309u, 0x07030503u, 0x07030507u, 0x07030901u, 0x07030d01u,
@@ -10248,9 +10293,9 @@ static const uint IQ2S_GRID_LO[1024] = {
     0x08190819u, 0x08191908u, 0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u, 0x2b080808u, 0x2b2b1919u,
     0x08080819u, 0x08081908u, 0x08082b19u, 0x08190808u, 0x0819082bu, 0x08191919u, 0x08192b08u, 0x082b0819u,
     0x082b1908u, 0x19080808u, 0x1908082bu, 0x19081919u, 0x19082b08u, 0x19190819u, 0x19191908u, 0x192b0808u,
-    0x2b081908u, 0x2b190808u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u, 0x08190819u, 0x08191908u,
 )hlsl",
-R"hlsl(    0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u, 0x2b080808u, 0x2b19192bu, 0x08080819u, 0x08081908u,
+R"hlsl(    0x2b081908u, 0x2b190808u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u, 0x08190819u, 0x08191908u,
+    0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u, 0x2b080808u, 0x2b19192bu, 0x08080819u, 0x08081908u,
     0x08190808u, 0x19080808u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u, 0x08190819u, 0x08191908u,
     0x0819192bu, 0x08192b19u, 0x082b0808u, 0x082b082bu, 0x082b1919u, 0x082b2b08u, 0x19080819u, 0x19081908u,
     0x1908192bu, 0x19082b19u, 0x19190808u, 0x1919082bu, 0x19191919u, 0x19192b08u, 0x192b0819u, 0x192b1908u,
@@ -10361,9 +10406,9 @@ static const uint IQ2S_GRID_HI[1024] = {
     0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b19u, 0x082b2b19u,
     0x082b2b19u, 0x082b2b19u, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x19080808u,
     0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
-    0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
 )hlsl",
 R"hlsl(    0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
+    0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
     0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080819u, 0x19080819u,
     0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u,
     0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u, 0x19080819u,
@@ -10478,9 +10523,9 @@ static const uint IQ2XXS_GRID_HI[256] = {
     0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x0808192bu, 0x0808192bu, 0x0808192bu,
     0x0808192bu, 0x0808192bu, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u,
     0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b19u, 0x08082b19u, 0x08082b2bu, 0x08082b2bu,
-    0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
 )hlsl",
-R"hlsl(    0x08190808u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x0819082bu,
+R"hlsl(    0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
+    0x08190808u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x0819082bu,
     0x0819082bu, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191919u,
     0x08191919u, 0x0819192bu, 0x0819192bu, 0x08192b08u, 0x08192b08u, 0x08192b08u, 0x08192b08u, 0x08192b08u,
     0x08192b19u, 0x08192b19u, 0x08192b19u, 0x08192b2bu, 0x082b0808u, 0x082b0808u, 0x082b0808u, 0x082b0808u,
@@ -10595,9 +10640,9 @@ static const uint IQ2XS_GRID_HI[512] = {
     0x08190808u, 0x08190808u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u,
     0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x0819082bu,
     0x0819082bu, 0x0819082bu, 0x0819082bu, 0x0819082bu, 0x0819082bu, 0x08191908u, 0x08191908u, 0x08191908u,
-    0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u,
 )hlsl",
-R"hlsl(    0x08191908u, 0x08191908u, 0x08191919u, 0x08191919u, 0x08191919u, 0x08191919u, 0x0819192bu, 0x0819192bu,
+R"hlsl(    0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u,
+    0x08191908u, 0x08191908u, 0x08191919u, 0x08191919u, 0x08191919u, 0x08191919u, 0x0819192bu, 0x0819192bu,
     0x0819192bu, 0x08192b08u, 0x08192b08u, 0x08192b08u, 0x08192b08u, 0x08192b08u, 0x08192b08u, 0x08192b08u,
     0x08192b19u, 0x08192b19u, 0x08192b19u, 0x08192b2bu, 0x08192b2bu, 0x082b0808u, 0x082b0808u, 0x082b0808u,
     0x082b0808u, 0x082b0808u, 0x082b0808u, 0x082b0808u, 0x082b0808u, 0x082b0808u, 0x082b0808u, 0x082b0808u,
@@ -10714,9 +10759,9 @@ static const uint IQ1S_GRID_LO[2048] = {
     0xff010000u, 0x00ffffffu, 0x00ff0001u, 0x00ff0100u, 0x0000ff01u, 0x00000000u, 0x000001ffu, 0x00000101u,
     0x000100ffu, 0x00010001u, 0x01ff0000u, 0x0100ff00u, 0x010000ffu, 0x01000001u, 0x01010000u, 0xffffff00u,
     0xffff0001u, 0xffff0100u, 0xff0000ffu, 0xff000000u, 0xff0001ffu, 0xff000100u, 0xff01ff00u, 0xff010001u,
-    0x00ffff00u, 0x00ff0000u, 0x00ff0001u, 0x00ff01ffu, 0x00ff0101u, 0x0000ff00u, 0x000000ffu, 0x00000000u,
 )hlsl",
-R"hlsl(    0x00000001u, 0x00000100u, 0x0001ff01u, 0x00010000u, 0x000101ffu, 0x01ff00ffu, 0x01ff0100u, 0x0100ffffu,
+R"hlsl(    0x00ffff00u, 0x00ff0000u, 0x00ff0001u, 0x00ff01ffu, 0x00ff0101u, 0x0000ff00u, 0x000000ffu, 0x00000000u,
+    0x00000001u, 0x00000100u, 0x0001ff01u, 0x00010000u, 0x000101ffu, 0x01ff00ffu, 0x01ff0100u, 0x0100ffffu,
     0x010000ffu, 0x01000000u, 0x010001ffu, 0x01000100u, 0x01000101u, 0x0101ff00u, 0x010100ffu, 0x01010000u,
     0x01010100u, 0xffffff01u, 0xffff0000u, 0xffff0101u, 0xff00ff00u, 0xff0000ffu, 0xff000000u, 0xff000001u,
     0xff000100u, 0xff01ffffu, 0xff01ff01u, 0xff010000u, 0xff0101ffu, 0xff010101u, 0x00ffff00u, 0x00ff00ffu,
@@ -10826,9 +10871,9 @@ R"hlsl(    0x00000001u, 0x00000100u, 0x0001ff01u, 0x00010000u, 0x000101ffu, 0x01
     0x0100ffffu, 0x0100ff01u, 0x01000000u, 0x010001ffu, 0x0101ff00u, 0x01010100u, 0xffffff00u, 0xffffff01u,
     0xffff0000u, 0xffff0101u, 0xff00ff00u, 0xff0000ffu, 0xff000000u, 0xff000001u, 0xff000100u, 0xff010000u,
     0x00ffff00u, 0x00ff00ffu, 0x00ff0000u, 0x00ff0001u, 0x00ff0100u, 0x0000ffffu, 0x0000ff00u, 0x0000ff01u,
-    0x000000ffu, 0x00000000u, 0x00000001u, 0x000001ffu, 0x00000100u, 0x00000101u, 0x0001ff00u, 0x000100ffu,
 )hlsl",
-R"hlsl(    0x00010000u, 0x00010001u, 0x00010100u, 0x01ffff00u, 0x01ff0000u, 0x01ff0100u, 0x0100ff00u, 0x010000ffu,
+R"hlsl(    0x000000ffu, 0x00000000u, 0x00000001u, 0x000001ffu, 0x00000100u, 0x00000101u, 0x0001ff00u, 0x000100ffu,
+    0x00010000u, 0x00010001u, 0x00010100u, 0x01ffff00u, 0x01ff0000u, 0x01ff0100u, 0x0100ff00u, 0x010000ffu,
     0x01000000u, 0x01000001u, 0x010001ffu, 0x01000100u, 0x01010000u, 0xffff00ffu, 0xffff01ffu, 0xff000000u,
     0xff000101u, 0xff01ffffu, 0xff010000u, 0xff010001u, 0xff010100u, 0x00ff0000u, 0x00ff01ffu, 0x00ff0100u,
     0x0000ff00u, 0x00000000u, 0x00000001u, 0x000001ffu, 0x00000100u, 0x0001ff01u, 0x00010000u, 0x000101ffu,
@@ -10939,9 +10984,9 @@ R"hlsl(    0x00010000u, 0x00010001u, 0x00010100u, 0x01ffff00u, 0x01ff0000u, 0x01
     0xff01ffffu, 0xff01ff01u, 0xff0101ffu, 0xff010101u, 0x0000ff00u, 0x000000ffu, 0x00000001u, 0x01ffffffu,
     0x01ffff01u, 0x01ff01ffu, 0x01ff0101u, 0x01000000u, 0x0101ffffu, 0x0101ff01u, 0x010101ffu, 0x01010101u,
 };
-static const uint IQ1S_GRID_HI[2048] = {
 )hlsl",
-R"hlsl(    0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
+R"hlsl(static const uint IQ1S_GRID_HI[2048] = {
+    0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
     0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
     0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu,
     0xffffffffu, 0xffffff00u, 0xffffff00u, 0xffffff00u, 0xffffff00u, 0xffffff00u, 0xffffff00u, 0xffffff00u,
@@ -11051,9 +11096,9 @@ R"hlsl(    0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xffffffffu, 0xff
     0x00ff0101u, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
     0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
     0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
-    0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ff00u, 0x0000ff00u,
 )hlsl",
-R"hlsl(    0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u,
+R"hlsl(    0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ff00u, 0x0000ff00u,
+    0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u,
     0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u,
     0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u,
     0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u,
@@ -11163,9 +11208,9 @@ R"hlsl(    0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x00
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
-    0x01000000u, 0x01000000u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u,
 )hlsl",
-R"hlsl(    0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u,
+R"hlsl(    0x01000000u, 0x01000000u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u,
+    0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u,
     0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u,
     0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x010001ffu, 0x010001ffu,
     0x010001ffu, 0x010001ffu, 0x010001ffu, 0x010001ffu, 0x010001ffu, 0x010001ffu, 0x010001ffu, 0x010001ffu,
@@ -11351,11 +11396,11 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
         const uint base = (src0_base + blk) * 20;
         uint w;
         LOAD_U32_UNALIGNED(src0, base, w);
-        const float d = f16tof32(w & 0xFFFFu);
+)hlsl",
+R"hlsl(        const float d = f16tof32(w & 0xFFFFu);
         const float m = f16tof32(w >> 16);
         [unroll] for (uint j = 0; j < 4; j++) {
-)hlsl",
-R"hlsl(            uint q;
+            uint q;
             LOAD_U32_UNALIGNED(src0, base + 4 + 4 * j, q);
             [unroll] for (uint b = 0; b < 4; b++) {
                 const uint byte = byte_of(q, b);
@@ -11611,11 +11656,11 @@ R"hlsl(            uint q;
         const uint blk  = sb / 8;
         const uint s    = sb % 8;
         const uint base = (src0_base + blk) * 176;
-        uint w;
+)hlsl",
+R"hlsl(        uint w;
         LOAD_U32_UNALIGNED(src0, base, w);
         const float d    = f16tof32(w & 0xFFFFu);
-)hlsl",
-R"hlsl(        const float dmin = f16tof32(w >> 16);
+        const float dmin = f16tof32(w >> 16);
         uint sc0, sc1, sc2;
         LOAD_U32_UNALIGNED(src0, base + 4, sc0);
         LOAD_U32_UNALIGNED(src0, base + 8, sc1);
@@ -11842,9 +11887,9 @@ R"hlsl(        const float dmin = f16tof32(w >> 16);
             }
         }
     }
-#elif defined(SRC0_IQ2_XXS)
 )hlsl",
-R"hlsl(    // super-block of 256 (66 bytes): f16 d, then 32 uint16 qs. Each sub-block of 32 reads two
+R"hlsl(#elif defined(SRC0_IQ2_XXS)
+    // super-block of 256 (66 bytes): f16 d, then 32 uint16 qs. Each sub-block of 32 reads two
     // uint32: the first is four grid indices, the second carries the four 7-bit sign codes and,
     // in its top nibble, the sub-block scale. Scale d * (0.5 + nibble) * 0.25.
     for (uint sb = lane; sb < k / 32; sb += TPR) {
@@ -12087,9 +12132,9 @@ R"hlsl(    // super-block of 256 (66 bytes): f16 d, then 32 uint16 qs. Each sub-
         qh0 = qh0 & 0xFFu;
         [unroll] for (uint l = 0; l < 4; l++) {
             uint q;
-            LOAD_U32_UNALIGNED(src0, base + 4 * s + l, q);
 )hlsl",
-R"hlsl(            const uint h  = l < 2 ? qh0 : qh1;
+R"hlsl(            LOAD_U32_UNALIGNED(src0, base + 4 * s + l, q);
+            const uint h  = l < 2 ? qh0 : qh1;
             const uint gi = (q & 0xFFu) | (((l & 1u) == 0 ? (h << 8) : (h << 4)) & 0x700u);
             const float delta = (h & ((l & 1u) == 0 ? 0x08u : 0x80u)) != 0 ? -0.125f : 0.125f;
             const float dl    = l < 2 ? dl1 : dl2;
@@ -12388,9 +12433,9 @@ void main(uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID) {
         [unroll] for (uint kk = 0; kk < TILE_K; kk++) {
             float a[REG_M], b[REG_N];
             [unroll] for (uint im2 = 0; im2 < REG_M; im2++) {
-                a[im2] = Atile[kk][ty * REG_M + im2];
 )hlsl",
-R"hlsl(            }
+R"hlsl(                a[im2] = Atile[kk][ty * REG_M + im2];
+            }
             [unroll] for (uint in2 = 0; in2 < REG_N; in2++) {
                 b[in2] = Btile[kk][tx * REG_N + in2];
             }
@@ -12492,8 +12537,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -12671,9 +12717,9 @@ static const uint IQ3S_GRID[512] = {
     0x05010701u, 0x05010705u, 0x05010903u, 0x05010907u, 0x0501090bu, 0x05010b01u, 0x05010b05u, 0x05010d0fu,
     0x05010f01u, 0x05010f07u, 0x05010f0bu, 0x05030101u, 0x05030105u, 0x05030301u, 0x05030307u, 0x0503030fu,
     0x05030505u, 0x0503050bu, 0x05030703u, 0x05030709u, 0x05030905u, 0x05030b03u, 0x05050103u, 0x05050109u,
-    0x0505010fu, 0x05050503u, 0x05050507u, 0x05050701u, 0x0505070fu, 0x05050903u, 0x05050b07u, 0x05050b0fu,
 )hlsl",
-R"hlsl(    0x05050f03u, 0x05050f09u, 0x05070101u, 0x05070105u, 0x0507010bu, 0x05070303u, 0x05070505u, 0x05070509u,
+R"hlsl(    0x0505010fu, 0x05050503u, 0x05050507u, 0x05050701u, 0x0505070fu, 0x05050903u, 0x05050b07u, 0x05050b0fu,
+    0x05050f03u, 0x05050f09u, 0x05070101u, 0x05070105u, 0x0507010bu, 0x05070303u, 0x05070505u, 0x05070509u,
     0x05070703u, 0x05070707u, 0x05070905u, 0x05070b01u, 0x05070d0du, 0x05090103u, 0x0509010fu, 0x05090501u,
     0x05090507u, 0x05090705u, 0x0509070bu, 0x05090903u, 0x05090f05u, 0x05090f0bu, 0x050b0109u, 0x050b0303u,
     0x050b0505u, 0x050b070fu, 0x050b0901u, 0x050b0b07u, 0x050b0f01u, 0x050d0101u, 0x050d0105u, 0x050d010fu,
@@ -12786,9 +12832,9 @@ static const uint IQ2S_GRID_LO[1024] = {
     0x2b080808u, 0x2b08082bu, 0x2b081919u, 0x2b082b08u, 0x2b190819u, 0x2b191908u, 0x2b2b0808u, 0x08080819u,
     0x08081908u, 0x0808192bu, 0x08082b19u, 0x08190808u, 0x0819082bu, 0x08191919u, 0x08192b08u, 0x082b0819u,
     0x082b1908u, 0x19080808u, 0x1908082bu, 0x19081919u, 0x19082b08u, 0x19190819u, 0x19191908u, 0x192b0808u,
-    0x192b2b2bu, 0x2b080819u, 0x2b081908u, 0x2b190808u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u,
 )hlsl",
-R"hlsl(    0x08190819u, 0x08191908u, 0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u, 0x2b080808u, 0x2b2b1919u,
+R"hlsl(    0x192b2b2bu, 0x2b080819u, 0x2b081908u, 0x2b190808u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u,
+    0x08190819u, 0x08191908u, 0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u, 0x2b080808u, 0x2b2b1919u,
     0x08080819u, 0x08081908u, 0x08082b19u, 0x08190808u, 0x0819082bu, 0x08191919u, 0x08192b08u, 0x082b0819u,
     0x082b1908u, 0x19080808u, 0x1908082bu, 0x19081919u, 0x19082b08u, 0x19190819u, 0x19191908u, 0x192b0808u,
     0x2b081908u, 0x2b190808u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u, 0x08190819u, 0x08191908u,
@@ -12899,9 +12945,9 @@ static const uint IQ2S_GRID_HI[1024] = {
     0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u,
     0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1919u, 0x082b1919u, 0x082b1919u,
     0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u,
-    0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u,
 )hlsl",
-R"hlsl(    0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b19u, 0x082b2b19u,
+R"hlsl(    0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u,
+    0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b19u, 0x082b2b19u,
     0x082b2b19u, 0x082b2b19u, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x19080808u,
     0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
     0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
@@ -13016,9 +13062,9 @@ static const uint IQ2XXS_GRID_HI[256] = {
     0x08080808u, 0x08080808u, 0x08080808u, 0x08080808u, 0x08080808u, 0x08080819u, 0x08080819u, 0x08080819u,
     0x08080819u, 0x08080819u, 0x08080819u, 0x08080819u, 0x0808082bu, 0x0808082bu, 0x0808082bu, 0x0808082bu,
     0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u,
-    0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081919u, 0x08081919u, 0x08081919u,
 )hlsl",
-R"hlsl(    0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x0808192bu, 0x0808192bu, 0x0808192bu,
+R"hlsl(    0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081919u, 0x08081919u, 0x08081919u,
+    0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x0808192bu, 0x0808192bu, 0x0808192bu,
     0x0808192bu, 0x0808192bu, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u,
     0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b19u, 0x08082b19u, 0x08082b2bu, 0x08082b2bu,
     0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
@@ -13133,9 +13179,9 @@ static const uint IQ2XS_GRID_HI[512] = {
     0x08082b08u, 0x08082b08u, 0x08082b19u, 0x08082b19u, 0x08082b19u, 0x08082b19u, 0x08082b19u, 0x08082b19u,
     0x08082b2bu, 0x08082b2bu, 0x08082b2bu, 0x08082b2bu, 0x08082b2bu, 0x08190808u, 0x08190808u, 0x08190808u,
     0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
-    0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
 )hlsl",
-R"hlsl(    0x08190808u, 0x08190808u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u,
+R"hlsl(    0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
+    0x08190808u, 0x08190808u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u,
     0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x0819082bu,
     0x0819082bu, 0x0819082bu, 0x0819082bu, 0x0819082bu, 0x0819082bu, 0x08191908u, 0x08191908u, 0x08191908u,
     0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u,
@@ -13252,9 +13298,9 @@ static const uint IQ1S_GRID_LO[2048] = {
     0x0101ff00u, 0x01010000u, 0xffffff00u, 0xffff00ffu, 0xffff0001u, 0xffff0100u, 0xff00ffffu, 0xff00ff01u,
     0xff000000u, 0xff0001ffu, 0xff01ff00u, 0xff0100ffu, 0xff010100u, 0x00ff0000u, 0x00ff0101u, 0x0000ffffu,
     0x0000ff00u, 0x0000ff01u, 0x000000ffu, 0x00000000u, 0x00000001u, 0x00000100u, 0x0001ffffu, 0x00010000u,
-    0x01ff00ffu, 0x0100ff01u, 0x01000000u, 0x0101ff00u, 0x010100ffu, 0xff00ff00u, 0xff0000ffu, 0xff000001u,
 )hlsl",
-R"hlsl(    0xff010000u, 0x00ffffffu, 0x00ff0001u, 0x00ff0100u, 0x0000ff01u, 0x00000000u, 0x000001ffu, 0x00000101u,
+R"hlsl(    0x01ff00ffu, 0x0100ff01u, 0x01000000u, 0x0101ff00u, 0x010100ffu, 0xff00ff00u, 0xff0000ffu, 0xff000001u,
+    0xff010000u, 0x00ffffffu, 0x00ff0001u, 0x00ff0100u, 0x0000ff01u, 0x00000000u, 0x000001ffu, 0x00000101u,
     0x000100ffu, 0x00010001u, 0x01ff0000u, 0x0100ff00u, 0x010000ffu, 0x01000001u, 0x01010000u, 0xffffff00u,
     0xffff0001u, 0xffff0100u, 0xff0000ffu, 0xff000000u, 0xff0001ffu, 0xff000100u, 0xff01ff00u, 0xff010001u,
     0x00ffff00u, 0x00ff0000u, 0x00ff0001u, 0x00ff01ffu, 0x00ff0101u, 0x0000ff00u, 0x000000ffu, 0x00000000u,
@@ -13364,9 +13410,9 @@ R"hlsl(    0xff010000u, 0x00ffffffu, 0x00ff0001u, 0x00ff0100u, 0x0000ff01u, 0x00
     0x0100ff00u, 0x01000000u, 0x01000101u, 0x0101ff01u, 0x01010000u, 0x01010001u, 0x010101ffu, 0x01010100u,
     0xffff00ffu, 0xffff0000u, 0xffff0001u, 0xffff0100u, 0xff00ffffu, 0xff000000u, 0xff0001ffu, 0xff01ff00u,
     0xff010101u, 0x00ff0000u, 0x00ff01ffu, 0x00ff0101u, 0x0000ff00u, 0x000000ffu, 0x00000000u, 0x00000001u,
-    0x000001ffu, 0x00000100u, 0x0001ffffu, 0x0001ff01u, 0x000100ffu, 0x00010000u, 0x01ffff01u, 0x01ff0100u,
 )hlsl",
-R"hlsl(    0x0100ffffu, 0x0100ff01u, 0x01000000u, 0x010001ffu, 0x0101ff00u, 0x01010100u, 0xffffff00u, 0xffffff01u,
+R"hlsl(    0x000001ffu, 0x00000100u, 0x0001ffffu, 0x0001ff01u, 0x000100ffu, 0x00010000u, 0x01ffff01u, 0x01ff0100u,
+    0x0100ffffu, 0x0100ff01u, 0x01000000u, 0x010001ffu, 0x0101ff00u, 0x01010100u, 0xffffff00u, 0xffffff01u,
     0xffff0000u, 0xffff0101u, 0xff00ff00u, 0xff0000ffu, 0xff000000u, 0xff000001u, 0xff000100u, 0xff010000u,
     0x00ffff00u, 0x00ff00ffu, 0x00ff0000u, 0x00ff0001u, 0x00ff0100u, 0x0000ffffu, 0x0000ff00u, 0x0000ff01u,
     0x000000ffu, 0x00000000u, 0x00000001u, 0x000001ffu, 0x00000100u, 0x00000101u, 0x0001ff00u, 0x000100ffu,
@@ -13476,9 +13522,9 @@ R"hlsl(    0x0100ffffu, 0x0100ff01u, 0x01000000u, 0x010001ffu, 0x0101ff00u, 0x01
     0x01010001u, 0xffffffffu, 0xffffff01u, 0xffff01ffu, 0xffff0101u, 0xff01ffffu, 0xff01ff01u, 0xff0101ffu,
     0xff010101u, 0x0000ff00u, 0x000000ffu, 0x00000001u, 0x00000100u, 0x01ffffffu, 0x01ffff01u, 0x01ff01ffu,
     0x01ff0101u, 0x01000000u, 0x0101ffffu, 0x0101ff01u, 0x010101ffu, 0x01010101u, 0xffff0000u, 0xff0000ffu,
-    0xff000100u, 0xff01ff00u, 0xff010000u, 0x00ffff00u, 0x0000ffffu, 0x00000000u, 0x00000101u, 0x0001ff00u,
 )hlsl",
-R"hlsl(    0x00010001u, 0x00010100u, 0x0100ffffu, 0x01000001u, 0xffffffffu, 0xffffff01u, 0xffff01ffu, 0xffff0101u,
+R"hlsl(    0xff000100u, 0xff01ff00u, 0xff010000u, 0x00ffff00u, 0x0000ffffu, 0x00000000u, 0x00000101u, 0x0001ff00u,
+    0x00010001u, 0x00010100u, 0x0100ffffu, 0x01000001u, 0xffffffffu, 0xffffff01u, 0xffff01ffu, 0xffff0101u,
     0xff01ffffu, 0xff01ff01u, 0xff0101ffu, 0xff010101u, 0x0000ff00u, 0x000000ffu, 0x00000001u, 0x01ffffffu,
     0x01ffff01u, 0x01ff01ffu, 0x01ff0101u, 0x01000000u, 0x0101ffffu, 0x0101ff01u, 0x010101ffu, 0x01010101u,
 };
@@ -13589,9 +13635,9 @@ static const uint IQ1S_GRID_HI[2048] = {
     0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u,
     0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u,
     0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0101u, 0x00ff0101u,
-    0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u,
 )hlsl",
-R"hlsl(    0x00ff0101u, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
+R"hlsl(    0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u,
+    0x00ff0101u, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
     0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
     0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
     0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ff00u, 0x0000ff00u,
@@ -13701,9 +13747,9 @@ R"hlsl(    0x00ff0101u, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x00
     0x010000ffu, 0x010000ffu, 0x010000ffu, 0x010000ffu, 0x010000ffu, 0x010000ffu, 0x010000ffu, 0x010000ffu,
     0x010000ffu, 0x010000ffu, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
-    0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
 )hlsl",
 R"hlsl(    0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
+    0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u,
@@ -13882,10 +13928,10 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
             LOAD_U32_UNALIGNED(src0, base + 2 + 4 * j, q);
             [unroll] for (uint b = 0; b < 4; b++) {
                 const uint byte = byte_of(q, b);
-                ACC(((float) (byte & 0xFu) - 8.0f) * d, blk * 32 + j * 4 + b);
-                ACC(((float) (byte >> 4) - 8.0f) * d, blk * 32 + 16 + j * 4 + b);
 )hlsl",
-R"hlsl(            }
+R"hlsl(                ACC(((float) (byte & 0xFu) - 8.0f) * d, blk * 32 + j * 4 + b);
+                ACC(((float) (byte >> 4) - 8.0f) * d, blk * 32 + 16 + j * 4 + b);
+            }
         }
     }
 #elif defined(SRC0_Q4_1)
@@ -14142,13 +14188,13 @@ R"hlsl(            }
             LOAD_U32_UNALIGNED(src0, qbase + 4 * j, q);
             [unroll] for (uint b = 0; b < 4; b++) {
                 const float v = dl * (float) ((byte_of(q, b) >> shift) & 0xFu) - ml;
-                ACC(v, blk * 256 + s * 32 + j * 4 + b);
+)hlsl",
+R"hlsl(                ACC(v, blk * 256 + s * 32 + j * 4 + b);
             }
         }
     }
 #elif defined(SRC0_Q5_K)
-)hlsl",
-R"hlsl(    // super-block of 256 (176 bytes): f16 d, f16 dmin, 12 bytes of 6-bit scales/mins, 32 bytes qh, 128 bytes ql.
+    // super-block of 256 (176 bytes): f16 d, f16 dmin, 12 bytes of 6-bit scales/mins, 32 bytes qh, 128 bytes ql.
     // like Q4_K with the nibbles at 48; bit s of qh[l] adds 16 to value l of sub-block s.
     for (uint sb = lane; sb < k / 32; sb += TPR) {
         const uint blk  = sb / 8;
@@ -14375,9 +14421,9 @@ R"hlsl(    // super-block of 256 (176 bytes): f16 d, f16 dmin, 12 bytes of 6-bit
             uint q, sg;
             LOAD_U32_UNALIGNED(src0, base + 2 + 4 * s + l, q);
             LOAD_U32_UNALIGNED(src0, base + 34 + 4 * s + l, sg);
-            const uint  gi = (q & 0xFFu) | (((qh >> (2u * l)) & 3u) << 8);
 )hlsl",
-R"hlsl(            const float dl = d * (0.5f + (float) ((sc >> (l < 2 ? 0u : 4u)) & 0xFu)) * 0.25f;
+R"hlsl(            const uint  gi = (q & 0xFFu) | (((qh >> (2u * l)) & 3u) << 8);
+            const float dl = d * (0.5f + (float) ((sc >> (l < 2 ? 0u : 4u)) & 0xFu)) * 0.25f;
             [unroll] for (uint j = 0; j < 8; j++) {
                 const uint  gv  = j < 4 ? byte_of(IQ2S_GRID_LO[gi], j) : byte_of(IQ2S_GRID_HI[gi], j - 4);
                 const float sgn = ((sg >> j) & 1u) != 0 ? -1.0f : 1.0f;
@@ -14616,10 +14662,10 @@ R"hlsl(            const float dl = d * (0.5f + (float) ((sc >> (l < 2 ? 0u : 4u
         LOAD_U16_UNALIGNED(src0, base + 52, sc2);
         LOAD_U16_UNALIGNED(src0, base + 54, sc3);
         const uint  sbits = (sc0 >> 12) | ((sc1 >> 8) & 0x00F0u) | ((sc2 >> 4) & 0x0F00u) | (sc3 & 0xF000u);
-        const float d     = f16tof32(sbits);
-
 )hlsl",
-R"hlsl(        const uint sc  = s < 2 ? sc0 : (s < 4 ? sc1 : (s < 6 ? sc2 : sc3));
+R"hlsl(        const float d     = f16tof32(sbits);
+
+        const uint sc  = s < 2 ? sc0 : (s < 4 ? sc1 : (s < 6 ? sc2 : sc3));
         const uint sh  = 6u * (s & 1u);
         const float dl1 = d * (float) (2u * ((sc >> sh) & 7u) + 1u);
         const float dl2 = d * (float) (2u * ((sc >> (sh + 3u)) & 7u) + 1u);
@@ -14900,8 +14946,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -15049,8 +15096,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -15228,8 +15276,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -15386,8 +15435,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -15541,8 +15591,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -15712,8 +15763,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -15865,8 +15917,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -16025,8 +16078,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -16196,8 +16250,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -16354,8 +16409,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -16512,8 +16568,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -16701,8 +16758,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -16885,8 +16943,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -17045,8 +17104,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -17300,8 +17360,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -17473,8 +17534,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -17645,8 +17707,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -17790,8 +17853,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -17940,8 +18004,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -18126,8 +18191,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -18419,10 +18485,10 @@ void put_byte(uint pos, uint end, uint b) {
         g_word = pos + 4u > end ? dst.Load(pos) : 0u;
     }
     const uint sh = (pos & 3u) * 8u;
-    g_word = (g_word & ~(0xFFu << sh)) | ((b & 0xFFu) << sh);
-    if ((pos & 3u) == 3u || pos + 1u == end) {
 )hlsl",
-R"hlsl(        dst.Store(pos & ~3u, g_word);
+R"hlsl(    g_word = (g_word & ~(0xFFu << sh)) | ((b & 0xFFu) << sh);
+    if ((pos & 3u) == 3u || pos + 1u == end) {
+        dst.Store(pos & ~3u, g_word);
     }
 }
 
@@ -18533,8 +18599,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -18659,8 +18726,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -18890,8 +18958,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -19037,8 +19106,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -19186,8 +19256,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -19335,8 +19406,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -19537,8 +19609,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -19683,8 +19756,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -19839,8 +19913,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -19974,8 +20049,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -20197,8 +20273,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -20349,8 +20426,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -20568,8 +20646,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \
@@ -20793,8 +20872,9 @@ uint f32_to_f16_rne(float f) {
 #ifdef USE_16BIT
 #define LOAD_F16(buf, i)     f16tof32((uint) (buf).Load<uint16_t>((i) * 2))
 #define STORE_F16(buf, i, v) (buf).Store<uint16_t>((i) * 2, (uint16_t) f32_to_f16_rne(v))
-#elif defined(GGML_D3D11)
-// cs_5_0 has no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
+#elif defined(GGML_D3D11) || defined(NO16)
+// cs_5_0 / devices without native 16-bit ops (the Xbox reports Native16BitShaderOpsSupported = false)
+// have no 16-bit loads: read the word, and write a half with two atomics so the other half is kept
 #define LOAD_F16(buf, i)     f16tof32((buf).Load(((i) * 2) & ~3u) >> ((((i) * 2) & 2u) * 8u))
 #define STORE_F16(buf, i, v) { \
     const uint _sh = (((i) * 2) & 2u) * 8u; \

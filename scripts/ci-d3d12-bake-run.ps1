@@ -34,6 +34,8 @@ New-Item -ItemType Directory -Force $cache, $logs | Out-Null
 
 $env:GGML_D3D12_WARP = "1"
 $env:GGML_D3D12_FAKE_VENDOR = "1002"
+$env:GGML_D3D12_FORCE_NO16 = "1"   # the Xbox reports no native 16-bit shader ops (WARP does): bake and verify the console kernel set
+$env:GGML_D3D12_STATS = "1"         # prints every op the GPU refused (those would run on the CPU) to stderr at exit
 if ($Mode -eq "verify") {
     $env:GGML_D3D12_CACHE_DIR = $CacheDir   # cache-only build: nothing can be compiled, nothing is written
 } else {
@@ -100,6 +102,11 @@ if ($Kind -eq "embed") {
         } else { "PPL not parsed (cpu=$pc gpu=$pg)" | Tee-Object -Append "$logs/summary.txt" | Out-File "$logs/ppl.txt" }
     }
 }
+
+# ops the GPU refused (they would run on the CPU, with the GPU-resident tensors copied across): report them
+$rej = Select-String -Path "$logs/*.err.txt" -Pattern "ggml_d3d12 rejected" -ErrorAction SilentlyContinue | ForEach-Object { $_.Line.Trim() } | Sort-Object -Unique
+if ($rej) { $rej | Out-File "$logs/REJECTED.txt"; "rejected ops (CPU fallback): $($rej.Count) distinct, see REJECTED.txt" | Tee-Object -Append "$logs/summary.txt" }
+else { "rejected ops (CPU fallback): none" | Tee-Object -Append "$logs/summary.txt" }
 
 # verify: the cache-only build must never have needed a shader that is not in the cache
 if ($Mode -eq "verify") {

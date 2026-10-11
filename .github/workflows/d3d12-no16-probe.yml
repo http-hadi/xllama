@@ -1,0 +1,82 @@
+name: d3d12-no16-probe
+
+# Quick check of the console configuration (no native 16-bit shader ops) on one small model: builds the
+# desktop tools, bakes + checks lfm25-350m with GGML_D3D12_FORCE_NO16, and reports every op the GPU refuses.
+on:
+  push:
+    branches: ['probe/no16']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  tools:
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with: { submodules: false, fetch-depth: 1 }
+      - uses: actions/setup-python@v7
+        with: { python-version: "3.12" }
+      - name: Pristine llama.cpp + inject the backend
+        shell: bash
+        run: |
+          git submodule update --init --depth 1 llama.cpp
+          python scripts/d3d12-full-inject.py llama.cpp
+      - name: Configure
+        shell: pwsh
+        run: |
+          cmake -S llama.cpp -B build -G "Visual Studio 17 2022" -A x64 `
+            -DGGML_D3D12F=ON -DGGML_NATIVE=OFF -DGGML_AVX512=OFF `
+            -DLLAMA_CURL=OFF -DLLAMA_BUILD_TESTS=ON -DLLAMA_BUILD_EXAMPLES=ON -DLLAMA_BUILD_SERVER=OFF `
+            -DLLAMA_BUILD_TOOLS=ON -DBUILD_SHARED_LIBS=OFF
+      - name: Build tools
+        shell: pwsh
+        run: cmake --build build --config Release --parallel --target llama-bench llama-completion llama-perplexity test-backend-ops
+      - name: Collect tools + DXC
+        env:
+          KOZA_ZIP: https://github.com/koza-coder/llama.cpp-directx12/releases/download/v0.2.7/llama-d3d12-v0.2.7-win-x64.zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force tools | Out-Null
+          Get-ChildItem build -Recurse -Include llama-bench.exe,llama-completion.exe,llama-perplexity.exe,test-backend-ops.exe |
+            Where-Object { $_.FullName -match 'Release' } | Copy-Item -Destination tools
+          curl.exe -sL -o koza.zip $env:KOZA_ZIP
+          Expand-Archive koza.zip -DestinationPath koza
+          Get-ChildItem koza -Recurse -Include dxcompiler.dll,dxil.dll | Copy-Item -Destination tools
+      - uses: actions/upload-artifact@v7
+        with: { name: bake-tools, path: tools, retention-days: 3 }
+
+  probe:
+    needs: tools
+    runs-on: windows-2022
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+        with: { submodules: false, fetch-depth: 1 }
+      - uses: actions/download-artifact@v8
+        with: { name: bake-tools, path: tools }
+      - name: lfm25-350m, console kernel set
+        shell: pwsh
+        run: ./scripts/ci-d3d12-bake-run.ps1 -Name lfm25-350m -Url "https://huggingface.co/LiquidAI/LFM2.5-350M-GGUF/resolve/main/LFM2.5-350M-QAD-Q4_0.gguf" -Pp "16" -N 4 -Check -Only fa1
+      - name: SET_ROWS / CPY / FLASH_ATTN_EXT without native 16-bit
+        shell: pwsh
+        env:
+          GGML_D3D12_WARP: "1"
+          GGML_D3D12_FAKE_VENDOR: "1002"
+          GGML_D3D12_FORCE_NO16: "1"
+          GGML_D3D12_CACHE_DIR: ${{ github.workspace }}\cache
+        run: |
+          foreach ($op in "SET_ROWS","CPY") {
+            $p = Start-Process -FilePath tools/test-backend-ops.exe -ArgumentList "test","-b","D3D12F0","-o",$op -NoNewWindow -PassThru -RedirectStandardOutput "logs/op_$op.out.txt" -RedirectStandardError "logs/op_$op.err.txt"
+            if (-not $p.WaitForExit(900000)) { $p.Kill() }
+            $res = Select-String -Path "logs/op_$op.out.txt" -Pattern "tests passed|Backend .* (OK|FAIL)" | Select-Object -Last 2 | ForEach-Object { $_.Line.Trim() }
+            "{0,-10} exit={1}  {2}" -f $op, $p.ExitCode, ($res -join " | ") | Tee-Object -Append logs/summary.txt
+          }
+      - name: Publish logs
+        if: always()
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: bash scripts/ci-publish-logs.sh "ci-logs-probe-no16" logs
