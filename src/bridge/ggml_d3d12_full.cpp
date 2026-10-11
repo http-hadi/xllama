@@ -106,8 +106,8 @@ bool d3d12_full_default_on() {
         const char* why = nullptr;
         if (exists(local_wide("d3d12f_disable.txt")))
             why = "d3d12f_disable.txt is present";
-        else if (exists(local_wide("d3d12f_attempt.txt")) && !exists(local_wide("d3d12f_force.txt")))
-            why = "the previous launch did not finish a GPU decode (d3d12f_attempt.txt); create d3d12f_force.txt to override";
+        else if (exists(local_wide("d3d12f_attempt.txt")) && exists(local_wide("d3d12f_safe.txt")))
+            why = "the previous launch did not finish a GPU decode and d3d12f_safe.txt asks for the CPU in that case";
         else if (!has_baked_shaders(baked_shader_dir()))
             why = "this package carries no baked shaders (d3d12-shader-cache)";
         on = (why == nullptr);
@@ -127,15 +127,16 @@ bool d3d12_full_register() {
         }
         const std::wstring sentinel = local_wide("d3d12f_attempt.txt");
         if (exists(sentinel)) {
-            if (!exists(local_wide("d3d12f_force.txt"))) {
-                // The last launch armed the sentinel and never completed a GPU decode: it crashed or was
-                // killed on the GPU. Run this launch on the CPU and clear the flag so the next one retries.
+            if (exists(local_wide("d3d12f_safe.txt"))) {
+                // Opt-in legacy behaviour: after a GPU crash run one launch on the CPU.
                 DeleteFileW(sentinel.c_str());
                 log_output("[xllama] d3d12f: previous GPU run did not finish a decode -> CPU for this "
-                           "launch (create d3d12f_force.txt to ignore this check)\n");
+                           "launch (d3d12f_safe.txt present)\n");
                 return;
             }
-            log_output("[xllama] d3d12f: stale sentinel ignored (d3d12f_force.txt present)\n");
+            // Default: GPU-only. A crash must never silently move the user to the CPU.
+            log_output("[xllama] d3d12f: WARNING previous GPU run did not finish a decode; staying on the GPU "
+                       "(create d3d12f_disable.txt to turn it off, d3d12f_safe.txt for CPU-after-crash)\n");
         }
         const std::wstring dir = baked_shader_dir();
         if (!has_baked_shaders(dir)) {
