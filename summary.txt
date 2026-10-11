@@ -1,0 +1,4 @@
+embed_gpu: exit=0 11s
+embed_gpu_long: exit=0 12s
+rejected ops (CPU fallback): 4 distinct, see REJECTED.txt
+baked: files=20 bytes=162140 manifest_unique=20
