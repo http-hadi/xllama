@@ -1,0 +1,4 @@
+embed_gpu: exit=0 26s
+embed_gpu_long: exit=0 25s
+rejected ops (CPU fallback): 4 distinct, see REJECTED.txt
+verify: no missing shaders

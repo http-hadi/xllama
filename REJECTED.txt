@@ -1,0 +1,4 @@
+ggml_d3d12 rejected [D3D12F0]:   2432 x CPY f32,f16 -> f16
+ggml_d3d12 rejected [D3D12F0]:   3496 x CPY f32,f16 -> f16
+ggml_d3d12 rejected [D3D12F1]:   2176 x CPY f32,f16 -> f16
+ggml_d3d12 rejected [D3D12F1]:   3128 x CPY f32,f16 -> f16
