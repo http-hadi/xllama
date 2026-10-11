@@ -1,0 +1,12 @@
+0.00.023.352 W ggml_d3d12: D3D12F0 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+0.00.023.745 W ggml_d3d12: D3D12F1 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+0.01.321.559 W llama_context: n_ctx is not divisible by n_seq_max - rounding down to 4096
+0.01.360.852 I cmn          init: llama threadpool init, n_threads = 2
+0.01.467.832 I 
+0.01.467.907 I system_info: n_threads = 2 (n_threads_batch = 2) / 4 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.01.467.917 I perplexity: tokenizing the input ..
+0.01.474.768 I perplexity: tokenization took 6.846 ms
+0.01.474.891 I perplexity: calculating perplexity over 3 chunks, n_ctx=128, batch_size=2048, n_seq=16
+0.05.936.673 I perplexity: 4.46 seconds per pass - ETA 0.06.012.268 I Final estimate: PPL = 6.4538 +/- 1.46992
+ggml_d3d12 stats [D3D12F0]: graphs 0, nodes 0, dispatches 0, submits 0 (mid-graph flushes: batch 0, arena 0) | graph_compute 0.0 ms = encode 0.0 (shader compile 0.0 in 0 pipelines) + submit calls 0.0 + fence wait 0.0 (barriers 0 of 0 dispatches) | set_tensor 0 calls 0.0 MB 0.0 ms | get_tensor 0 calls 0.0 MB 0.0 ms
+ggml_d3d12 stats [D3D12F1]: graphs 0, nodes 0, dispatches 0, submits 0 (mid-graph flushes: batch 0, arena 0) | graph_compute 0.0 ms = encode 0.0 (shader compile 0.0 in 0 pipelines) + submit calls 0.0 + fence wait 0.0 (barriers 0 of 0 dispatches) | set_tensor 0 calls 0.0 MB 0.0 ms | get_tensor 0 calls 0.0 MB 0.0 ms

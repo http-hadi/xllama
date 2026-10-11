@@ -1,0 +1,10 @@
+bench_fa1: exit=0 150s
+bench_fa0: exit=0 148s
+bench_kvq8: exit=0 21s
+gen_cpu: exit=0 2s
+gen_gpu: exit=0 45s
+ppl_cpu: exit=0 6s
+ppl_gpu: exit=0 85s
+PPL cpu=6.4538 gpu=6.377 rel_diff=1.19% -> MISMATCH
+rejected ops (CPU fallback): none
+baked: files=52 bytes=490988 manifest_unique=52
