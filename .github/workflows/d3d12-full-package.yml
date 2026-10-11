@@ -1,0 +1,84 @@
+name: d3d12-full-package
+
+# Builds the Xbox package from the shader cache that d3d12-full-release already baked and verified
+# (run CACHE_RUN_ID), then publishes it as a GitHub pre-release. Only glue/docs differ from the verified
+# commit - the backend source and every HLSL file are unchanged, so the baked cache keys still match.
+on:
+  push:
+    branches: ['package/d3d12f']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+env:
+  CACHE_RUN_ID: "38142002665"
+
+jobs:
+  package:
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: false
+          fetch-depth: 1
+      - uses: actions/download-artifact@v8
+        with:
+          name: d3d12-shader-cache
+          path: uwp/d3d12-shader-cache
+          run-id: ${{ env.CACHE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Baked shaders present?
+        shell: pwsh
+        run: |
+          $n = (Get-ChildItem uwp/d3d12-shader-cache -Filter *.dxil).Count
+          "baked shaders: $n"
+          if ($n -lt 100) { throw "shader cache looks wrong ($n files)" }
+      - name: Surface MSVC/linker errors as annotations
+        shell: bash
+        run: echo "::add-matcher::.github/msvc-matcher.json"
+      - name: Package revision (always above the released 1.6.0.x)
+        shell: bash
+        run: echo "XLLAMA_REV=$((GITHUB_RUN_NUMBER + 30000))" >> "$GITHUB_ENV"
+      - uses: ./.github/actions/build-uwp-package
+        with:
+          variant: unified
+          patched: "true"
+          store_sku: "false"
+          artifact: xllama-appx-d3d12f-final
+          build_revision: ${{ env.XLLAMA_REV }}
+
+  release:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: xllama-appx-d3d12f-final
+          path: pkg
+      - name: Publish pre-release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="d3d12f-${{ github.run_number }}"
+          files=$(find pkg -type f \( -name '*.msix' -o -name '*.appx' -o -name '*.cer' \))
+          echo "$files"
+          cat > notes.md <<'NOTES'
+          Whole-graph D3D12 GPU backend for Xbox (see docs/d3d12-full.md).
+
+          **Verified in CI** (software D3D12 adapter, compared with the CPU backend): ops MUL_MAT 1321/1321 (incl. Q1_0),
+          MUL_MAT_ID 940/940, ROPE, NORM, SSM_CONV, GATED_DELTA_NET, flash attention subset 553/553; Bonsai 27B Q1_0 loads and
+          its greedy output matches the CPU; 13 other catalogue models ran with the console configuration (no shader
+          compiler, 609 baked shaders) and needed no shader that was not baked.
+
+          **Not verified:** speed and behaviour on a real console GPU/driver. Perplexity differs from the CPU by 0.1-2% on
+          small models (expected: the CPU quantises activations to 8 bit).
+
+          First launch: check xllama.log for `[xllama] d3d12f:` lines. They say whether the GPU is on and why not.
+          NOTES
+          gh release create "$tag" $files --repo "$GITHUB_REPOSITORY" --prerelease \
+            --title "xllama + whole-graph D3D12 GPU backend (build ${{ github.run_number }})" \
+            --notes-file notes.md

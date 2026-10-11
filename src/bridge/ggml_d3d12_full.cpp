@@ -96,12 +96,25 @@ std::atomic<bool> g_sentinel_armed{false};
 
 } // namespace
 
+// Decided once per launch, *before* d3d12_full_register() arms the crash sentinel (re-reading the sentinel
+// later would make a second model loaded before the first decode finished fall back to the CPU), and always
+// logged, so a silent CPU fallback can be told apart from "the GPU never ran".
 bool d3d12_full_default_on() {
-    if (exists(local_wide("d3d12f_disable.txt")))
-        return false;
-    if (exists(local_wide("d3d12f_attempt.txt")) && !exists(local_wide("d3d12f_force.txt")))
-        return false;
-    return has_baked_shaders(baked_shader_dir());
+    static std::once_flag once;
+    static bool on = false;
+    std::call_once(once, [] {
+        const char* why = nullptr;
+        if (exists(local_wide("d3d12f_disable.txt")))
+            why = "d3d12f_disable.txt is present";
+        else if (exists(local_wide("d3d12f_attempt.txt")) && !exists(local_wide("d3d12f_force.txt")))
+            why = "the previous launch did not finish a GPU decode (d3d12f_attempt.txt); create d3d12f_force.txt to override";
+        else if (!has_baked_shaders(baked_shader_dir()))
+            why = "this package carries no baked shaders (d3d12-shader-cache)";
+        on = (why == nullptr);
+        log_output(on ? std::string("[xllama] d3d12f: GPU default ON for GGUF models (baked shaders present)\n")
+                      : std::string("[xllama] d3d12f: GPU default OFF, models stay on the CPU: ") + why + "\n");
+    });
+    return on;
 }
 
 bool d3d12_full_register() {

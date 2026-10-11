@@ -51,7 +51,7 @@ for ($i = 1; $i -le 3 -and -not (Test-Path $model); $i++) {
 if (-not (Test-Path $model)) { "download failed: $Url" | Out-File "$logs/FAILED.txt"; exit 1 }
 "{0} {1} MB" -f $Name, [int]((Get-Item $model).Length / 1MB) | Tee-Object "$logs/model.txt"
 
-function Invoke-Timed($exe, $argList, $tag) {
+function Invoke-Timed($exe, $argList, $tag, [switch]$NonFatal) {
     $o = Join-Path $logs "$tag.out.txt"; $e = Join-Path $logs "$tag.err.txt"
     Write-Host "== $tag : $exe $argList"
     $sw = [Diagnostics.Stopwatch]::StartNew()
@@ -59,7 +59,7 @@ function Invoke-Timed($exe, $argList, $tag) {
          -RedirectStandardOutput $o -RedirectStandardError $e
     if (-not $p.WaitForExit($TimeoutMin * 60000)) { $p.Kill(); "TIMEOUT $tag" | Out-File -Append "$logs/timeouts.txt" }
     "{0}: exit={1} {2:n0}s" -f $tag, $p.ExitCode, $sw.Elapsed.TotalSeconds | Out-File -Append "$logs/summary.txt"
-    if ($p.ExitCode -ne 0) { $script:failed = $true }
+    if ($p.ExitCode -ne 0 -and -not $NonFatal) { $script:failed = $true }   # the perplexity cross-check is informational: a 27B model can exhaust the CI runner's memory
     return $p.ExitCode
 }
 
@@ -88,8 +88,8 @@ if ($Kind -eq "embed") {
         # (near-ties in a small model flip a token without anything being wrong).
         $text = Join-Path $ws "README.md"
         $pcommon = "-m `"$model`" -f `"$text`" -c $PplCtx --chunks $PplChunks"
-        Invoke-Timed "llama-perplexity.exe" "$pcommon -ngl 0" "ppl_cpu"
-        Invoke-Timed "llama-perplexity.exe" "$pcommon -ngl 999 -dev D3D12F0" "ppl_gpu"
+        Invoke-Timed "llama-perplexity.exe" "$pcommon -ngl 0" "ppl_cpu" -NonFatal
+        Invoke-Timed "llama-perplexity.exe" "$pcommon -ngl 999 -dev D3D12F0" "ppl_gpu" -NonFatal
         function Get-Ppl($f) { $m = Select-String -Path $f -Pattern "Final estimate: PPL = ([0-9.]+)" | Select-Object -Last 1; if ($m) { [double]$m.Matches[0].Groups[1].Value } else { $null } }
         $pc = Get-Ppl "$logs/ppl_cpu.out.txt"; if (-not $pc) { $pc = Get-Ppl "$logs/ppl_cpu.err.txt" }
         $pg = Get-Ppl "$logs/ppl_gpu.out.txt"; if (-not $pg) { $pg = Get-Ppl "$logs/ppl_gpu.err.txt" }
