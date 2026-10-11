@@ -1,0 +1,5 @@
+bench_fa1: exit=0 200s
+bench_fa0: exit=0 200s
+bench_kvq8: exit=0 153s
+rejected ops (CPU fallback): none
+baked: files=54 bytes=561212 manifest_unique=54
