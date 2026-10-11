@@ -144,6 +144,14 @@ bool d3d12_full_register() {
             return;
         }
         apply_env_file();
+        // The shaders in the package are baked in CI with GGML_D3D12_FAKE_VENDOR=1002 (the pipelines an AMD UMA GPU
+        // requests). The Xbox adapter does not report that vendor id, so without this it asks for variants that
+        // were never baked (e.g. mul_mat_vec N_MATS=2 without FUSE_ADD) and every graph fails: the console is an
+        // AMD APU, so request exactly what the bake produced. d3d12f_env.txt can still override it.
+        if (!std::getenv("GGML_D3D12_FAKE_VENDOR")) {
+            _putenv_s("GGML_D3D12_FAKE_VENDOR", "1002");
+            log_output("[xllama] d3d12f: GGML_D3D12_FAKE_VENDOR=1002 (matches the baked shader set)\n");
+        }
         xllama_d3d12f_set_shader_dir(dir.c_str());
 
         // Arm before touching the GPU; cleared by the first successful decode.

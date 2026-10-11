@@ -5536,12 +5536,12 @@ static bool ggml_d3d12_init_device(d3d12_device_ctx & dev, ggml_backend_dev_t gg
         /* .context = */ &dev,
     };
 
-    GGML_LOG_WARN("ggml_d3d12: %s = %s | Direct3D 12 | driver %s | SM %d.%d | 16-bit %s | wave %u-%u | %s | %zu MiB | build %s %s\n",
+    GGML_LOG_WARN("ggml_d3d12: %s = %s | Direct3D 12 | driver %s | SM %d.%d | 16-bit %s | wave %u-%u | %s | %zu MiB | vendor 0x%04x | build %s %s\n",
                   dev.name.c_str(), dev.desc.c_str(), ggml_d3d12_driver_version(dev.adapter.get()).c_str(),
                   dev.caps.shader_model >> 4, dev.caps.shader_model & 0xf,
                   dev.caps.native_16bit ? "yes" : "no", dev.caps.wave_min, dev.caps.wave_max,
                   dev.caps.uma ? "UMA" : "discrete", (dev.caps.uma ? dev.shared_mem : dev.dedicated_mem) / (1024 * 1024),
-                  __DATE__, __TIME__);
+                  (unsigned) dev.vendor_id, __DATE__, __TIME__);
     return true;
 }
 
