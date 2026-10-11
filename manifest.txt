@@ -1,0 +1,62 @@
+62d25d6030d17ccb.dxil	memset -DBYTES_PER_THREAD=16
+82652a69d18d7007.dxil	rms_norm -DFUSE_MUL
+94e994ba3f7b9fdc.dxil	rope -DTYPE_F32 -DFF_FUNC
+9f0e59694a68c4ba.dxil	set_rows -DDST_F16 -DNO16 -DI64_IDX
+8648cb89f988b9f4.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1
+65ed8427e5709c8d.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+e194ec9465702c95.dxil	flash_attn -DDV=128 -DCOMBINE -DWG_SIZE=64
+4679d142a3f7e7be.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DFUSE_ADD
+3344c9543000e6e5.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=2 -DFUSE_ADD
+8ace271c8aa2321f.dxil	glu -DTYPE_F32 -DOP_SWIGLU
+98be7b779eebb4dc.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=256 -DN_MATS=1 -DFUSE_ADD
+f1dd2fc27ec110c5.dxil	get_rows -DSRC_F32
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+1a725c46de7a4027.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=2 -DONE_COL -DFUSE_ADD
+4432ae7dfa033c3e.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=256 -DN_MATS=1 -DONE_COL -DFUSE_ADD
+d1d8d09aa890983b.dxil	mul_mat_vec -DSRC0_Q6_K -DTPR=128 -DN_MATS=1 -DONE_COL
+19a718d38dbf4c86.dxil	mul_mat_tiled -DSRC0_Q3_K
+93e1d5ff31f19c66.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DONE_COL
+10723ac86b1162d3.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DDECODE
+8040bb40591f6dbc.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DONE_COL -DFUSE_ADD
+62d25d6030d17ccb.dxil	memset -DBYTES_PER_THREAD=16
+82652a69d18d7007.dxil	rms_norm -DFUSE_MUL
+94e994ba3f7b9fdc.dxil	rope -DTYPE_F32 -DFF_FUNC
+9f0e59694a68c4ba.dxil	set_rows -DDST_F16 -DNO16 -DI64_IDX
+8648cb89f988b9f4.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1
+45b29b7c499214ae.dxil	soft_max -DHAS_MASK -DMASK_F32
+550945d4e64f2b19.dxil	mul_mat_vec -DSRC0_F16 -DTPR=32 -DN_MATS=1
+985a8c15ec2fc54a.dxil	mul_mat_vec -DSRC0_F16 -DTPR=64 -DN_MATS=1
+c8a47a7f18b0f31e.dxil	cpy -DSRC_F32 -DDST_F32
+4679d142a3f7e7be.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DFUSE_ADD
+3344c9543000e6e5.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=2 -DFUSE_ADD
+8ace271c8aa2321f.dxil	glu -DTYPE_F32 -DOP_SWIGLU
+98be7b779eebb4dc.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=256 -DN_MATS=1 -DFUSE_ADD
+f1dd2fc27ec110c5.dxil	get_rows -DSRC_F32
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+1a725c46de7a4027.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=2 -DONE_COL -DFUSE_ADD
+4432ae7dfa033c3e.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=256 -DN_MATS=1 -DONE_COL -DFUSE_ADD
+d1d8d09aa890983b.dxil	mul_mat_vec -DSRC0_Q6_K -DTPR=128 -DN_MATS=1 -DONE_COL
+19a718d38dbf4c86.dxil	mul_mat_tiled -DSRC0_Q3_K
+65e6a169e7201599.dxil	mul_mat_tiled -DSRC0_F16
+93e1d5ff31f19c66.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DONE_COL
+173245cd7104722b.dxil	mul_mat_vec -DSRC0_F16 -DTPR=32 -DN_MATS=1 -DONE_COL
+1455c22030d469f8.dxil	mul_mat_vec -DSRC0_F16 -DTPR=64 -DN_MATS=1 -DONE_COL
+8040bb40591f6dbc.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DONE_COL -DFUSE_ADD
+62d25d6030d17ccb.dxil	memset -DBYTES_PER_THREAD=16
+82652a69d18d7007.dxil	rms_norm -DFUSE_MUL
+94e994ba3f7b9fdc.dxil	rope -DTYPE_F32 -DFF_FUNC
+19a718d38dbf4c86.dxil	mul_mat_tiled -DSRC0_Q3_K
+abe4ba5183a1ffcf.dxil	mul_mat_tiled -DSRC0_F32
+021400eb980f1588.dxil	set_rows_q -DQT_Q8_0 -DI64_IDX
+2cc404e860f3ef58.dxil	flash_attn -DDK=128 -DDV=128 -DK_Q8_0 -DV_Q8_0 -DHAS_MASK -DWG_SIZE=64
+e194ec9465702c95.dxil	flash_attn -DDV=128 -DCOMBINE -DWG_SIZE=64
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+8ace271c8aa2321f.dxil	glu -DTYPE_F32 -DOP_SWIGLU
+f1dd2fc27ec110c5.dxil	get_rows -DSRC_F32
+1a725c46de7a4027.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=2 -DONE_COL -DFUSE_ADD
+4432ae7dfa033c3e.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=256 -DN_MATS=1 -DONE_COL -DFUSE_ADD
+d1d8d09aa890983b.dxil	mul_mat_vec -DSRC0_Q6_K -DTPR=128 -DN_MATS=1 -DONE_COL
+d6e3e5d88d1f0eb6.dxil	flash_attn -DDK=128 -DDV=128 -DK_Q8_0 -DV_Q8_0 -DHAS_MASK -DDECODE
+ced3fe5874a71f0f.dxil	mul_mat_vec -DSRC0_F32 -DTPR=32 -DN_MATS=1
+93e1d5ff31f19c66.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DONE_COL
+8040bb40591f6dbc.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DONE_COL -DFUSE_ADD
