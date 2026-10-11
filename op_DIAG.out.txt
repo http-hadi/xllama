@@ -1,0 +1,17 @@
+Testing 3 devices
+
+Backend 1/3: D3D12F0
+  Device description: Microsoft Basic Render Driver
+  Device memory: 7523 MB (7519 MB free)
+
+  DIAG(type=f32,ne=[10,1,4,3]): [1;32mOK[0m
+  DIAG(type=f32,ne=[79,1,19,13]): [1;32mOK[0m
+  DIAG(type=f32,ne=[256,1,8,16]): [1;32mOK[0m
+  3/3 tests passed
+  Backend D3D12F0: [1;32mOK[0m
+Backend 2/3: D3D12F1
+  Skipping
+Backend 3/3: CPU
+  Skipping
+3/3 backends passed
+[1;32mOK[0m

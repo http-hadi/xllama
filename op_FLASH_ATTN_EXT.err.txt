@@ -1,0 +1,16 @@
+ggml_d3d12: D3D12F0 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+ggml_d3d12: D3D12F1 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+
+ggml_d3d12: compiling shaders, 19 of 19
+
+ggml_d3d12: compiling shaders, 20 of 20
+
+ggml_d3d12: compiling shaders, 39 of 39
+
+ggml_d3d12: compiling shaders, 57 of 57
+
+ggml_d3d12: compiling shaders, 75 of 75
+
+ggml_d3d12: compiling shaders, 85 of 85
+
+ggml_d3d12: compiling shaders, 96 of 96

@@ -1,0 +1,24 @@
+Testing 3 devices
+
+Backend 1/3: D3D12F0
+  Device description: Microsoft Basic Render Driver
+  Device memory: 7523 MB (7519 MB free)
+
+  DUP(type=f32,ne=[10,10,20,1]): [1;32mOK[0m
+  DUP(type=f16,ne=[10,10,20,1]): [1;32mOK[0m
+  DUP(type=i32,ne=[10,10,20,1]): [1;32mOK[0m
+  DUP(type=i16,ne=[10,10,20,1]): [1;32mOK[0m
+  DUP(type=f32,ne=[10,10,5,1],permute=[0,2,1,3]): [1;32mOK[0m
+  DUP(type=f16,ne=[10,10,5,1],permute=[0,2,1,3]): [1;32mOK[0m
+  DUP(type=f32,ne=[10,10,5,1],permute=[1,0,2,3]): [1;32mOK[0m
+  DUP(type=f16,ne=[10,10,5,1],permute=[1,0,2,3]): [1;32mOK[0m
+  DUP(type=i16,ne=[10,8,3,1],permute=[0,2,1,3]): [1;32mOK[0m
+  DUP(type=i16,ne=[10,8,3,1],permute=[1,2,0,3]): [1;32mOK[0m
+  10/10 tests passed
+  Backend D3D12F0: [1;32mOK[0m
+Backend 2/3: D3D12F1
+  Skipping
+Backend 3/3: CPU
+  Skipping
+3/3 backends passed
+[1;32mOK[0m

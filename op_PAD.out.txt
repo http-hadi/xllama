@@ -1,0 +1,42 @@
+Testing 3 devices
+
+Backend 1/3: D3D12F0
+  Device description: Microsoft Basic Render Driver
+  Device memory: 7523 MB (7519 MB free)
+
+  PAD(type=f32,ne_a=[512,512,1,1],pad_0=1,pad_1=1,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[33,17,2,1],pad_0=4,pad_1=3,circular=1): [1;32mOK[0m
+  PAD(type=f32,ne_a=[512,512,3,1],lp0=1,rp0=1,lp1=1,rp1=1,lp2=1,rp2=1,lp3=1,rp3=1,tfrm=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[1024,1,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[1024,2,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[1024,16,1,1],pad_0=0,pad_1=1,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[1023,1,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[1023,8,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[1025,1,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[1025,8,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[2048,1,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[2048,4,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[2049,1,1,1],pad_0=1,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[100,1,1,1],pad_0=100,pad_1=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[100,1,1,1],pad_0=0,pad_1=100,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[100,100,1,1],pad_0=50,pad_1=50,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[512,512,1,1],lp0=0,rp0=1,lp1=0,rp1=1,lp2=0,rp2=0,lp3=0,rp3=0,tfrm=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[11,22,33,44],lp0=1,rp0=2,lp1=3,rp1=4,lp2=5,rp2=6,lp3=7,rp3=8,tfrm=0,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[512,512,1,1],lp0=0,rp0=1,lp1=0,rp1=1,lp2=0,rp2=0,lp3=0,rp3=0,tfrm=0,circular=1): [1;32mOK[0m
+  PAD(type=f32,ne_a=[11,22,33,44],lp0=1,rp0=2,lp1=3,rp1=4,lp2=5,rp2=6,lp3=7,rp3=8,tfrm=0,circular=1): [1;32mOK[0m
+  PAD(type=f32,ne_a=[512,512,1,1],lp0=0,rp0=1,lp1=0,rp1=1,lp2=0,rp2=0,lp3=0,rp3=0,tfrm=1,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[11,22,33,44],lp0=1,rp0=2,lp1=3,rp1=4,lp2=5,rp2=6,lp3=7,rp3=8,tfrm=1,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[512,512,1,1],lp0=0,rp0=1,lp1=0,rp1=1,lp2=0,rp2=0,lp3=0,rp3=0,tfrm=1,circular=1): [1;32mOK[0m
+  PAD(type=f32,ne_a=[11,22,33,44],lp0=1,rp0=2,lp1=3,rp1=4,lp2=5,rp2=6,lp3=7,rp3=8,tfrm=1,circular=1): [1;32mOK[0m
+  PAD(type=f32,ne_a=[512,512,1,1],lp0=0,rp0=1,lp1=0,rp1=1,lp2=0,rp2=0,lp3=0,rp3=0,tfrm=2,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[11,22,33,44],lp0=1,rp0=2,lp1=3,rp1=4,lp2=5,rp2=6,lp3=7,rp3=8,tfrm=2,circular=0): [1;32mOK[0m
+  PAD(type=f32,ne_a=[512,512,1,1],lp0=0,rp0=1,lp1=0,rp1=1,lp2=0,rp2=0,lp3=0,rp3=0,tfrm=2,circular=1): [1;32mOK[0m
+  PAD(type=f32,ne_a=[11,22,33,44],lp0=1,rp0=2,lp1=3,rp1=4,lp2=5,rp2=6,lp3=7,rp3=8,tfrm=2,circular=1): [1;32mOK[0m
+  28/28 tests passed
+  Backend D3D12F0: [1;32mOK[0m
+Backend 2/3: D3D12F1
+  Skipping
+Backend 3/3: CPU
+  Skipping
+3/3 backends passed
+[1;32mOK[0m

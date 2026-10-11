@@ -1,0 +1,54 @@
+ggml_d3d12: D3D12F0 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+ggml_d3d12: D3D12F1 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+
+ggml_d3d12: compiling shaders, 4 of 4
+
+ggml_d3d12: compiling shaders, 6 of 6
+
+ggml_d3d12: compiling shaders, 9 of 9
+
+ggml_d3d12: compiling shaders, 11 of 11
+
+ggml_d3d12: compiling shaders, 13 of 13
+
+ggml_d3d12: compiling shaders, 14 of 14
+
+ggml_d3d12: compiling shaders, 16 of 16
+
+ggml_d3d12: compiling shaders, 18 of 18
+
+ggml_d3d12: compiling shaders, 19 of 19
+
+ggml_d3d12: compiling shaders, 24 of 24
+
+ggml_d3d12: compiling shaders, 27 of 27
+
+ggml_d3d12: compiling shaders, 30 of 30
+
+ggml_d3d12: compiling shaders, 32 of 32
+
+ggml_d3d12: compiling shaders, 34 of 34
+
+ggml_d3d12: compiling shaders, 37 of 37
+
+ggml_d3d12: compiling shaders, 45 of 45
+
+ggml_d3d12: compiling shaders, 47 of 47
+
+ggml_d3d12: compiling shaders, 48 of 48
+
+ggml_d3d12: compiling shaders, 50 of 50
+
+ggml_d3d12: compiling shaders, 52 of 52
+
+ggml_d3d12: compiling shaders, 53 of 53
+
+ggml_d3d12: compiling shaders, 54 of 54
+
+ggml_d3d12: compiling shaders, 55 of 55
+
+ggml_d3d12: compiling shaders, 56 of 56
+
+ggml_d3d12: compiling shaders, 63 of 63
+
+ggml_d3d12: compiling shaders, 64 of 64

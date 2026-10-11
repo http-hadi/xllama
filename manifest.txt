@@ -1,0 +1,505 @@
+08873658701bcc1c.dxil	mul_mat_vec -DSRC0_F32 -DTPR=64 -DN_MATS=1
+9ca57530a27fba67.dxil	mul_mat_vec -DSRC0_F32 -DTPR=256 -DN_MATS=1
+1455c22030d469f8.dxil	mul_mat_vec -DSRC0_F16 -DTPR=64 -DN_MATS=1 -DONE_COL
+985a8c15ec2fc54a.dxil	mul_mat_vec -DSRC0_F16 -DTPR=64 -DN_MATS=1
+1d862999dae37eb3.dxil	mul_mat_vec -DSRC0_F16 -DTPR=256 -DN_MATS=1 -DONE_COL
+36893b01c6d4be81.dxil	mul_mat_vec -DSRC0_F16 -DTPR=256 -DN_MATS=1
+263a1be9233ff92a.dxil	mul_mat_vec -DSRC0_BF16 -DTPR=64 -DN_MATS=1 -DONE_COL
+4cb1812d0edf75b8.dxil	mul_mat_vec -DSRC0_BF16 -DTPR=64 -DN_MATS=1
+f34847d798a133b1.dxil	mul_mat_vec -DSRC0_BF16 -DTPR=256 -DN_MATS=1 -DONE_COL
+ad6717a482702ea3.dxil	mul_mat_vec -DSRC0_BF16 -DTPR=256 -DN_MATS=1
+fff140da5487e8e1.dxil	mul_mat_vec -DSRC0_Q4_0 -DTPR=8 -DN_MATS=1 -DONE_COL
+1e6ce1354622e8f3.dxil	mul_mat_vec -DSRC0_Q4_0 -DTPR=8 -DN_MATS=1
+cf7bede3bf8aa9ba.dxil	mul_mat_vec -DSRC0_Q4_0 -DTPR=128 -DN_MATS=1 -DONE_COL
+f01fda8568f5a328.dxil	mul_mat_vec -DSRC0_Q4_0 -DTPR=128 -DN_MATS=1
+ac3e18a112058c88.dxil	mul_mat_vec -DSRC0_Q4_1 -DTPR=8 -DN_MATS=1 -DONE_COL
+9f1b495d3853447a.dxil	mul_mat_vec -DSRC0_Q4_1 -DTPR=8 -DN_MATS=1
+105f463036fcb683.dxil	mul_mat_vec -DSRC0_Q4_1 -DTPR=128 -DN_MATS=1 -DONE_COL
+9a75cbbdb9457d71.dxil	mul_mat_vec -DSRC0_Q4_1 -DTPR=128 -DN_MATS=1
+f7f38cc274d50818.dxil	mul_mat_vec -DSRC0_Q5_0 -DTPR=8 -DN_MATS=1 -DONE_COL
+c4691a1d7dbc41aa.dxil	mul_mat_vec -DSRC0_Q5_0 -DTPR=8 -DN_MATS=1
+bd5d0f4869d8d9d3.dxil	mul_mat_vec -DSRC0_Q5_0 -DTPR=128 -DN_MATS=1 -DONE_COL
+59720bb5e2d38361.dxil	mul_mat_vec -DSRC0_Q5_0 -DTPR=128 -DN_MATS=1
+3eab5a17bd322bb1.dxil	mul_mat_vec -DSRC0_Q5_1 -DTPR=8 -DN_MATS=1 -DONE_COL
+c0626637832fa6a3.dxil	mul_mat_vec -DSRC0_Q5_1 -DTPR=8 -DN_MATS=1
+c114c6d6568e3cca.dxil	mul_mat_vec -DSRC0_Q5_1 -DTPR=128 -DN_MATS=1 -DONE_COL
+8060bf00285f7818.dxil	mul_mat_vec -DSRC0_Q5_1 -DTPR=128 -DN_MATS=1
+29940d102b1ddddd.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=8 -DN_MATS=1 -DONE_COL
+4aa71ee8c3c3d78f.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=8 -DN_MATS=1
+0dc32b862ab99536.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=128 -DN_MATS=1 -DONE_COL
+87a19d2d2ab8dbe4.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=128 -DN_MATS=1
+e2f4ce83ecf36b3c.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=8 -DN_MATS=1 -DONE_COL
+f0c53dd599823ace.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=8 -DN_MATS=1
+8f965a713b8b70f7.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=128 -DN_MATS=1 -DONE_COL
+420f0c07e3896785.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=128 -DN_MATS=1
+92c9806b4f84b9f7.dxil	mul_mat_vec -DSRC0_Q2_0 -DTPR=8 -DN_MATS=1 -DONE_COL
+7cf2fae329206085.dxil	mul_mat_vec -DSRC0_Q2_0 -DTPR=8 -DN_MATS=1
+dee08339e14a808c.dxil	mul_mat_vec -DSRC0_Q2_0 -DTPR=128 -DN_MATS=1 -DONE_COL
+19365c48e527a33e.dxil	mul_mat_vec -DSRC0_Q2_0 -DTPR=128 -DN_MATS=1
+e7f53874c998a1b4.dxil	mul_mat_vec -DSRC0_MXFP4 -DTPR=8 -DN_MATS=1 -DONE_COL
+73eeafe9c6a62086.dxil	mul_mat_vec -DSRC0_MXFP4 -DTPR=8 -DN_MATS=1
+462422d707e4a58f.dxil	mul_mat_vec -DSRC0_MXFP4 -DTPR=128 -DN_MATS=1 -DONE_COL
+e42aa2bb33bb98fd.dxil	mul_mat_vec -DSRC0_MXFP4 -DTPR=128 -DN_MATS=1
+8b5e6bf0b9bf5e41.dxil	mul_mat_vec -DSRC0_NVFP4 -DTPR=8 -DN_MATS=1 -DONE_COL
+1474f016b51bcc93.dxil	mul_mat_vec -DSRC0_NVFP4 -DTPR=8 -DN_MATS=1
+5b779d1e0fbeb11a.dxil	mul_mat_vec -DSRC0_NVFP4 -DTPR=128 -DN_MATS=1 -DONE_COL
+0d1f1358fa4676c8.dxil	mul_mat_vec -DSRC0_NVFP4 -DTPR=128 -DN_MATS=1
+e6750ae2dc638284.dxil	mul_mat_vec -DSRC0_Q2_K -DTPR=8 -DN_MATS=1 -DONE_COL
+4ab85c1e43d75036.dxil	mul_mat_vec -DSRC0_Q2_K -DTPR=8 -DN_MATS=1
+5b8e37d80555a85f.dxil	mul_mat_vec -DSRC0_Q2_K -DTPR=128 -DN_MATS=1 -DONE_COL
+6400ac797f31c0ed.dxil	mul_mat_vec -DSRC0_Q2_K -DTPR=128 -DN_MATS=1
+ddf3968cc621588d.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=8 -DN_MATS=1 -DONE_COL
+de3cb98b1d3ccedf.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=8 -DN_MATS=1
+93e1d5ff31f19c66.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1 -DONE_COL
+8648cb89f988b9f4.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=128 -DN_MATS=1
+681c07e92edd87d2.dxil	mul_mat_vec -DSRC0_Q4_K -DTPR=8 -DN_MATS=1 -DONE_COL
+f69b62e46ff28480.dxil	mul_mat_vec -DSRC0_Q4_K -DTPR=8 -DN_MATS=1
+eddcfc17b71ffee9.dxil	mul_mat_vec -DSRC0_Q4_K -DTPR=128 -DN_MATS=1 -DONE_COL
+854e6550f440d63b.dxil	mul_mat_vec -DSRC0_Q4_K -DTPR=128 -DN_MATS=1
+07c3b9a39c947cdb.dxil	mul_mat_vec -DSRC0_Q5_K -DTPR=8 -DN_MATS=1 -DONE_COL
+c0d7cc88634e21a9.dxil	mul_mat_vec -DSRC0_Q5_K -DTPR=8 -DN_MATS=1
+5cbdec476bd272b0.dxil	mul_mat_vec -DSRC0_Q5_K -DTPR=128 -DN_MATS=1 -DONE_COL
+f8af5a77ee81b342.dxil	mul_mat_vec -DSRC0_Q5_K -DTPR=128 -DN_MATS=1
+bc5f361b2dee2fe0.dxil	mul_mat_vec -DSRC0_Q6_K -DTPR=8 -DN_MATS=1 -DONE_COL
+7815abc46cf8ce12.dxil	mul_mat_vec -DSRC0_Q6_K -DTPR=8 -DN_MATS=1
+d1d8d09aa890983b.dxil	mul_mat_vec -DSRC0_Q6_K -DTPR=128 -DN_MATS=1 -DONE_COL
+e1985b8f4f1f13c9.dxil	mul_mat_vec -DSRC0_Q6_K -DTPR=128 -DN_MATS=1
+d7f6c1c217022263.dxil	mul_mat_vec -DSRC0_TQ2_0 -DTPR=8 -DN_MATS=1 -DONE_COL
+dae26d28033a6791.dxil	mul_mat_vec -DSRC0_TQ2_0 -DTPR=8 -DN_MATS=1
+22c4f4def9f15ab8.dxil	mul_mat_vec -DSRC0_TQ2_0 -DTPR=128 -DN_MATS=1 -DONE_COL
+2d009acaad8fa20a.dxil	mul_mat_vec -DSRC0_TQ2_0 -DTPR=128 -DN_MATS=1
+658e04f7ddeb78a8.dxil	mul_mat_vec -DSRC0_TQ1_0 -DTPR=8 -DN_MATS=1 -DONE_COL
+28d83262f44268da.dxil	mul_mat_vec -DSRC0_TQ1_0 -DTPR=8 -DN_MATS=1
+4c099798b1400923.dxil	mul_mat_vec -DSRC0_TQ1_0 -DTPR=128 -DN_MATS=1 -DONE_COL
+46bd502fc8ee2251.dxil	mul_mat_vec -DSRC0_TQ1_0 -DTPR=128 -DN_MATS=1
+1c4f9f6fe1c47abd.dxil	mul_mat_vec -DSRC0_IQ2_XXS -DTPR=8 -DN_MATS=1 -DONE_COL
+dd38a2d1438c6aaf.dxil	mul_mat_vec -DSRC0_IQ2_XXS -DTPR=8 -DN_MATS=1
+b10b09a581ac1f96.dxil	mul_mat_vec -DSRC0_IQ2_XXS -DTPR=128 -DN_MATS=1 -DONE_COL
+6dbac2839c80bc04.dxil	mul_mat_vec -DSRC0_IQ2_XXS -DTPR=128 -DN_MATS=1
+9fcb776657e84ead.dxil	mul_mat_vec -DSRC0_IQ2_XS -DTPR=8 -DN_MATS=1 -DONE_COL
+1621f07e2cf3d6bf.dxil	mul_mat_vec -DSRC0_IQ2_XS -DTPR=8 -DN_MATS=1
+c0730f0e99763986.dxil	mul_mat_vec -DSRC0_IQ2_XS -DTPR=128 -DN_MATS=1 -DONE_COL
+5dee915dd3c18cd4.dxil	mul_mat_vec -DSRC0_IQ2_XS -DTPR=128 -DN_MATS=1
+8c2a275f10e5e0fd.dxil	mul_mat_vec -DSRC0_IQ2_S -DTPR=8 -DN_MATS=1 -DONE_COL
+e67770bd60d103ef.dxil	mul_mat_vec -DSRC0_IQ2_S -DTPR=8 -DN_MATS=1
+1219535e4bd4f7d6.dxil	mul_mat_vec -DSRC0_IQ2_S -DTPR=128 -DN_MATS=1 -DONE_COL
+48551f7605346844.dxil	mul_mat_vec -DSRC0_IQ2_S -DTPR=128 -DN_MATS=1
+e741b3446ac661d4.dxil	mul_mat_vec -DSRC0_IQ3_XXS -DTPR=8 -DN_MATS=1 -DONE_COL
+e3b7bd174b9cf666.dxil	mul_mat_vec -DSRC0_IQ3_XXS -DTPR=8 -DN_MATS=1
+c32952caa553bdaf.dxil	mul_mat_vec -DSRC0_IQ3_XXS -DTPR=128 -DN_MATS=1 -DONE_COL
+009ed45566d94b5d.dxil	mul_mat_vec -DSRC0_IQ3_XXS -DTPR=128 -DN_MATS=1
+8308808b5ba5e086.dxil	mul_mat_vec -DSRC0_IQ1_S -DTPR=8 -DN_MATS=1 -DONE_COL
+dcb0855cae0083d4.dxil	mul_mat_vec -DSRC0_IQ1_S -DTPR=8 -DN_MATS=1
+2b75acfe18c5f19d.dxil	mul_mat_vec -DSRC0_IQ1_S -DTPR=128 -DN_MATS=1 -DONE_COL
+b60be9257f20be4f.dxil	mul_mat_vec -DSRC0_IQ1_S -DTPR=128 -DN_MATS=1
+dbb02ac8fe044f58.dxil	mul_mat_vec -DSRC0_IQ1_M -DTPR=8 -DN_MATS=1 -DONE_COL
+bf85cd9e7a6a3cea.dxil	mul_mat_vec -DSRC0_IQ1_M -DTPR=8 -DN_MATS=1
+e843e7f0641c9f13.dxil	mul_mat_vec -DSRC0_IQ1_M -DTPR=128 -DN_MATS=1 -DONE_COL
+a8fa8b2333d6d4a1.dxil	mul_mat_vec -DSRC0_IQ1_M -DTPR=128 -DN_MATS=1
+9ddf63a7935e66ba.dxil	mul_mat_vec -DSRC0_IQ4_NL -DTPR=8 -DN_MATS=1 -DONE_COL
+eda1c60c48dcd028.dxil	mul_mat_vec -DSRC0_IQ4_NL -DTPR=8 -DN_MATS=1
+78e2561619f644b1.dxil	mul_mat_vec -DSRC0_IQ4_NL -DTPR=128 -DN_MATS=1 -DONE_COL
+50ae952c1d986fa3.dxil	mul_mat_vec -DSRC0_IQ4_NL -DTPR=128 -DN_MATS=1
+11295a3c1367af14.dxil	mul_mat_vec -DSRC0_IQ3_S -DTPR=8 -DN_MATS=1 -DONE_COL
+de3c12c9daa3d8a6.dxil	mul_mat_vec -DSRC0_IQ3_S -DTPR=8 -DN_MATS=1
+0f08acb94f45daef.dxil	mul_mat_vec -DSRC0_IQ3_S -DTPR=128 -DN_MATS=1 -DONE_COL
+b21891b4c636e29d.dxil	mul_mat_vec -DSRC0_IQ3_S -DTPR=128 -DN_MATS=1
+a9ff6c96e685d7ab.dxil	mul_mat_vec -DSRC0_IQ4_XS -DTPR=8 -DN_MATS=1 -DONE_COL
+93b342c341639899.dxil	mul_mat_vec -DSRC0_IQ4_XS -DTPR=8 -DN_MATS=1
+d63787d016504980.dxil	mul_mat_vec -DSRC0_IQ4_XS -DTPR=128 -DN_MATS=1 -DONE_COL
+377b899a204eaa72.dxil	mul_mat_vec -DSRC0_IQ4_XS -DTPR=128 -DN_MATS=1
+9549f9f2791c77e3.dxil	mul_mat_vec -DSRC0_Q4_K -DTPR=32 -DN_MATS=1 -DONE_COL
+f1236b56c994c511.dxil	mul_mat_vec -DSRC0_Q4_K -DTPR=32 -DN_MATS=1
+5843c185d9e14792.dxil	mul_mat_vec -DSRC0_Q5_K -DTPR=32 -DN_MATS=1 -DONE_COL
+d868e4c7f0c47040.dxil	mul_mat_vec -DSRC0_Q5_K -DTPR=32 -DN_MATS=1
+73fcccabb8d2da2a.dxil	mul_mat_tiled -DSRC0_Q4_0
+f787799cd14fc8d6.dxil	mul_mat_tiled -DSRC0_Q8_0
+6cd3575fdba86cf7.dxil	mul_mat_tiled -DSRC0_MXFP4
+abe4ba5183a1ffcf.dxil	mul_mat_tiled -DSRC0_F32
+65e6a169e7201599.dxil	mul_mat_tiled -DSRC0_F16
+3952e1464d02202d.dxil	mul_mat_tiled -DSRC0_F16 -DSRC1_F16
+76e6cf1a0d0eb2a1.dxil	mul_mat_scalar -DSRC0_F16
+56b20ef0dc3478f5.dxil	mul_mat_scalar -DSRC0_F16 -DSRC1_F16
+bce4e801a9909cd7.dxil	mul_mat_scalar -DSRC0_F32
+fe4241148feb2fef.dxil	mul_mat_vec -DSRC0_F32 -DTPR=1 -DN_MATS=1
+963b42b7104aee3b.dxil	mul_mat_vec -DSRC0_F16 -DTPR=1 -DN_MATS=1 -DONE_COL
+e369cd41070989c9.dxil	mul_mat_vec -DSRC0_F16 -DTPR=1 -DN_MATS=1
+cde8e641b0497be4.dxil	mul_mat_vec -DSRC0_F16 -DTPR=64 -DN_MATS=1 -DONE_COL -DSRC1_F16
+93c12c6fa593b3a6.dxil	mul_mat_vec -DSRC0_F16 -DTPR=64 -DN_MATS=1 -DSRC1_F16
+eef3ffecc481ecff.dxil	mul_mat_vec -DSRC0_F16 -DTPR=1 -DN_MATS=1 -DONE_COL -DSRC1_F16
+30c39552a668999d.dxil	mul_mat_vec -DSRC0_F16 -DTPR=1 -DN_MATS=1 -DSRC1_F16
+4a5d08b75b7579b7.dxil	mul_mat_vec -DSRC0_F16 -DTPR=256 -DN_MATS=1 -DONE_COL -DSRC1_F16
+b30e9d79e7f01ed5.dxil	mul_mat_vec -DSRC0_F16 -DTPR=256 -DN_MATS=1 -DSRC1_F16
+70b6925221b95104.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=32 -DN_MATS=1 -DONE_COL
+47f66396f573d6b6.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=32 -DN_MATS=1
+898fb341f9be5c2f.dxil	mul_mat_tiled -DSRC0_Q1_0
+4eb0019834fd784d.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=32 -DN_MATS=1 -DONE_COL
+0325e2b1a4a3089f.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=32 -DN_MATS=1
+850a714f9f4666ac.dxil	mul_mat_tiled -DSRC0_Q2_0
+d94f542b12a939be.dxil	mul_mat_vec -DSRC0_Q2_0 -DTPR=32 -DN_MATS=1 -DONE_COL
+20a305ed09610dec.dxil	mul_mat_vec -DSRC0_Q2_0 -DTPR=32 -DN_MATS=1
+f3f5aa7dbadf3338.dxil	mul_mat_vec -DSRC0_Q4_0 -DTPR=32 -DN_MATS=1 -DONE_COL
+8484d04c5e06128a.dxil	mul_mat_vec -DSRC0_Q4_0 -DTPR=32 -DN_MATS=1
+13f778b40f0896bb.dxil	mul_mat_tiled -DSRC0_Q4_1
+adc92c8458d6b859.dxil	mul_mat_vec -DSRC0_Q4_1 -DTPR=32 -DN_MATS=1 -DONE_COL
+88a4b7c98663ad4b.dxil	mul_mat_vec -DSRC0_Q4_1 -DTPR=32 -DN_MATS=1
+d1d804066871b881.dxil	mul_mat_tiled -DSRC0_Q4_K
+b9b551861823b935.dxil	mul_mat_vec -DSRC0_MXFP4 -DTPR=32 -DN_MATS=1 -DONE_COL
+89349c59a63ae9e7.dxil	mul_mat_vec -DSRC0_MXFP4 -DTPR=32 -DN_MATS=1
+819be8bc5eab7dd8.dxil	mul_mat_vec -DSRC0_NVFP4 -DTPR=32 -DN_MATS=1 -DONE_COL
+12c13ad8ba9a236a.dxil	mul_mat_vec -DSRC0_NVFP4 -DTPR=32 -DN_MATS=1
+ff56790f758e3b96.dxil	mul_mat_tiled -DSRC0_IQ2_XXS
+461e1a88a13c6d24.dxil	mul_mat_vec -DSRC0_IQ2_XXS -DTPR=32 -DN_MATS=1 -DONE_COL
+aa8e28021d9e4416.dxil	mul_mat_vec -DSRC0_IQ2_XXS -DTPR=32 -DN_MATS=1
+c90cc3d430bc0c99.dxil	mul_mat_vec -DSRC0_Q4_1 -DTPR=1 -DN_MATS=1 -DONE_COL
+658feaa849586ee9.dxil	mul_mat_vec -DSRC0_Q5_0 -DTPR=1 -DN_MATS=1 -DONE_COL
+2e10d0e6d3fe7fb0.dxil	mul_mat_vec -DSRC0_Q5_1 -DTPR=1 -DN_MATS=1 -DONE_COL
+e4ef6729e59f194c.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=1 -DN_MATS=1 -DONE_COL
+1a66c97239eac18b.dxil	mul_mat_vec -DSRC0_IQ4_NL -DTPR=1 -DN_MATS=1 -DONE_COL
+479df6c34e0f7213.dxil	mul_mat_scalar -DSRC0_BF16
+550945d4e64f2b19.dxil	mul_mat_vec -DSRC0_F16 -DTPR=32 -DN_MATS=1
+bc3f1afbaa771c7f.dxil	mul_mat_vec -DSRC0_F16 -DTPR=16 -DN_MATS=1
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+ced3fe5874a71f0f.dxil	mul_mat_vec -DSRC0_F32 -DTPR=32 -DN_MATS=1
+d5959457bd0a366b.dxil	mul_mat_tiled -DSRC0_Q5_0
+359ae84f66d479da.dxil	mul_mat_tiled -DSRC0_Q5_1
+66cf528aff6eca87.dxil	mul_mat_tiled -DSRC0_Q2_K
+19a718d38dbf4c86.dxil	mul_mat_tiled -DSRC0_Q3_K
+f57af0816c16e540.dxil	mul_mat_tiled -DSRC0_Q5_K
+b2d533a0c2baa4c3.dxil	mul_mat_tiled -DSRC0_Q6_K
+a8e74f5e3e9d22f8.dxil	mul_mat_tiled -DSRC0_TQ2_0
+9e4e92ea452be436.dxil	mul_mat_tiled -DSRC0_IQ2_XS
+104384a31fc96756.dxil	mul_mat_tiled -DSRC0_IQ2_S
+0848bf29cce01d77.dxil	mul_mat_tiled -DSRC0_IQ3_XXS
+5a29fcced9289035.dxil	mul_mat_tiled -DSRC0_IQ1_S
+19b4c58641c6c4ab.dxil	mul_mat_tiled -DSRC0_IQ1_M
+c46e20d0baf919a9.dxil	mul_mat_tiled -DSRC0_IQ4_NL
+eff512f23a8e5ff7.dxil	mul_mat_tiled -DSRC0_IQ3_S
+72782b051a3c4840.dxil	mul_mat_tiled -DSRC0_IQ4_XS
+e6ff06e8683549ad.dxil	mul_mat_vec -DSRC0_F16 -DTPR=32 -DN_MATS=1 -DSRC1_F16
+173245cd7104722b.dxil	mul_mat_vec -DSRC0_F16 -DTPR=32 -DN_MATS=1 -DONE_COL
+a9f6c3810ac4a639.dxil	mul_mat_vec -DSRC0_BF16 -DTPR=32 -DN_MATS=1 -DONE_COL
+a8a031cb9d82062c.dxil	mul_mat_vec -DSRC0_Q4_K -DTPR=8 -DN_MATS=1 -DMMID
+a8464af128bf5798.dxil	mul_mat_id_prep
+24f85c997d0d5905.dxil	mul_mat_tiled -DSRC0_Q4_K -DMMID
+f303d310b7cd4ecb.dxil	mul_mat_vec -DSRC0_IQ2_XS -DTPR=8 -DN_MATS=1 -DMMID
+82d20fbf5b58a82a.dxil	mul_mat_tiled -DSRC0_IQ2_XS -DMMID
+1d975f9401c23ec6.dxil	mul_mat_vec -DSRC0_F16 -DTPR=64 -DN_MATS=1 -DMMID
+385a28086dbfe2dd.dxil	mul_mat_tiled -DSRC0_F16 -DMMID
+12400753c415d998.dxil	mul_mat_vec -DSRC0_F16 -DTPR=4 -DN_MATS=1 -DMMID
+3bd8020abd6f4caa.dxil	mul_mat_vec -DSRC0_BF16 -DTPR=4 -DN_MATS=1 -DMMID
+214b56e39841bde9.dxil	mul_mat_vec -DSRC0_BF16 -DTPR=16 -DN_MATS=1 -DMMID
+0cf6c7df4cf849ca.dxil	mul_mat_tiled -DSRC0_IQ2_XXS -DMMID
+966ce7fca1feabce.dxil	mul_mat_id_scalar -DSRC0_F16
+7316a5b49cb5fe43.dxil	mul_mat_tiled -DSRC0_MXFP4 -DMMID
+4753af4e82124ea5.dxil	mul_mat_vec -DSRC0_IQ3_S -DTPR=16 -DN_MATS=1 -DMMID
+fb8a343aea0208db.dxil	mul_mat_vec -DSRC0_Q4_0 -DTPR=4 -DN_MATS=1 -DMMID
+ebefde830e4c7943.dxil	mul_mat_tiled -DSRC0_IQ3_S -DMMID
+646c1c290cb90f66.dxil	mul_mat_tiled -DSRC0_Q4_0 -DMMID
+531b58a94ca36155.dxil	mul_mat_vec -DSRC0_TQ1_0 -DTPR=128 -DN_MATS=1 -DMMID
+4198fc8475766944.dxil	mul_mat_vec -DSRC0_TQ1_0 -DTPR=64 -DN_MATS=1 -DMMID
+506ecf15057cc198.dxil	mul_mat_id_scalar -DSRC0_F32
+33375105244bb6b4.dxil	mul_mat_id_scalar -DSRC0_BF16
+cb0bfdc0e539ad6f.dxil	mul_mat_tiled -DSRC0_Q4_1 -DMMID
+3464cc1f3e33841f.dxil	mul_mat_tiled -DSRC0_Q5_0 -DMMID
+7761a8956f0271d6.dxil	mul_mat_tiled -DSRC0_Q5_1 -DMMID
+9e22ae191a33178a.dxil	mul_mat_tiled -DSRC0_Q8_0 -DMMID
+2673826e6f040093.dxil	mul_mat_tiled -DSRC0_Q2_K -DMMID
+47b3bb2ab8aee1ba.dxil	mul_mat_tiled -DSRC0_Q3_K -DMMID
+ddbd1ad45c03176c.dxil	mul_mat_tiled -DSRC0_Q5_K -DMMID
+900b8e3f7ba82577.dxil	mul_mat_tiled -DSRC0_Q6_K -DMMID
+cfd5cdcc6652f804.dxil	mul_mat_tiled -DSRC0_TQ2_0 -DMMID
+9adec485ae5f1b1f.dxil	mul_mat_vec -DSRC0_TQ1_0 -DTPR=32 -DN_MATS=1 -DMMID
+e666cd5570d0b20a.dxil	mul_mat_tiled -DSRC0_IQ2_S -DMMID
+f04ee8c7f5e5dac3.dxil	mul_mat_tiled -DSRC0_IQ3_XXS -DMMID
+c49c9bd5269628d1.dxil	mul_mat_tiled -DSRC0_IQ1_S -DMMID
+f15fa1a915b9c0df.dxil	mul_mat_tiled -DSRC0_IQ1_M -DMMID
+86e3610e651e8fad.dxil	mul_mat_tiled -DSRC0_IQ4_NL -DMMID
+538b025036b7826c.dxil	mul_mat_tiled -DSRC0_IQ4_XS -DMMID
+9967b5b1d32130bb.dxil	mul_mat_vec -DSRC0_IQ2_XXS -DTPR=8 -DN_MATS=1 -DMMID
+adba59cb64d2c07b.dxil	mul_mat_vec -DSRC0_IQ2_S -DTPR=8 -DN_MATS=1 -DMMID
+3f4854f3cd108ada.dxil	mul_mat_vec -DSRC0_IQ3_XXS -DTPR=8 -DN_MATS=1 -DMMID
+f3f41a1258b9fb9a.dxil	mul_mat_vec -DSRC0_IQ3_S -DTPR=8 -DN_MATS=1 -DMMID
+6056e8b709547258.dxil	mul_mat_vec -DSRC0_IQ1_S -DTPR=8 -DN_MATS=1 -DMMID
+b062519037b642a6.dxil	mul_mat_vec -DSRC0_IQ1_M -DTPR=8 -DN_MATS=1 -DMMID
+5ce2eefbb1cd6ddd.dxil	mul_mat_vec -DSRC0_IQ4_XS -DTPR=8 -DN_MATS=1 -DMMID
+539ba2ffe1bf75c0.dxil	mul_mat_vec -DSRC0_F32 -DTPR=64 -DN_MATS=1 -DMMID
+11c5be6e9b3c2b1b.dxil	mul_mat_tiled -DSRC0_F32 -DMMID
+d010be750f051d5b.dxil	mul_mat_vec -DSRC0_Q8_0 -DTPR=8 -DN_MATS=1 -DMMID
+e7d5b22645ca5222.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=8 -DN_MATS=1 -DMMID
+9017c212ad18a63b.dxil	mul_mat_tiled -DSRC0_Q1_0 -DMMID
+694efe38ab7fa2e1.dxil	mul_mat_vec -DSRC0_Q2_0 -DTPR=8 -DN_MATS=1 -DMMID
+3ed6595607cc0a10.dxil	mul_mat_tiled -DSRC0_Q2_0 -DMMID
+00164d5bc5a4b8e7.dxil	mul_mat_vec -DSRC0_Q4_0 -DTPR=8 -DN_MATS=1 -DMMID
+d29577bd39b1f036.dxil	mul_mat_vec -DSRC0_Q4_1 -DTPR=8 -DN_MATS=1 -DMMID
+117bb936e8ba95ba.dxil	mul_mat_vec -DSRC0_MXFP4 -DTPR=8 -DN_MATS=1 -DMMID
+680604e84b9bddc7.dxil	mul_mat_vec -DSRC0_NVFP4 -DTPR=8 -DN_MATS=1 -DMMID
+0da49b913cb28ae6.dxil	mul_mat_vec -DSRC0_Q5_0 -DTPR=8 -DN_MATS=1 -DMMID
+03971a6de28d2a17.dxil	mul_mat_vec -DSRC0_Q5_1 -DTPR=8 -DN_MATS=1 -DMMID
+46ed7e6cfce5342a.dxil	mul_mat_vec -DSRC0_Q2_K -DTPR=8 -DN_MATS=1 -DMMID
+7d1cb059137b3f2b.dxil	mul_mat_vec -DSRC0_Q3_K -DTPR=8 -DN_MATS=1 -DMMID
+00efba0dade657ad.dxil	mul_mat_vec -DSRC0_Q5_K -DTPR=8 -DN_MATS=1 -DMMID
+b714cd99361e0e6e.dxil	mul_mat_vec -DSRC0_Q6_K -DTPR=8 -DN_MATS=1 -DMMID
+351aeebb6159ee15.dxil	mul_mat_vec -DSRC0_TQ2_0 -DTPR=8 -DN_MATS=1 -DMMID
+5fba15a00dc388d6.dxil	mul_mat_vec -DSRC0_TQ1_0 -DTPR=8 -DN_MATS=1 -DMMID
+eebf4225fb5b35b4.dxil	mul_mat_vec -DSRC0_IQ4_NL -DTPR=8 -DN_MATS=1 -DMMID
+f4967df072c3ad44.dxil	mul_mat_vec -DSRC0_BF16 -DTPR=64 -DN_MATS=1 -DMMID
+f1dd2fc27ec110c5.dxil	get_rows -DSRC_F32
+ee253c99873f275a.dxil	get_rows_q -DSRC0_Q4_0 -DTPR=32
+3aafe43c4eb6cdf3.dxil	get_rows -DSRC_F16
+d6f390e7decd97d1.dxil	get_rows -DSRC_BF16
+099dfc57af36f693.dxil	get_rows_q -DSRC0_Q4_1 -DTPR=32
+abbe4d596f945ea3.dxil	get_rows_q -DSRC0_Q5_0 -DTPR=32
+cdcb0b335ce1c32a.dxil	get_rows_q -DSRC0_Q5_1 -DTPR=32
+a45b0787e8855816.dxil	get_rows_q -DSRC0_Q8_0 -DTPR=32
+ba693ceb19a73d07.dxil	get_rows_q -DSRC0_Q1_0 -DTPR=32
+eda2295f81aa0b2c.dxil	get_rows_q -DSRC0_Q2_0 -DTPR=32
+9c8d8d769d04efd7.dxil	get_rows_q -DSRC0_MXFP4 -DTPR=32
+882330bcbd5d39f2.dxil	get_rows_q -DSRC0_NVFP4 -DTPR=32
+3ca53e92f5ccd74f.dxil	get_rows_q -DSRC0_Q2_K -DTPR=32
+0d70a2e747454246.dxil	get_rows_q -DSRC0_Q3_K -DTPR=32
+1dfca91a99892a99.dxil	get_rows_q -DSRC0_Q4_K -DTPR=32
+1ac40ab7efb87450.dxil	get_rows_q -DSRC0_Q5_K -DTPR=32
+6e5d6d1f215c596b.dxil	get_rows_q -DSRC0_Q6_K -DTPR=32
+3f26f94ab49e2380.dxil	get_rows_q -DSRC0_TQ2_0 -DTPR=32
+2eca7f3c122c561b.dxil	get_rows_q -DSRC0_TQ1_0 -DTPR=32
+e66bf82d4e4ab8ee.dxil	get_rows_q -DSRC0_IQ2_XXS -DTPR=32
+6d9f6571092ff7f6.dxil	get_rows_q -DSRC0_IQ2_XS -DTPR=32
+524a7db2454c9fae.dxil	get_rows_q -DSRC0_IQ2_S -DTPR=32
+8c5527ff085618d7.dxil	get_rows_q -DSRC0_IQ3_XXS -DTPR=32
+73e55115cab5acc5.dxil	get_rows_q -DSRC0_IQ1_S -DTPR=32
+2e003327f0be63eb.dxil	get_rows_q -DSRC0_IQ1_M -DTPR=32
+de1f2e4bdc015591.dxil	get_rows_q -DSRC0_IQ4_NL -DTPR=32
+8ad99fc1919db317.dxil	get_rows_q -DSRC0_IQ3_S -DTPR=32
+1c0006a6cc5d8870.dxil	get_rows_q -DSRC0_IQ4_XS -DTPR=32
+9d4e7ff85c93694a.dxil	get_rows -DSRC_I32
+6fd92ea95ab9a2eb.dxil	set_rows -DDST_F32 -DI64_IDX
+52fad9585f49892b.dxil	set_rows -DDST_F32
+6236b1a28689b678.dxil	set_rows_q -DQT_Q8_0
+c7d3aba538658641.dxil	set_rows -DDST_F32 -DSRC_F16 -DNO16 -DI64_IDX
+0eb46dbd085e6f07.dxil	set_rows -DDST_F16 -DSRC_F16 -DNO16 -DI64_IDX
+9f0e59694a68c4ba.dxil	set_rows -DDST_F16 -DNO16 -DI64_IDX
+cbb1519f4add55a4.dxil	set_rows_q -DQT_Q4_0 -DI64_IDX
+b6b7967eb70c8c65.dxil	set_rows_q -DQT_Q4_1 -DI64_IDX
+a4e568766b220955.dxil	set_rows_q -DQT_Q5_0 -DI64_IDX
+92e936967db7f854.dxil	set_rows_q -DQT_Q5_1 -DI64_IDX
+021400eb980f1588.dxil	set_rows_q -DQT_Q8_0 -DI64_IDX
+a9e035aba2c18b11.dxil	set_rows_q -DQT_Q1_0 -DI64_IDX
+8d3be342605cefc2.dxil	set_rows_q -DQT_Q2_0 -DI64_IDX
+5aae1c700bda71c7.dxil	set_rows_q -DQT_IQ4_NL -DI64_IDX
+f93f688052d3a477.dxil	set_rows -DDST_F16 -DSRC_F16 -DNO16
+b86e5ec7e83c298b.dxil	soft_max
+ab62580f19b06538.dxil	soft_max -DHAS_SINK
+45b29b7c499214ae.dxil	soft_max -DHAS_MASK -DMASK_F32
+fd0a86bfc7ee72f8.dxil	soft_max -DHAS_MASK -DMASK_F16
+dff7882112dbf705.dxil	soft_max -DHAS_MASK -DMASK_F32 -DHAS_SINK
+371e74c1fa7e29a3.dxil	soft_max -DHAS_MASK -DMASK_F16 -DHAS_SINK
+a1332c67773fe444.dxil	rope -DTYPE_F32
+94e994ba3f7b9fdc.dxil	rope -DTYPE_F32 -DFF_FUNC
+a9d47a7715a81260.dxil	rms_norm
+9489475dea43e516.dxil	rms_norm -DL2_NORM
+025efa76384e96fe.dxil	norm
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+1c6588e4ea759494.dxil	binary -DTYPE_F32 -DOP_SUB
+e3a676a881460974.dxil	binary -DTYPE_F32 -DOP_MUL
+c217128b3659c78b.dxil	binary -DTYPE_F32 -DOP_DIV
+fc46e71d385c86b9.dxil	scale
+9e21ba800421315f.dxil	unary -DTYPE_F32 -DSILU
+9feaebe98a3b300a.dxil	concat
+01f7d26814e08db5.dxil	concat_e16 -DELEM16
+5ce4e3886e9179b2.dxil	concat_e8 -DELEM8
+20032c537020c448.dxil	concat_e64 -DELEM64
+ab1b502f1843711b.dxil	concat_b18 -DELEMBLK=18
+1582c3539cc039e8.dxil	concat_b20 -DELEMBLK=20
+55781b64492bb30a.dxil	concat_b22 -DELEMBLK=22
+956d7374f5972c2c.dxil	concat_b24 -DELEMBLK=24
+715958b2aa408485.dxil	concat_b34 -DELEMBLK=34
+c8a47a7f18b0f31e.dxil	cpy -DSRC_F32 -DDST_F32
+b394ea2057e04ca3.dxil	cpy_raw_CH2_2 -DCH2 -DTS=2
+5238c0f44dec05c8.dxil	cpy_raw_CH2_18 -DCH2 -DTS=18
+cca609a56c72baad.dxil	cpy_raw_CH4_20 -DCH4 -DTS=20
+a786b644805f8ce9.dxil	cpy_raw_CH2_22 -DCH2 -DTS=22
+4cbb5984139bc869.dxil	cpy_raw_CH4_24 -DCH4 -DTS=24
+897b5c59251f5656.dxil	cpy_raw_CH2_34 -DCH2 -DTS=34
+a98e69764e00c464.dxil	cpy_raw_CH1_17 -DCH1 -DTS=17
+aec54f775f849f92.dxil	cpy_raw_CH4_36 -DCH4 -DTS=36
+e9464596ec7caae3.dxil	cpy_raw_CH4_84 -DCH4 -DTS=84
+13f65626ea851069.dxil	cpy_raw_CH2_110 -DCH2 -DTS=110
+bb302cb9cf65dc26.dxil	cpy_raw_CH4_144 -DCH4 -DTS=144
+1c8fa3b7e206456f.dxil	cpy_raw_CH4_176 -DCH4 -DTS=176
+4a866939eda8297a.dxil	cpy_raw_CH2_210 -DCH2 -DTS=210
+98a099046cbed7c9.dxil	cpy_raw_CH2_66 -DCH2 -DTS=66
+437d4371889d6c20.dxil	cpy_raw_CH2_54 -DCH2 -DTS=54
+9068d22b5ab0558b.dxil	cpy_raw_CH4_136 -DCH4 -DTS=136
+01ad90cac0426e72.dxil	cpy -DSRC_BF16 -DDST_F32
+dd932f3989b47d8f.dxil	set_rows_q -DQT_Q4_0 -DIDENT
+9865fade43e4746e.dxil	set_rows_q -DQT_Q4_1 -DIDENT
+3874b7b1771c0b3e.dxil	set_rows_q -DQT_Q5_0 -DIDENT
+0ecd26a60636e75f.dxil	set_rows_q -DQT_Q5_1 -DIDENT
+75e12ae29465bb93.dxil	set_rows_q -DQT_Q8_0 -DIDENT
+787f880e296868ba.dxil	set_rows_q -DQT_Q1_0 -DIDENT
+4b0fe3cef8f34b69.dxil	set_rows_q -DQT_Q2_0 -DIDENT
+d2003e495d32988c.dxil	set_rows_q -DQT_IQ4_NL -DIDENT
+650d2e1d4e2d4960.dxil	get_rows_q_cpy -DSRC0_Q4_0 -DTPR=32 -DCPYQ
+03a78bf6230534e1.dxil	get_rows_q_cpy -DSRC0_Q4_1 -DTPR=32 -DCPYQ
+cff8d048f7132a11.dxil	get_rows_q_cpy -DSRC0_Q5_0 -DTPR=32 -DCPYQ
+e36f89c34dff1b10.dxil	get_rows_q_cpy -DSRC0_Q5_1 -DTPR=32 -DCPYQ
+3cc70dec3f01109c.dxil	get_rows_q_cpy -DSRC0_Q8_0 -DTPR=32 -DCPYQ
+07671964efaa6ad5.dxil	get_rows_q_cpy -DSRC0_Q1_0 -DTPR=32 -DCPYQ
+030a5abed9f70fa6.dxil	get_rows_q_cpy -DSRC0_Q2_0 -DTPR=32 -DCPYQ
+e08837740db67845.dxil	get_rows_q_cpy -DSRC0_MXFP4 -DTPR=32 -DCPYQ
+73dfad5e5f9b2c98.dxil	get_rows_q_cpy -DSRC0_NVFP4 -DTPR=32 -DCPYQ
+2490f54a26f9137d.dxil	get_rows_q_cpy -DSRC0_Q2_K -DTPR=32 -DCPYQ
+6407d769941a252c.dxil	get_rows_q_cpy -DSRC0_Q3_K -DTPR=32 -DCPYQ
+3629d9f4dfde59fb.dxil	get_rows_q_cpy -DSRC0_Q4_K -DTPR=32 -DCPYQ
+c06b97df0273eb6a.dxil	get_rows_q_cpy -DSRC0_Q5_K -DTPR=32 -DCPYQ
+65cd19378295c2b9.dxil	get_rows_q_cpy -DSRC0_Q6_K -DTPR=32 -DCPYQ
+f162b9cb63fdd47a.dxil	get_rows_q_cpy -DSRC0_TQ2_0 -DTPR=32 -DCPYQ
+76f099a4bc575289.dxil	get_rows_q_cpy -DSRC0_TQ1_0 -DTPR=32 -DCPYQ
+871739ba66025ef4.dxil	get_rows_q_cpy -DSRC0_IQ2_XXS -DTPR=32 -DCPYQ
+8aada597a231583c.dxil	get_rows_q_cpy -DSRC0_IQ2_XS -DTPR=32 -DCPYQ
+3c1c72b514c5bf34.dxil	get_rows_q_cpy -DSRC0_IQ2_S -DTPR=32 -DCPYQ
+498c3e92730cb945.dxil	get_rows_q_cpy -DSRC0_IQ3_XXS -DTPR=32 -DCPYQ
+01f19071ca8ff947.dxil	get_rows_q_cpy -DSRC0_IQ1_S -DTPR=32 -DCPYQ
+59cc5af26cf4e939.dxil	get_rows_q_cpy -DSRC0_IQ1_M -DTPR=32 -DCPYQ
+a82e2833dee16593.dxil	get_rows_q_cpy -DSRC0_IQ4_NL -DTPR=32 -DCPYQ
+8f41f0eb9047ca05.dxil	get_rows_q_cpy -DSRC0_IQ3_S -DTPR=32 -DCPYQ
+92e234b23ba8534a.dxil	get_rows_q_cpy -DSRC0_IQ4_XS -DTPR=32 -DCPYQ
+2806edd5c8860111.dxil	cpy -DSRC_F32 -DDST_I32
+ed9102d30a869c31.dxil	cpy -DSRC_I32 -DDST_F32
+90d88b513fd345be.dxil	cpy -DSRC_I32 -DDST_I32
+c8a47a7f18b0f31e.dxil	cpy -DSRC_F32 -DDST_F32
+90d88b513fd345be.dxil	cpy -DSRC_I32 -DDST_I32
+b394ea2057e04ca3.dxil	cpy_raw_CH2_2 -DCH2 -DTS=2
+c8a47a7f18b0f31e.dxil	cpy -DSRC_F32 -DDST_F32
+b394ea2057e04ca3.dxil	cpy_raw_CH2_2 -DCH2 -DTS=2
+90d88b513fd345be.dxil	cpy -DSRC_I32 -DDST_I32
+a431914325b57b6d.dxil	pad
+b7c5b3e7d3fa9d6d.dxil	pad_circular -DCIRCULAR
+d194d379883dd9f6.dxil	repeat
+37e19cf1c865dec9.dxil	repeat_e16 -DELEM16
+9fc6d30f0f533494.dxil	sum_rows
+e1714697b814d7dd.dxil	cumsum
+e18d8f5a37840141.dxil	tri
+c343bd92d9230b01.dxil	solve_tri
+26d06e885388e100.dxil	ssm_conv
+9489475dea43e516.dxil	rms_norm -DL2_NORM
+4841bea2b2e4d8ad.dxil	gated_delta_net -DS_V=128
+97630f2265b444e9.dxil	gated_delta_net -DS_V=16
+804bf4e4a1cbce1e.dxil	gated_delta_net -DS_V=16 -DKDA
+ce668b1c08e8c924.dxil	gated_delta_net -DS_V=64
+dd61280a02362f1f.dxil	gated_delta_net -DS_V=32
+cd61ccacdd54b523.dxil	gated_delta_net -DS_V=64 -DKDA
+95e18f1bbab1d0a8.dxil	gated_delta_net -DS_V=32 -DKDA
+f98b2c4dc6d02a2a.dxil	argsort
+82ca86a82b47743d.dxil	argsort_bitonic
+51364f5555033207.dxil	argsort -DSORT_DESC
+ba550513ddaef260.dxil	argsort_bitonic -DSORT_DESC
+51364f5555033207.dxil	argsort -DSORT_DESC
+ba550513ddaef260.dxil	argsort_bitonic -DSORT_DESC
+04e1b0583ac3e953.dxil	cpy_raw_CH4_4 -DCH4 -DTS=4
+33e300295fca22bf.dxil	unary -DTYPE_F32 -DCLAMP
+830e7a5f06cba297.dxil	diag
+090b507dd7f106ee.dxil	flash_attn -DDK=64 -DDV=64 -DK_F32 -DV_F32 -DHAS_MASK -DHAS_SINKS -DDECODE
+974c829e1f777254.dxil	flash_attn -DDV=64 -DCOMBINE -DWG_SIZE=64 -DHAS_SINKS
+e5e85ea708a98b3b.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_MASK -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DDECODE
+19c4e975aee5df96.dxil	flash_attn -DDK=64 -DDV=64 -DK_BF16 -DV_BF16 -DHAS_MASK -DHAS_SINKS -DDECODE
+a450981989ffbd6e.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q8_0 -DV_Q8_0 -DHAS_MASK -DHAS_SINKS -DDECODE
+0fa3aa75f73e308e.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_1 -DV_Q5_1 -DHAS_MASK -DHAS_SINKS -DDECODE
+d4c40f1fe1600eb6.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_0 -DV_Q5_0 -DHAS_MASK -DHAS_SINKS -DDECODE
+4fa2cb23db4031f6.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_1 -DV_Q4_1 -DHAS_MASK -DHAS_SINKS -DDECODE
+184494f36f7b7aae.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_0 -DV_Q4_0 -DHAS_MASK -DHAS_SINKS -DDECODE
+bf23f091edbd9576.dxil	flash_attn -DDK=64 -DDV=64 -DK_IQ4_NL -DV_IQ4_NL -DHAS_MASK -DHAS_SINKS -DDECODE
+4150e5be9d48b1f0.dxil	flash_attn -DDK=64 -DDV=64 -DK_F32 -DV_F32 -DHAS_MASK -DHAS_SINKS -DWG_SIZE=64
+49098daab89ed505.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_MASK -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+49210e0b38c0d348.dxil	flash_attn -DDK=64 -DDV=64 -DK_BF16 -DV_BF16 -DHAS_MASK -DHAS_SINKS -DWG_SIZE=64
+673a9ca4a769e960.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q8_0 -DV_Q8_0 -DHAS_MASK -DHAS_SINKS -DWG_SIZE=64
+53d0388d32190850.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_1 -DV_Q5_1 -DHAS_MASK -DHAS_SINKS -DWG_SIZE=64
+36abc595339a5958.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_0 -DV_Q5_0 -DHAS_MASK -DHAS_SINKS -DWG_SIZE=64
+b228293c1fe397d8.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_1 -DV_Q4_1 -DHAS_MASK -DHAS_SINKS -DWG_SIZE=64
+c2a56247fa831df0.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_0 -DV_Q4_0 -DHAS_MASK -DHAS_SINKS -DWG_SIZE=64
+ec96cf0125bfbfa8.dxil	flash_attn -DDK=64 -DDV=64 -DK_IQ4_NL -DV_IQ4_NL -DHAS_MASK -DHAS_SINKS -DWG_SIZE=64
+2d379bdaf3d8955e.dxil	flash_attn -DDK=64 -DDV=64 -DK_F32 -DV_F32 -DHAS_MASK -DDECODE
+45a60ff36d6d6494.dxil	flash_attn -DDV=64 -DCOMBINE -DWG_SIZE=64
+40dda12a6c16f58b.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DDECODE
+c60850ae755cabc6.dxil	flash_attn -DDK=64 -DDV=64 -DK_BF16 -DV_BF16 -DHAS_MASK -DDECODE
+d9e9d5bd07bbdbde.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q8_0 -DV_Q8_0 -DHAS_MASK -DDECODE
+131defbeb4c79b3e.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_1 -DV_Q5_1 -DHAS_MASK -DDECODE
+17173a74f24815a6.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_0 -DV_Q5_0 -DHAS_MASK -DDECODE
+3224a655239718e6.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_1 -DV_Q4_1 -DHAS_MASK -DDECODE
+720f5974d24a601e.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_0 -DV_Q4_0 -DHAS_MASK -DDECODE
+8797f583259a2c66.dxil	flash_attn -DDK=64 -DDV=64 -DK_IQ4_NL -DV_IQ4_NL -DHAS_MASK -DDECODE
+139ce4e84de30370.dxil	flash_attn -DDK=64 -DDV=64 -DK_F32 -DV_F32 -DHAS_MASK -DWG_SIZE=64
+b706b51cac573bc5.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+7dbad0948c4a21c8.dxil	flash_attn -DDK=64 -DDV=64 -DK_BF16 -DV_BF16 -DHAS_MASK -DWG_SIZE=64
+5e734568cde9e5a0.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q8_0 -DV_Q8_0 -DHAS_MASK -DWG_SIZE=64
+fd60c8eb940fc710.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_1 -DV_Q5_1 -DHAS_MASK -DWG_SIZE=64
+abdb7ddec1a2cd18.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_0 -DV_Q5_0 -DHAS_MASK -DWG_SIZE=64
+c628b8671c9d9b98.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_1 -DV_Q4_1 -DHAS_MASK -DWG_SIZE=64
+e07ce635e1acef70.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_0 -DV_Q4_0 -DHAS_MASK -DWG_SIZE=64
+2da1f54feba8f668.dxil	flash_attn -DDK=64 -DDV=64 -DK_IQ4_NL -DV_IQ4_NL -DHAS_MASK -DWG_SIZE=64
+b0cab004bff0499e.dxil	flash_attn -DDK=64 -DDV=64 -DK_F32 -DV_F32 -DHAS_SINKS -DDECODE
+96972afb6f4a56cb.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DDECODE
+fc912f9718789dd6.dxil	flash_attn -DDK=64 -DDV=64 -DK_BF16 -DV_BF16 -DHAS_SINKS -DDECODE
+380494a303da141e.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q8_0 -DV_Q8_0 -DHAS_SINKS -DDECODE
+8b8db90e628f627e.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_1 -DV_Q5_1 -DHAS_SINKS -DDECODE
+96320ef809da72b6.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_0 -DV_Q5_0 -DHAS_SINKS -DDECODE
+fa2aafffe2f71b76.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_1 -DV_Q4_1 -DHAS_SINKS -DDECODE
+8f14f9e805ea15de.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_0 -DV_Q4_0 -DHAS_SINKS -DDECODE
+fb792e2d16bfbaf6.dxil	flash_attn -DDK=64 -DDV=64 -DK_IQ4_NL -DV_IQ4_NL -DHAS_SINKS -DDECODE
+3a6ff30f2d8bba08.dxil	flash_attn -DDK=64 -DDV=64 -DK_F32 -DV_F32 -DHAS_SINKS -DWG_SIZE=64
+4a4d774cbb00c74d.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+8308c55c845429b0.dxil	flash_attn -DDK=64 -DDV=64 -DK_BF16 -DV_BF16 -DHAS_SINKS -DWG_SIZE=64
+2caf2916a3ef3818.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q8_0 -DV_Q8_0 -DHAS_SINKS -DWG_SIZE=64
+7dfba6ff5c1e15a8.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_1 -DV_Q5_1 -DHAS_SINKS -DWG_SIZE=64
+7d56569fd654e520.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_0 -DV_Q5_0 -DHAS_SINKS -DWG_SIZE=64
+fd7355186a9b77a0.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_1 -DV_Q4_1 -DHAS_SINKS -DWG_SIZE=64
+e61b1a1bbd268608.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_0 -DV_Q4_0 -DHAS_SINKS -DWG_SIZE=64
+acbfaff180394850.dxil	flash_attn -DDK=64 -DDV=64 -DK_IQ4_NL -DV_IQ4_NL -DHAS_SINKS -DWG_SIZE=64
+daba898617ec0a8e.dxil	flash_attn -DDK=64 -DDV=64 -DK_F32 -DV_F32 -DDECODE
+629fcbd2d973985b.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DK_ALIGNED -DV_ALIGNED -DDECODE
+dcf8517a14d17c06.dxil	flash_attn -DDK=64 -DDV=64 -DK_BF16 -DV_BF16 -DDECODE
+1242d0f5be0ae50e.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q8_0 -DV_Q8_0 -DDECODE
+74d4e1730166852e.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_1 -DV_Q5_1 -DDECODE
+35180d93f784f9a6.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_0 -DV_Q5_0 -DDECODE
+b4d49170659d7266.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_1 -DV_Q4_1 -DDECODE
+ff9aed1438681ace.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_0 -DV_Q4_0 -DDECODE
+7a673966484d41e6.dxil	flash_attn -DDK=64 -DDV=64 -DK_IQ4_NL -DV_IQ4_NL -DDECODE
+9802599591b62c88.dxil	flash_attn -DDK=64 -DDV=64 -DK_F32 -DV_F32 -DWG_SIZE=64
+a82bf933a19a700d.dxil	flash_attn -DDK=64 -DDV=64 -DK_F16 -DV_F16 -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+38e384d507377e30.dxil	flash_attn -DDK=64 -DDV=64 -DK_BF16 -DV_BF16 -DWG_SIZE=64
+d772189b1cec5bd8.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q8_0 -DV_Q8_0 -DWG_SIZE=64
+e9a5618996230c68.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_1 -DV_Q5_1 -DWG_SIZE=64
+99f19a93b0d0e460.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q5_0 -DV_Q5_0 -DWG_SIZE=64
+d7f983a929d186e0.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_1 -DV_Q4_1 -DWG_SIZE=64
+5aff6d00c97c7888.dxil	flash_attn -DDK=64 -DDV=64 -DK_Q4_0 -DV_Q4_0 -DWG_SIZE=64
+c8bcbad2e4980710.dxil	flash_attn -DDK=64 -DDV=64 -DK_IQ4_NL -DV_IQ4_NL -DWG_SIZE=64
+d05e229a52e2ce03.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DDECODE
+929bfcec01898f85.dxil	flash_attn -DDV=128 -DCOMBINE -DWG_SIZE=64 -DHAS_SINKS
+7b28170ef454a3cd.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+0e4073d3b3a7ba7e.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DHAS_SINKS -DSOFTCAP -DK_ALIGNED -DV_ALIGNED -DDECODE
+127bc259e866b930.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DHAS_SINKS -DSOFTCAP -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+10723ac86b1162d3.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DDECODE
+e194ec9465702c95.dxil	flash_attn -DDV=128 -DCOMBINE -DWG_SIZE=64
+65ed8427e5709c8d.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+19d9c13ba6a723ae.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DSOFTCAP -DK_ALIGNED -DV_ALIGNED -DDECODE
+bab3db2e917c1af0.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_MASK -DSOFTCAP -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+12523cb98d158b63.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DDECODE
+dde0036adb268b85.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+89581cb2d278779e.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_SINKS -DSOFTCAP -DK_ALIGNED -DV_ALIGNED -DDECODE
+4a48ed2f102709e8.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DHAS_SINKS -DSOFTCAP -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+36c8a20717c172f3.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DK_ALIGNED -DV_ALIGNED -DDECODE
+32538d086d538245.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+2b1dcf3eb9fb340e.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DSOFTCAP -DK_ALIGNED -DV_ALIGNED -DDECODE
+eb92a187125a55a8.dxil	flash_attn -DDK=128 -DDV=128 -DK_F16 -DV_F16 -DSOFTCAP -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+6cd903f29a2c7e03.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_MASK -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DDECODE
+ed68c6d4fc7ca177.dxil	flash_attn -DDV=256 -DCOMBINE -DWG_SIZE=64 -DHAS_SINKS
+eed70971c4800b3d.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_MASK -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+46308b4c689912d3.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DDECODE
+79eddd53072c2c27.dxil	flash_attn -DDV=256 -DCOMBINE -DWG_SIZE=64
+07090bb9af02863d.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+305a26bbd8e0bb63.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DDECODE
+448b1ac2d107fd95.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_SINKS -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+9aac3a06c03aa2f3.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DK_ALIGNED -DV_ALIGNED -DDECODE
+43d5696746bfca95.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+d6f27bb618b5beb6.dxil	flash_attn -DDK=256 -DDV=256 -DK_Q8_0 -DV_Q8_0 -DHAS_MASK -DDECODE
