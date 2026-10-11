@@ -159,8 +159,11 @@ src = sub1(src,
     '    dir = dir.substr(0, dir.find_last_of(L"\\\\/") + 1) + L"d3d12-shader-cache";\n'
     '    CreateDirectoryW(dir.c_str(), nullptr);\n',
     '#ifdef XLLAMA_D3D12_UWP\n'
-    '    if (g_xllama_shader_dir.empty()) {\n        return L"";\n    }\n'
     '    std::wstring dir = g_xllama_shader_dir;\n'
+    '    if (dir.empty()) {   // cache-only builds run on a desktop for testing: folder from the environment\n'
+    '        if (const char * env = getenv("GGML_D3D12_CACHE_DIR")) {\n'
+    '            dir.assign(env, env + strlen(env));\n        }\n    }\n'
+    '    if (dir.empty()) {\n        return L"";\n    }\n'
     '    while (!dir.empty() && (dir.back() == L\'\\\\\' || dir.back() == L\'/\')) {\n        dir.pop_back();\n    }\n'
     '#else\n'
     '    std::wstring dir;\n'
@@ -299,6 +302,77 @@ src = sub1(src, "        dev->vendor_id     = desc.VendorId;\n",
 # (alloc_buffer_n / get_alloc_size_n). xllama pins an older llama.cpp without them; both were NULL anyway.
 src = sub1(src, "            /* .alloc_buffer_n = */ NULL,\n", "", "alloc_buffer_n")
 src = sub1(src, "            /* .get_alloc_size_n = */ NULL,\n", "", "get_alloc_size_n")
+
+# ---------------------------------------------------------------- HLSL fixes
+hlsl_dir = root / "hlsl"
+
+
+def patch_hlsl(name, old, new, what):
+    path = hlsl_dir / name
+    text = path.read_text(encoding="utf-8")
+    path.write_text(sub1(text, old, new, what), encoding="utf-8")
+
+
+# (1) norm.hlsl: after the mean reduction every thread reads scratch[0]; phase 2 then overwrites
+# scratch[tid] (thread 0 clobbers scratch[0]) with no barrier in between, so a faster wave can destroy
+# the mean before a slower wave has read it. test-backend-ops NORM failed 0/60 on a 4-wide-wave adapter.
+patch_hlsl("norm.hlsl",
+    "    const float mean = scratch[0] / (float) ne0;\n",
+    "    const float mean = scratch[0] / (float) ne0;\n"
+    "    GroupMemoryBarrierWithGroupSync();   // xllama: scratch[0] is overwritten by pass 2\n",
+    "norm barrier")
+
+# (2) Q1_0 matrix-vector: the generic path issued one scalar activation load per weight (32 per group of
+# 32). sum_j (+/-)x_j = 2*sum(x_j where the bit is set) - sum(x_j), so read the activations with 128-bit
+# loads (8 per group) and multiply by the group scale once. Mathematically identical to the generic path.
+patch_hlsl("mul_mat_vec.hlsl",
+    '#include "dequant_row.hlsli"\n',
+    '#define XLLAMA_MMV 1   // dequant_row.hlsli: this kernel (not get_rows) may use src1 vector loads\n'
+    '#include "dequant_row.hlsli"\n',
+    "mmv define")
+patch_hlsl("dequant_row.hlsli",
+    "void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane",
+    "#if defined(SRC0_Q1_0) && defined(XLLAMA_MMV) && !defined(SRC1_F16)\n"
+    "// sum over 32 consecutive activations of (bit set ? +x : -x), eight 128-bit loads\n"
+    "float q1_0_group_sum(uint elem0, uint q) {\n"
+    "    float sel = 0.0f, tot = 0.0f;\n"
+    "    [unroll] for (uint i = 0; i < 8; i++) {\n"
+    "        const float4 v   = asfloat(src1.Load4((elem0 + 4 * i) * 4));\n"
+    "        const uint   nib = (q >> (4 * i)) & 15u;\n"
+    "        tot += (v.x + v.y) + (v.z + v.w);\n"
+    "        sel += (((nib & 1u) != 0u) ? v.x : 0.0f) + (((nib & 2u) != 0u) ? v.y : 0.0f) +\n"
+    "               (((nib & 4u) != 0u) ? v.z : 0.0f) + (((nib & 8u) != 0u) ? v.w : 0.0f);\n"
+    "    }\n"
+    "    return 2.0f * sel - tot;\n"
+    "}\n"
+    "#endif\n\n"
+    "void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane",
+    "q1_0 helper")
+patch_hlsl("dequant_row.hlsli",
+    "        const float d = f16tof32(dbits);\n"
+    "        for (uint j = 0; j < 32; j++) {\n"
+    "            ACC(((q >> j) & 1u) != 0u ? d : -d, blk * 128 + s * 32 + j);\n"
+    "        }\n"
+    "    }\n"
+    "#elif defined(SRC0_Q2_0)",
+    "        const float d = f16tof32(dbits);\n"
+    "#if defined(XLLAMA_MMV) && !defined(SRC1_F16)\n"
+    "        const uint kb = blk * 128 + s * 32;\n"
+    "#if defined(ONE_COL)\n"
+    "        acc[0] += d * q1_0_group_sum(src1_base[0] + kb, q);\n"
+    "#else\n"
+    "        [unroll] for (uint _c = 0; _c < MAX_COLS; _c++) {\n"
+    "            if (_c < ncols) { acc[_c] += d * q1_0_group_sum(src1_base[_c] + kb, q); }\n"
+    "        }\n"
+    "#endif\n"
+    "#else\n"
+    "        for (uint j = 0; j < 32; j++) {\n"
+    "            ACC(((q >> j) & 1u) != 0u ? d : -d, blk * 128 + s * 32 + j);\n"
+    "        }\n"
+    "#endif\n"
+    "    }\n"
+    "#elif defined(SRC0_Q2_0)",
+    "q1_0 body")
 
 cpp_path.write_text(src, encoding="utf-8")
 h_path.write_text(hdr, encoding="utf-8")

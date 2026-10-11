@@ -29,6 +29,21 @@ float tq1_digit(uint b, uint n) {
 
 static const float KVALUES_IQ4NL[16] = { -127, -104, -83, -65, -49, -35, -22, -10, 1, 13, 25, 38, 53, 69, 89, 113 };
 // partial dot products of one src0 row against the active columns of src1, strided by lane
+#if defined(SRC0_Q1_0) && defined(XLLAMA_MMV) && !defined(SRC1_F16)
+// sum over 32 consecutive activations of (bit set ? +x : -x), eight 128-bit loads
+float q1_0_group_sum(uint elem0, uint q) {
+    float sel = 0.0f, tot = 0.0f;
+    [unroll] for (uint i = 0; i < 8; i++) {
+        const float4 v   = asfloat(src1.Load4((elem0 + 4 * i) * 4));
+        const uint   nib = (q >> (4 * i)) & 15u;
+        tot += (v.x + v.y) + (v.z + v.w);
+        sel += (((nib & 1u) != 0u) ? v.x : 0.0f) + (((nib & 2u) != 0u) ? v.y : 0.0f) +
+               (((nib & 4u) != 0u) ? v.z : 0.0f) + (((nib & 8u) != 0u) ? v.w : 0.0f);
+    }
+    return 2.0f * sel - tot;
+}
+#endif
+
 void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, uint src1_base[MAX_COLS],
              inout float acc[MAX_COLS]) {
 #if defined(SRC0_F32)
@@ -790,9 +805,20 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
         LOAD_U16_UNALIGNED(src0, base, dbits);
         LOAD_U32_UNALIGNED(src0, base + 2 + 4 * s, q);
         const float d = f16tof32(dbits);
+#if defined(XLLAMA_MMV) && !defined(SRC1_F16)
+        const uint kb = blk * 128 + s * 32;
+#if defined(ONE_COL)
+        acc[0] += d * q1_0_group_sum(src1_base[0] + kb, q);
+#else
+        [unroll] for (uint _c = 0; _c < MAX_COLS; _c++) {
+            if (_c < ncols) { acc[_c] += d * q1_0_group_sum(src1_base[_c] + kb, q); }
+        }
+#endif
+#else
         for (uint j = 0; j < 32; j++) {
             ACC(((q >> j) & 1u) != 0u ? d : -d, blk * 128 + s * 32 + j);
         }
+#endif
     }
 #elif defined(SRC0_Q2_0)
     // block of 64 (18 bytes): f16 d, 16 bytes of 2-bit codes q (4 per byte, low bits first); value = (q - 1) * d

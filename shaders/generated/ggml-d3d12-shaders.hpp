@@ -7082,6 +7082,21 @@ float tq1_digit(uint b, uint n) {
 
 static const float KVALUES_IQ4NL[16] = { -127, -104, -83, -65, -49, -35, -22, -10, 1, 13, 25, 38, 53, 69, 89, 113 };
 // partial dot products of one src0 row against the active columns of src1, strided by lane
+#if defined(SRC0_Q1_0) && defined(XLLAMA_MMV) && !defined(SRC1_F16)
+// sum over 32 consecutive activations of (bit set ? +x : -x), eight 128-bit loads
+float q1_0_group_sum(uint elem0, uint q) {
+    float sel = 0.0f, tot = 0.0f;
+    [unroll] for (uint i = 0; i < 8; i++) {
+        const float4 v   = asfloat(src1.Load4((elem0 + 4 * i) * 4));
+        const uint   nib = (q >> (4 * i)) & 15u;
+        tot += (v.x + v.y) + (v.z + v.w);
+        sel += (((nib & 1u) != 0u) ? v.x : 0.0f) + (((nib & 2u) != 0u) ? v.y : 0.0f) +
+               (((nib & 4u) != 0u) ? v.z : 0.0f) + (((nib & 8u) != 0u) ? v.w : 0.0f);
+    }
+    return 2.0f * sel - tot;
+}
+#endif
+
 void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, uint src1_base[MAX_COLS],
              inout float acc[MAX_COLS]) {
 #if defined(SRC0_F32)
@@ -7229,7 +7244,8 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
         const uint base = (src0_base + blk) * 17;
         uint ebits;
         LOAD_U16_UNALIGNED(src0, base & ~1u, ebits);
-        const float d = e8m0_to_f32_half((base & 1u) != 0 ? (ebits >> 8) : (ebits & 0xFFu));
+)hlsl",
+R"hlsl(        const float d = e8m0_to_f32_half((base & 1u) != 0 ? (ebits >> 8) : (ebits & 0xFFu));
         [unroll] for (uint j = 0; j < 4; j++) {
             uint q;
             LOAD_U32_UNALIGNED(src0, base + 1 + 4 * j, q);
@@ -7245,8 +7261,7 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
     for (uint blk = lane; blk < k / 32; blk += TPR) {
         const uint base = (src0_base + blk) * 18;
         uint dbits;
-)hlsl",
-R"hlsl(        LOAD_U16_UNALIGNED(src0, base, dbits);
+        LOAD_U16_UNALIGNED(src0, base, dbits);
         const float d = f16tof32(dbits);
         [unroll] for (uint j = 0; j < 4; j++) {
             uint q;
@@ -7479,7 +7494,8 @@ R"hlsl(        LOAD_U16_UNALIGNED(src0, base, dbits);
         const uint4 q1   = src0.Load4(qbase + 16);
         const uint  Q[8] = { q0.x, q0.y, q0.z, q0.w, q1.x, q1.y, q1.z, q1.w };
         const uint  ys   = (src1_base[0] + blk * 256 + s * 32) * 4;
-        float sqa = 0.0f, sya = 0.0f, sqb = 0.0f, syb = 0.0f;
+)hlsl",
+R"hlsl(        float sqa = 0.0f, sya = 0.0f, sqb = 0.0f, syb = 0.0f;
         [unroll] for (uint j = 0; j < 8; j++) {
             const float4 y = asfloat(src1.Load4(ys + 16 * j));
             const uint   v = (Q[j] >> shift) & 0x03030303u;
@@ -7491,8 +7507,7 @@ R"hlsl(        LOAD_U16_UNALIGNED(src0, base, dbits);
         acc[0] += dl0 * sqa - ml0 * sya + dl1 * sqb - ml1 * syb;
     }
 #elif defined(SRC0_Q2_K)
-)hlsl",
-R"hlsl(    // super-block of 256 (84 bytes): 16 bytes of 4-bit scale/min pairs, 64 bytes of 2-bit quants, f16 d, f16 dmin.
+    // super-block of 256 (84 bytes): 16 bytes of 4-bit scale/min pairs, 64 bytes of 2-bit quants, f16 d, f16 dmin.
     // sub-block s: values e < 16 use scale byte 2s, e >= 16 use 2s + 1; quant byte 16 + 32 * (s / 4) + e, shift 2 * (s % 4).
     for (uint sb = lane; sb < k / 32; sb += TPR) {
         const uint blk  = sb / 8;
@@ -7705,7 +7720,8 @@ R"hlsl(    // super-block of 256 (84 bytes): 16 bytes of 4-bit scale/min pairs, 
             const float dl = l < 2 ? db0 : db1;
             [unroll] for (uint j = 0; j < 8; j++) {
                 const uint  gv  = j < 4 ? byte_of(IQ2XS_GRID_LO[gi], j) : byte_of(IQ2XS_GRID_HI[gi], j - 4);
-                const float sgn = ((sg >> j) & 1u) != 0 ? -1.0f : 1.0f;
+)hlsl",
+R"hlsl(                const float sgn = ((sg >> j) & 1u) != 0 ? -1.0f : 1.0f;
                 ACC(dl * (float) gv * sgn, blk * 256 + s * 32 + l * 8 + j);
             }
         }
@@ -7718,8 +7734,7 @@ R"hlsl(    // super-block of 256 (84 bytes): 16 bytes of 4-bit scale/min pairs, 
     for (uint sb = lane; sb < k / 32; sb += TPR) {
         const uint blk  = sb / 8;
         const uint s    = sb % 8;
-)hlsl",
-R"hlsl(        const uint base = (src0_base + blk) * 98;
+        const uint base = (src0_base + blk) * 98;
         uint dbits, aux;
         LOAD_U16_UNALIGNED(src0, base, dbits);
         LOAD_U32_UNALIGNED(src0, base + 66 + 4 * s, aux);
@@ -7846,9 +7861,20 @@ R"hlsl(        const uint base = (src0_base + blk) * 98;
         LOAD_U16_UNALIGNED(src0, base, dbits);
         LOAD_U32_UNALIGNED(src0, base + 2 + 4 * s, q);
         const float d = f16tof32(dbits);
+#if defined(XLLAMA_MMV) && !defined(SRC1_F16)
+        const uint kb = blk * 128 + s * 32;
+#if defined(ONE_COL)
+        acc[0] += d * q1_0_group_sum(src1_base[0] + kb, q);
+#else
+        [unroll] for (uint _c = 0; _c < MAX_COLS; _c++) {
+            if (_c < ncols) { acc[_c] += d * q1_0_group_sum(src1_base[_c] + kb, q); }
+        }
+#endif
+#else
         for (uint j = 0; j < 32; j++) {
             ACC(((q >> j) & 1u) != 0u ? d : -d, blk * 128 + s * 32 + j);
         }
+#endif
     }
 #elif defined(SRC0_Q2_0)
     // block of 64 (18 bytes): f16 d, 16 bytes of 2-bit codes q (4 per byte, low bits first); value = (q - 1) * d
@@ -7946,7 +7972,8 @@ R"hlsl(        const uint base = (src0_base + blk) * 98;
     s01 = stride_01_##M; s02 = stride_02_##M; s03 = stride_03_##M; \
     add_flag = add_flag_##M; o_add = offset_add_##M; \
     add_ne1 = add_ne1_##M; add_ne2 = add_ne2_##M; add_ne3 = add_ne3_##M; \
-    add_s1 = add_s1_##M; add_s2 = add_s2_##M; add_s3 = add_s3_##M; \
+)hlsl",
+R"hlsl(    add_s1 = add_s1_##M; add_s2 = add_s2_##M; add_s3 = add_s3_##M; \
 }
 
 
@@ -11222,6 +11249,21 @@ float tq1_digit(uint b, uint n) {
 
 static const float KVALUES_IQ4NL[16] = { -127, -104, -83, -65, -49, -35, -22, -10, 1, 13, 25, 38, 53, 69, 89, 113 };
 // partial dot products of one src0 row against the active columns of src1, strided by lane
+#if defined(SRC0_Q1_0) && defined(XLLAMA_MMV) && !defined(SRC1_F16)
+// sum over 32 consecutive activations of (bit set ? +x : -x), eight 128-bit loads
+float q1_0_group_sum(uint elem0, uint q) {
+    float sel = 0.0f, tot = 0.0f;
+    [unroll] for (uint i = 0; i < 8; i++) {
+        const float4 v   = asfloat(src1.Load4((elem0 + 4 * i) * 4));
+        const uint   nib = (q >> (4 * i)) & 15u;
+        tot += (v.x + v.y) + (v.z + v.w);
+        sel += (((nib & 1u) != 0u) ? v.x : 0.0f) + (((nib & 2u) != 0u) ? v.y : 0.0f) +
+               (((nib & 4u) != 0u) ? v.z : 0.0f) + (((nib & 8u) != 0u) ? v.w : 0.0f);
+    }
+    return 2.0f * sel - tot;
+}
+#endif
+
 void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, uint src1_base[MAX_COLS],
              inout float acc[MAX_COLS]) {
 #if defined(SRC0_F32)
@@ -11312,7 +11354,8 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
         const float d = f16tof32(w & 0xFFFFu);
         const float m = f16tof32(w >> 16);
         [unroll] for (uint j = 0; j < 4; j++) {
-            uint q;
+)hlsl",
+R"hlsl(            uint q;
             LOAD_U32_UNALIGNED(src0, base + 4 + 4 * j, q);
             [unroll] for (uint b = 0; b < 4; b++) {
                 const uint byte = byte_of(q, b);
@@ -11326,8 +11369,7 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
     // Q5_1 block: f16 d, f16 m, u32 qh, 16 bytes of nibbles; value = (q | bit << 4) * d + m
 #if defined(SRC0_Q5_0)
     const uint bsize = 22;
-)hlsl",
-R"hlsl(    const uint hoff  = 2;
+    const uint hoff  = 2;
 #else
     const uint bsize = 24;
     const uint hoff  = 4;
@@ -11572,7 +11614,8 @@ R"hlsl(    const uint hoff  = 2;
         uint w;
         LOAD_U32_UNALIGNED(src0, base, w);
         const float d    = f16tof32(w & 0xFFFFu);
-        const float dmin = f16tof32(w >> 16);
+)hlsl",
+R"hlsl(        const float dmin = f16tof32(w >> 16);
         uint sc0, sc1, sc2;
         LOAD_U32_UNALIGNED(src0, base + 4, sc0);
         LOAD_U32_UNALIGNED(src0, base + 8, sc1);
@@ -11588,8 +11631,7 @@ R"hlsl(    const uint hoff  = 2;
         const float dl = d * (float) sc;
         const float ml = dmin * (float) mn;
         const uint  shift = (s & 1u) * 4u;
-)hlsl",
-R"hlsl(        const uint  qbase = base + 48 + 32 * (s / 2);
+        const uint  qbase = base + 48 + 32 * (s / 2);
         [unroll] for (uint j = 0; j < 8; j++) {
             uint q, h;
             LOAD_U32_UNALIGNED(src0, qbase + 4 * j, q);
@@ -11801,7 +11843,8 @@ R"hlsl(        const uint  qbase = base + 48 + 32 * (s / 2);
         }
     }
 #elif defined(SRC0_IQ2_XXS)
-    // super-block of 256 (66 bytes): f16 d, then 32 uint16 qs. Each sub-block of 32 reads two
+)hlsl",
+R"hlsl(    // super-block of 256 (66 bytes): f16 d, then 32 uint16 qs. Each sub-block of 32 reads two
     // uint32: the first is four grid indices, the second carries the four 7-bit sign codes and,
     // in its top nibble, the sub-block scale. Scale d * (0.5 + nibble) * 0.25.
     for (uint sb = lane; sb < k / 32; sb += TPR) {
@@ -11814,8 +11857,7 @@ R"hlsl(        const uint  qbase = base + 48 + 32 * (s / 2);
         LOAD_U32_UNALIGNED(src0, base + 6 + 8 * s, a1);
         const float db = f16tof32(dbits) * (0.5f + (float) (a1 >> 28)) * 0.25f;
         [unroll] for (uint l = 0; l < 4; l++) {
-)hlsl",
-R"hlsl(            const uint gi = byte_of(a0, l);
+            const uint gi = byte_of(a0, l);
             const uint sg = KSIGNS[(a1 >> (7u * l)) & 127u];
             [unroll] for (uint j = 0; j < 8; j++) {
                 const uint  gv  = j < 4 ? byte_of(IQ2XXS_GRID_LO[gi], j) : byte_of(IQ2XXS_GRID_HI[gi], j - 4);
@@ -11986,9 +12028,20 @@ R"hlsl(            const uint gi = byte_of(a0, l);
         LOAD_U16_UNALIGNED(src0, base, dbits);
         LOAD_U32_UNALIGNED(src0, base + 2 + 4 * s, q);
         const float d = f16tof32(dbits);
+#if defined(XLLAMA_MMV) && !defined(SRC1_F16)
+        const uint kb = blk * 128 + s * 32;
+#if defined(ONE_COL)
+        acc[0] += d * q1_0_group_sum(src1_base[0] + kb, q);
+#else
+        [unroll] for (uint _c = 0; _c < MAX_COLS; _c++) {
+            if (_c < ncols) { acc[_c] += d * q1_0_group_sum(src1_base[_c] + kb, q); }
+        }
+#endif
+#else
         for (uint j = 0; j < 32; j++) {
             ACC(((q >> j) & 1u) != 0u ? d : -d, blk * 128 + s * 32 + j);
         }
+#endif
     }
 #elif defined(SRC0_Q2_0)
     // block of 64 (18 bytes): f16 d, 16 bytes of 2-bit codes q (4 per byte, low bits first); value = (q - 1) * d
@@ -12035,7 +12088,8 @@ R"hlsl(            const uint gi = byte_of(a0, l);
         [unroll] for (uint l = 0; l < 4; l++) {
             uint q;
             LOAD_U32_UNALIGNED(src0, base + 4 * s + l, q);
-            const uint h  = l < 2 ? qh0 : qh1;
+)hlsl",
+R"hlsl(            const uint h  = l < 2 ? qh0 : qh1;
             const uint gi = (q & 0xFFu) | (((l & 1u) == 0 ? (h << 8) : (h << 4)) & 0x700u);
             const float delta = (h & ((l & 1u) == 0 ? 0x08u : 0x80u)) != 0 ? -0.125f : 0.125f;
             const float dl    = l < 2 ? dl1 : dl2;
@@ -12057,8 +12111,7 @@ R"hlsl(            const uint gi = byte_of(a0, l);
         uint dbits;
         LOAD_U16_UNALIGNED(src0, base + 208, dbits);
         const float d = f16tof32(dbits);
-)hlsl",
-R"hlsl(        const uint  ql_base = base + 64 * h + 32 * (t & 1u);
+        const uint  ql_base = base + 64 * h + 32 * (t & 1u);
         const uint  qh_base = base + 128 + 32 * h;
         const uint  sc_base = base + 192 + 8 * h + 2 * t;
         const uint  lshift  = (t >> 1) * 4u;
@@ -12336,7 +12389,8 @@ void main(uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID) {
             float a[REG_M], b[REG_N];
             [unroll] for (uint im2 = 0; im2 < REG_M; im2++) {
                 a[im2] = Atile[kk][ty * REG_M + im2];
-            }
+)hlsl",
+R"hlsl(            }
             [unroll] for (uint in2 = 0; in2 < REG_N; in2++) {
                 b[in2] = Btile[kk][tx * REG_N + in2];
             }
@@ -12365,8 +12419,7 @@ void main(uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID) {
                 STORE_F32(dst, offset_dst + (pair % n_used) * dst_s1 + (pair / n_used) * dst_s2 + r, acc[im4][in4]);
             }
 #else
-)hlsl",
-R"hlsl(            const uint c = col0 + tx * REG_N + in4;
+            const uint c = col0 + tx * REG_N + in4;
             if (c < n) {
                 STORE_F32(dst, dst_base + c * m + r, acc[im4][in4]);
             }
@@ -12579,6 +12632,8 @@ float load_src1(uint i) {
     } \
 }
 #endif
+
+#define XLLAMA_MMV 1   // dequant_row.hlsli: this kernel (not get_rows) may use src1 vector loads
 // Dequantization of one src0 row, shared by the matrix-vector kernel and by get_rows of quantized types.
 // The includer defines: SRC0_<TYPE>, TPR, MAX_COLS and the ACC(value, element_index) macro, and provides the
 // row length k. Values are produced strided by lane: sub-block or block number lane, lane + TPR, ...
@@ -12617,9 +12672,9 @@ static const uint IQ3S_GRID[512] = {
     0x05010f01u, 0x05010f07u, 0x05010f0bu, 0x05030101u, 0x05030105u, 0x05030301u, 0x05030307u, 0x0503030fu,
     0x05030505u, 0x0503050bu, 0x05030703u, 0x05030709u, 0x05030905u, 0x05030b03u, 0x05050103u, 0x05050109u,
     0x0505010fu, 0x05050503u, 0x05050507u, 0x05050701u, 0x0505070fu, 0x05050903u, 0x05050b07u, 0x05050b0fu,
-    0x05050f03u, 0x05050f09u, 0x05070101u, 0x05070105u, 0x0507010bu, 0x05070303u, 0x05070505u, 0x05070509u,
 )hlsl",
-R"hlsl(    0x05070703u, 0x05070707u, 0x05070905u, 0x05070b01u, 0x05070d0du, 0x05090103u, 0x0509010fu, 0x05090501u,
+R"hlsl(    0x05050f03u, 0x05050f09u, 0x05070101u, 0x05070105u, 0x0507010bu, 0x05070303u, 0x05070505u, 0x05070509u,
+    0x05070703u, 0x05070707u, 0x05070905u, 0x05070b01u, 0x05070d0du, 0x05090103u, 0x0509010fu, 0x05090501u,
     0x05090507u, 0x05090705u, 0x0509070bu, 0x05090903u, 0x05090f05u, 0x05090f0bu, 0x050b0109u, 0x050b0303u,
     0x050b0505u, 0x050b070fu, 0x050b0901u, 0x050b0b07u, 0x050b0f01u, 0x050d0101u, 0x050d0105u, 0x050d010fu,
     0x050d0503u, 0x050d0b0bu, 0x050d0d03u, 0x050f010bu, 0x050f0303u, 0x050f050du, 0x050f0701u, 0x050f0907u,
@@ -12732,9 +12787,9 @@ static const uint IQ2S_GRID_LO[1024] = {
     0x08081908u, 0x0808192bu, 0x08082b19u, 0x08190808u, 0x0819082bu, 0x08191919u, 0x08192b08u, 0x082b0819u,
     0x082b1908u, 0x19080808u, 0x1908082bu, 0x19081919u, 0x19082b08u, 0x19190819u, 0x19191908u, 0x192b0808u,
     0x192b2b2bu, 0x2b080819u, 0x2b081908u, 0x2b190808u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u,
-    0x08190819u, 0x08191908u, 0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u, 0x2b080808u, 0x2b2b1919u,
 )hlsl",
-R"hlsl(    0x08080819u, 0x08081908u, 0x08082b19u, 0x08190808u, 0x0819082bu, 0x08191919u, 0x08192b08u, 0x082b0819u,
+R"hlsl(    0x08190819u, 0x08191908u, 0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u, 0x2b080808u, 0x2b2b1919u,
+    0x08080819u, 0x08081908u, 0x08082b19u, 0x08190808u, 0x0819082bu, 0x08191919u, 0x08192b08u, 0x082b0819u,
     0x082b1908u, 0x19080808u, 0x1908082bu, 0x19081919u, 0x19082b08u, 0x19190819u, 0x19191908u, 0x192b0808u,
     0x2b081908u, 0x2b190808u, 0x08080808u, 0x0808082bu, 0x08081919u, 0x08082b08u, 0x08190819u, 0x08191908u,
     0x082b0808u, 0x19080819u, 0x19081908u, 0x19190808u, 0x2b080808u, 0x2b19192bu, 0x08080819u, 0x08081908u,
@@ -12845,9 +12900,9 @@ static const uint IQ2S_GRID_HI[1024] = {
     0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1908u, 0x082b1919u, 0x082b1919u, 0x082b1919u,
     0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u, 0x082b1919u,
     0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b192bu, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u,
-    0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b19u, 0x082b2b19u,
 )hlsl",
-R"hlsl(    0x082b2b19u, 0x082b2b19u, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x19080808u,
+R"hlsl(    0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b08u, 0x082b2b19u, 0x082b2b19u,
+    0x082b2b19u, 0x082b2b19u, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x082b2b2bu, 0x19080808u,
     0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
     0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
     0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u, 0x19080808u,
@@ -12962,9 +13017,9 @@ static const uint IQ2XXS_GRID_HI[256] = {
     0x08080819u, 0x08080819u, 0x08080819u, 0x08080819u, 0x0808082bu, 0x0808082bu, 0x0808082bu, 0x0808082bu,
     0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u,
     0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081908u, 0x08081919u, 0x08081919u, 0x08081919u,
-    0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x0808192bu, 0x0808192bu, 0x0808192bu,
 )hlsl",
-R"hlsl(    0x0808192bu, 0x0808192bu, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u,
+R"hlsl(    0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x08081919u, 0x0808192bu, 0x0808192bu, 0x0808192bu,
+    0x0808192bu, 0x0808192bu, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u,
     0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b08u, 0x08082b19u, 0x08082b19u, 0x08082b2bu, 0x08082b2bu,
     0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
     0x08190808u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x0819082bu,
@@ -13079,9 +13134,9 @@ static const uint IQ2XS_GRID_HI[512] = {
     0x08082b2bu, 0x08082b2bu, 0x08082b2bu, 0x08082b2bu, 0x08082b2bu, 0x08190808u, 0x08190808u, 0x08190808u,
     0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
     0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u, 0x08190808u,
-    0x08190808u, 0x08190808u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u,
 )hlsl",
-R"hlsl(    0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x0819082bu,
+R"hlsl(    0x08190808u, 0x08190808u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u,
+    0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x08190819u, 0x0819082bu,
     0x0819082bu, 0x0819082bu, 0x0819082bu, 0x0819082bu, 0x0819082bu, 0x08191908u, 0x08191908u, 0x08191908u,
     0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u, 0x08191908u,
     0x08191908u, 0x08191908u, 0x08191919u, 0x08191919u, 0x08191919u, 0x08191919u, 0x0819192bu, 0x0819192bu,
@@ -13198,9 +13253,9 @@ static const uint IQ1S_GRID_LO[2048] = {
     0xff000000u, 0xff0001ffu, 0xff01ff00u, 0xff0100ffu, 0xff010100u, 0x00ff0000u, 0x00ff0101u, 0x0000ffffu,
     0x0000ff00u, 0x0000ff01u, 0x000000ffu, 0x00000000u, 0x00000001u, 0x00000100u, 0x0001ffffu, 0x00010000u,
     0x01ff00ffu, 0x0100ff01u, 0x01000000u, 0x0101ff00u, 0x010100ffu, 0xff00ff00u, 0xff0000ffu, 0xff000001u,
-    0xff010000u, 0x00ffffffu, 0x00ff0001u, 0x00ff0100u, 0x0000ff01u, 0x00000000u, 0x000001ffu, 0x00000101u,
 )hlsl",
-R"hlsl(    0x000100ffu, 0x00010001u, 0x01ff0000u, 0x0100ff00u, 0x010000ffu, 0x01000001u, 0x01010000u, 0xffffff00u,
+R"hlsl(    0xff010000u, 0x00ffffffu, 0x00ff0001u, 0x00ff0100u, 0x0000ff01u, 0x00000000u, 0x000001ffu, 0x00000101u,
+    0x000100ffu, 0x00010001u, 0x01ff0000u, 0x0100ff00u, 0x010000ffu, 0x01000001u, 0x01010000u, 0xffffff00u,
     0xffff0001u, 0xffff0100u, 0xff0000ffu, 0xff000000u, 0xff0001ffu, 0xff000100u, 0xff01ff00u, 0xff010001u,
     0x00ffff00u, 0x00ff0000u, 0x00ff0001u, 0x00ff01ffu, 0x00ff0101u, 0x0000ff00u, 0x000000ffu, 0x00000000u,
     0x00000001u, 0x00000100u, 0x0001ff01u, 0x00010000u, 0x000101ffu, 0x01ff00ffu, 0x01ff0100u, 0x0100ffffu,
@@ -13310,9 +13365,9 @@ R"hlsl(    0x000100ffu, 0x00010001u, 0x01ff0000u, 0x0100ff00u, 0x010000ffu, 0x01
     0xffff00ffu, 0xffff0000u, 0xffff0001u, 0xffff0100u, 0xff00ffffu, 0xff000000u, 0xff0001ffu, 0xff01ff00u,
     0xff010101u, 0x00ff0000u, 0x00ff01ffu, 0x00ff0101u, 0x0000ff00u, 0x000000ffu, 0x00000000u, 0x00000001u,
     0x000001ffu, 0x00000100u, 0x0001ffffu, 0x0001ff01u, 0x000100ffu, 0x00010000u, 0x01ffff01u, 0x01ff0100u,
-    0x0100ffffu, 0x0100ff01u, 0x01000000u, 0x010001ffu, 0x0101ff00u, 0x01010100u, 0xffffff00u, 0xffffff01u,
 )hlsl",
-R"hlsl(    0xffff0000u, 0xffff0101u, 0xff00ff00u, 0xff0000ffu, 0xff000000u, 0xff000001u, 0xff000100u, 0xff010000u,
+R"hlsl(    0x0100ffffu, 0x0100ff01u, 0x01000000u, 0x010001ffu, 0x0101ff00u, 0x01010100u, 0xffffff00u, 0xffffff01u,
+    0xffff0000u, 0xffff0101u, 0xff00ff00u, 0xff0000ffu, 0xff000000u, 0xff000001u, 0xff000100u, 0xff010000u,
     0x00ffff00u, 0x00ff00ffu, 0x00ff0000u, 0x00ff0001u, 0x00ff0100u, 0x0000ffffu, 0x0000ff00u, 0x0000ff01u,
     0x000000ffu, 0x00000000u, 0x00000001u, 0x000001ffu, 0x00000100u, 0x00000101u, 0x0001ff00u, 0x000100ffu,
     0x00010000u, 0x00010001u, 0x00010100u, 0x01ffff00u, 0x01ff0000u, 0x01ff0100u, 0x0100ff00u, 0x010000ffu,
@@ -13422,9 +13477,9 @@ R"hlsl(    0xffff0000u, 0xffff0101u, 0xff00ff00u, 0xff0000ffu, 0xff000000u, 0xff
     0xff010101u, 0x0000ff00u, 0x000000ffu, 0x00000001u, 0x00000100u, 0x01ffffffu, 0x01ffff01u, 0x01ff01ffu,
     0x01ff0101u, 0x01000000u, 0x0101ffffu, 0x0101ff01u, 0x010101ffu, 0x01010101u, 0xffff0000u, 0xff0000ffu,
     0xff000100u, 0xff01ff00u, 0xff010000u, 0x00ffff00u, 0x0000ffffu, 0x00000000u, 0x00000101u, 0x0001ff00u,
-    0x00010001u, 0x00010100u, 0x0100ffffu, 0x01000001u, 0xffffffffu, 0xffffff01u, 0xffff01ffu, 0xffff0101u,
 )hlsl",
-R"hlsl(    0xff01ffffu, 0xff01ff01u, 0xff0101ffu, 0xff010101u, 0x0000ff00u, 0x000000ffu, 0x00000001u, 0x01ffffffu,
+R"hlsl(    0x00010001u, 0x00010100u, 0x0100ffffu, 0x01000001u, 0xffffffffu, 0xffffff01u, 0xffff01ffu, 0xffff0101u,
+    0xff01ffffu, 0xff01ff01u, 0xff0101ffu, 0xff010101u, 0x0000ff00u, 0x000000ffu, 0x00000001u, 0x01ffffffu,
     0x01ffff01u, 0x01ff01ffu, 0x01ff0101u, 0x01000000u, 0x0101ffffu, 0x0101ff01u, 0x010101ffu, 0x01010101u,
 };
 static const uint IQ1S_GRID_HI[2048] = {
@@ -13535,9 +13590,9 @@ static const uint IQ1S_GRID_HI[2048] = {
     0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u,
     0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0100u, 0x00ff0101u, 0x00ff0101u,
     0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u, 0x00ff0101u,
-    0x00ff0101u, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
 )hlsl",
-R"hlsl(    0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
+R"hlsl(    0x00ff0101u, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
+    0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
     0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu,
     0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ff00u, 0x0000ff00u,
     0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u, 0x0000ff00u,
@@ -13647,9 +13702,9 @@ R"hlsl(    0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x0000ffffu, 0x00
     0x010000ffu, 0x010000ffu, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
-    0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
 )hlsl",
 R"hlsl(    0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
+    0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u, 0x01000000u,
     0x01000000u, 0x01000000u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u,
     0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u, 0x01000001u,
@@ -13736,6 +13791,21 @@ float tq1_digit(uint b, uint n) {
 
 static const float KVALUES_IQ4NL[16] = { -127, -104, -83, -65, -49, -35, -22, -10, 1, 13, 25, 38, 53, 69, 89, 113 };
 // partial dot products of one src0 row against the active columns of src1, strided by lane
+#if defined(SRC0_Q1_0) && defined(XLLAMA_MMV) && !defined(SRC1_F16)
+// sum over 32 consecutive activations of (bit set ? +x : -x), eight 128-bit loads
+float q1_0_group_sum(uint elem0, uint q) {
+    float sel = 0.0f, tot = 0.0f;
+    [unroll] for (uint i = 0; i < 8; i++) {
+        const float4 v   = asfloat(src1.Load4((elem0 + 4 * i) * 4));
+        const uint   nib = (q >> (4 * i)) & 15u;
+        tot += (v.x + v.y) + (v.z + v.w);
+        sel += (((nib & 1u) != 0u) ? v.x : 0.0f) + (((nib & 2u) != 0u) ? v.y : 0.0f) +
+               (((nib & 4u) != 0u) ? v.z : 0.0f) + (((nib & 8u) != 0u) ? v.w : 0.0f);
+    }
+    return 2.0f * sel - tot;
+}
+#endif
+
 void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, uint src1_base[MAX_COLS],
              inout float acc[MAX_COLS]) {
 #if defined(SRC0_F32)
@@ -13814,7 +13884,8 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
                 const uint byte = byte_of(q, b);
                 ACC(((float) (byte & 0xFu) - 8.0f) * d, blk * 32 + j * 4 + b);
                 ACC(((float) (byte >> 4) - 8.0f) * d, blk * 32 + 16 + j * 4 + b);
-            }
+)hlsl",
+R"hlsl(            }
         }
     }
 #elif defined(SRC0_Q4_1)
@@ -13832,8 +13903,7 @@ void dot_row(RWByteAddressBuffer src0, uint src0_base, uint lane, uint ncols, ui
                 const uint byte = byte_of(q, b);
                 ACC((float) (byte & 0xFu) * d + m, blk * 32 + j * 4 + b);
                 ACC((float) (byte >> 4) * d + m, blk * 32 + 16 + j * 4 + b);
-)hlsl",
-R"hlsl(            }
+            }
         }
     }
 #elif defined(SRC0_Q5_0) || defined(SRC0_Q5_1)
@@ -14077,7 +14147,8 @@ R"hlsl(            }
         }
     }
 #elif defined(SRC0_Q5_K)
-    // super-block of 256 (176 bytes): f16 d, f16 dmin, 12 bytes of 6-bit scales/mins, 32 bytes qh, 128 bytes ql.
+)hlsl",
+R"hlsl(    // super-block of 256 (176 bytes): f16 d, f16 dmin, 12 bytes of 6-bit scales/mins, 32 bytes qh, 128 bytes ql.
     // like Q4_K with the nibbles at 48; bit s of qh[l] adds 16 to value l of sub-block s.
     for (uint sb = lane; sb < k / 32; sb += TPR) {
         const uint blk  = sb / 8;
@@ -14096,8 +14167,7 @@ R"hlsl(            }
             sc = byte_of(sc0, s) & 63u;
             mn = byte_of(sc1, s) & 63u;
         } else {
-)hlsl",
-R"hlsl(            sc = (byte_of(sc2, s - 4) & 0xFu) | ((byte_of(sc0, s - 4) >> 6) << 4);
+            sc = (byte_of(sc2, s - 4) & 0xFu) | ((byte_of(sc0, s - 4) >> 6) << 4);
             mn = (byte_of(sc2, s - 4) >> 4) | ((byte_of(sc1, s - 4) >> 6) << 4);
         }
         const float dl = d * (float) sc;
@@ -14306,7 +14376,8 @@ R"hlsl(            sc = (byte_of(sc2, s - 4) & 0xFu) | ((byte_of(sc0, s - 4) >> 
             LOAD_U32_UNALIGNED(src0, base + 2 + 4 * s + l, q);
             LOAD_U32_UNALIGNED(src0, base + 34 + 4 * s + l, sg);
             const uint  gi = (q & 0xFFu) | (((qh >> (2u * l)) & 3u) << 8);
-            const float dl = d * (0.5f + (float) ((sc >> (l < 2 ? 0u : 4u)) & 0xFu)) * 0.25f;
+)hlsl",
+R"hlsl(            const float dl = d * (0.5f + (float) ((sc >> (l < 2 ? 0u : 4u)) & 0xFu)) * 0.25f;
             [unroll] for (uint j = 0; j < 8; j++) {
                 const uint  gv  = j < 4 ? byte_of(IQ2S_GRID_LO[gi], j) : byte_of(IQ2S_GRID_HI[gi], j - 4);
                 const float sgn = ((sg >> j) & 1u) != 0 ? -1.0f : 1.0f;
@@ -14322,8 +14393,7 @@ R"hlsl(            sc = (byte_of(sc2, s - 4) & 0xFu) | ((byte_of(sc0, s - 4) >> 
         const uint blk  = sb / 8;
         const uint s    = sb % 8;
         const uint base = (src0_base + blk) * 66;
-)hlsl",
-R"hlsl(        uint dbits, a0, a1;
+        uint dbits, a0, a1;
         LOAD_U16_UNALIGNED(src0, base, dbits);
         LOAD_U32_UNALIGNED(src0, base + 2 + 8 * s, a0);
         LOAD_U32_UNALIGNED(src0, base + 6 + 8 * s, a1);
@@ -14500,9 +14570,20 @@ R"hlsl(        uint dbits, a0, a1;
         LOAD_U16_UNALIGNED(src0, base, dbits);
         LOAD_U32_UNALIGNED(src0, base + 2 + 4 * s, q);
         const float d = f16tof32(dbits);
+#if defined(XLLAMA_MMV) && !defined(SRC1_F16)
+        const uint kb = blk * 128 + s * 32;
+#if defined(ONE_COL)
+        acc[0] += d * q1_0_group_sum(src1_base[0] + kb, q);
+#else
+        [unroll] for (uint _c = 0; _c < MAX_COLS; _c++) {
+            if (_c < ncols) { acc[_c] += d * q1_0_group_sum(src1_base[_c] + kb, q); }
+        }
+#endif
+#else
         for (uint j = 0; j < 32; j++) {
             ACC(((q >> j) & 1u) != 0u ? d : -d, blk * 128 + s * 32 + j);
         }
+#endif
     }
 #elif defined(SRC0_Q2_0)
     // block of 64 (18 bytes): f16 d, 16 bytes of 2-bit codes q (4 per byte, low bits first); value = (q - 1) * d
@@ -14537,7 +14618,8 @@ R"hlsl(        uint dbits, a0, a1;
         const uint  sbits = (sc0 >> 12) | ((sc1 >> 8) & 0x00F0u) | ((sc2 >> 4) & 0x0F00u) | (sc3 & 0xF000u);
         const float d     = f16tof32(sbits);
 
-        const uint sc  = s < 2 ? sc0 : (s < 4 ? sc1 : (s < 6 ? sc2 : sc3));
+)hlsl",
+R"hlsl(        const uint sc  = s < 2 ? sc0 : (s < 4 ? sc1 : (s < 6 ? sc2 : sc3));
         const uint sh  = 6u * (s & 1u);
         const float dl1 = d * (float) (2u * ((sc >> sh) & 7u) + 1u);
         const float dl2 = d * (float) (2u * ((sc >> (sh + 3u)) & 7u) + 1u);
@@ -14562,8 +14644,7 @@ R"hlsl(        uint dbits, a0, a1;
 #elif defined(SRC0_Q6_K)
     // super-block of 256: 128 bytes ql, 64 bytes qh, 16 int8 scales, f16 d.
     // sub-block s: half h = s/4 (128 values), t = s%4 selects the quarter inside the half.
-)hlsl",
-R"hlsl(    for (uint sb = lane; sb < k / 32; sb += TPR) {
+    for (uint sb = lane; sb < k / 32; sb += TPR) {
         const uint blk  = sb / 8;
         const uint s    = sb % 8;
         const uint h    = s / 4;
@@ -15060,6 +15141,7 @@ void main(uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID) {
         GroupMemoryBarrierWithGroupSync();
     }
     const float mean = scratch[0] / (float) ne0;
+    GroupMemoryBarrierWithGroupSync();   // xllama: scratch[0] is overwritten by pass 2
 
     // pass 2: variance around the mean
     float var = 0;

@@ -44,6 +44,10 @@ target_compile_definitions(ggml-d3d12f PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX 
 if (MSVC)
     target_compile_options(ggml-d3d12f PRIVATE /bigobj /utf-8)
 endif()
+# -DXLLAMA_D3D12F_UWP_MODE=ON builds the console configuration (no shader compiler, baked cache only)
+if (XLLAMA_D3D12F_UWP_MODE)
+    target_compile_definitions(ggml-d3d12f PRIVATE XLLAMA_D3D12_UWP=1)
+endif()
 """,
     encoding="utf-8",
 )

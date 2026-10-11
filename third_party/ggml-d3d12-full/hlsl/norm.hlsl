@@ -58,6 +58,7 @@ void main(uint3 gtid : SV_GroupThreadID, uint3 gid : SV_GroupID) {
         GroupMemoryBarrierWithGroupSync();
     }
     const float mean = scratch[0] / (float) ne0;
+    GroupMemoryBarrierWithGroupSync();   // xllama: scratch[0] is overwritten by pass 2
 
     // pass 2: variance around the mean
     float var = 0;

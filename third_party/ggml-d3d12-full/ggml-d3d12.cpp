@@ -631,10 +631,15 @@ static std::wstring ggml_d3d12_shader_cache_file(const char * source, const std:
         hash_bytes(a.c_str(), (a.size() + 1) * sizeof(wchar_t));
     }
 #ifdef XLLAMA_D3D12_UWP
-    if (g_xllama_shader_dir.empty()) {
+    std::wstring dir = g_xllama_shader_dir;
+    if (dir.empty()) {   // cache-only builds run on a desktop for testing: folder from the environment
+        if (const char * env = getenv("GGML_D3D12_CACHE_DIR")) {
+            dir.assign(env, env + strlen(env));
+        }
+    }
+    if (dir.empty()) {
         return L"";
     }
-    std::wstring dir = g_xllama_shader_dir;
     while (!dir.empty() && (dir.back() == L'\\' || dir.back() == L'/')) {
         dir.pop_back();
     }

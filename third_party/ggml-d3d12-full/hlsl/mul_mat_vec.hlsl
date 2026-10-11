@@ -107,6 +107,7 @@ float load_src1(uint i) {
 }
 #endif
 
+#define XLLAMA_MMV 1   // dequant_row.hlsli: this kernel (not get_rows) may use src1 vector loads
 #include "dequant_row.hlsli"
 
 [numthreads(WG_SIZE, 1, 1)]
