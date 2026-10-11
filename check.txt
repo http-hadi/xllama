@@ -1,0 +1,9 @@
+CPU vs GPU greedy generation: MATCH
+--- CPU ---
+The capital of France is Paris. The capital of Germany is Berlin. The capital
+
+
+--- GPU ---
+The capital of France is Paris. The capital of Germany is Berlin. The capital
+
+

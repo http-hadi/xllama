@@ -1,0 +1,15 @@
+0.00.071.786 W ggml_d3d12: D3D12F0 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8191 MiB | build Oct 11 2026 19:49:21
+0.00.072.281 W ggml_d3d12: D3D12F1 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8191 MiB | build Oct 11 2026 19:49:21
+0.01.116.377 E ggml_d3d12: failed to allocate 209191168 bytes (heap type 1), HRESULT 0x8007000e
+0.01.116.392 E alloc_tensor_range: failed to allocate D3D12F0 buffer of size 209190912
+0.01.140.866 E llama_init_from_model: failed to initialize the context: failed to allocate buffer for rs cache
+0.01.198.773 E common_fit_params: encountered an error while trying to fit params to free device memory: failed to create llama_context from model
+0.07.950.713 W llama_context: n_ctx is not divisible by n_seq_max - rounding down to 16384
+0.08.965.734 E ggml_d3d12: failed to allocate 209191168 bytes (heap type 1), HRESULT 0x8007000e
+0.08.965.747 E alloc_tensor_range: failed to allocate D3D12F0 buffer of size 209190912
+0.09.010.583 E llama_init_from_model: failed to initialize the context: failed to allocate buffer for rs cache
+0.09.010.595 E cmn  common_init_: failed to create context with model 'D:\a\xllama\xllama\model.gguf'
+0.09.010.596 E cmn  common_init_: failed to create context with model 'D:\a\xllama\xllama\model.gguf'
+0.09.010.597 E llama_perplexity: failed to create context
+ggml_d3d12 stats [D3D12F0]: graphs 0, nodes 0, dispatches 4, submits 856 (mid-graph flushes: batch 0, arena 0) | graph_compute 0.0 ms = encode 0.0 (shader compile 2.3 in 1 pipelines) + submit calls 0.0 + fence wait 0.0 (barriers 4 of 4 dispatches) | set_tensor 850 calls 3613.7 MB 3529.6 ms | get_tensor 0 calls 0.0 MB 0.0 ms
+ggml_d3d12 stats [D3D12F1]: graphs 0, nodes 0, dispatches 0, submits 0 (mid-graph flushes: batch 0, arena 0) | graph_compute 0.0 ms = encode 0.0 (shader compile 0.0 in 0 pipelines) + submit calls 0.0 + fence wait 0.0 (barriers 0 of 0 dispatches) | set_tensor 0 calls 0.0 MB 0.0 ms | get_tensor 0 calls 0.0 MB 0.0 ms

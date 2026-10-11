@@ -1,0 +1,51 @@
+62d25d6030d17ccb.dxil	memset -DBYTES_PER_THREAD=16
+82652a69d18d7007.dxil	rms_norm -DFUSE_MUL
+fc46e71d385c86b9.dxil	scale
+f1dd2fc27ec110c5.dxil	get_rows -DSRC_F32
+898fb341f9be5c2f.dxil	mul_mat_tiled -DSRC0_Q1_0
+9feaebe98a3b300a.dxil	concat
+c8a47a7f18b0f31e.dxil	cpy -DSRC_F32 -DDST_F32
+64bd201ff93fc488.dxil	ssm_conv -DFUSE_SILU
+a9d47a7715a81260.dxil	rms_norm
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+6fa6b9a02be91690.dxil	unary -DTYPE_F32 -DSOFTPLUS
+e3a676a881460974.dxil	binary -DTYPE_F32 -DOP_MUL
+a1f8379311657a1e.dxil	unary -DTYPE_F32 -DSIGMOID
+37da60244c6b7852.dxil	gated_delta_net -DS_V=128 -DSTATE_OUT
+9e21ba800421315f.dxil	unary -DTYPE_F32 -DSILU
+8ace271c8aa2321f.dxil	glu -DTYPE_F32 -DOP_SWIGLU
+a1332c67773fe444.dxil	rope -DTYPE_F32
+9f0e59694a68c4ba.dxil	set_rows -DDST_F16 -DNO16 -DI64_IDX
+07090bb9af02863d.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+79eddd53072c2c27.dxil	flash_attn -DDV=256 -DCOMBINE -DWG_SIZE=64
+155fe7e377c67a85.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=1 -DONE_COL
+0e4f611720d435ec.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=2 -DONE_COL -DFUSE_ADD
+46308b4c689912d3.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DDECODE
+d1cc5de4e429c457.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=1 -DONE_COL -DFUSE_ADD
+62d25d6030d17ccb.dxil	memset -DBYTES_PER_THREAD=16
+82652a69d18d7007.dxil	rms_norm -DFUSE_MUL
+fc46e71d385c86b9.dxil	scale
+f1dd2fc27ec110c5.dxil	get_rows -DSRC_F32
+365ca2262db6f797.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=1
+9feaebe98a3b300a.dxil	concat
+c8a47a7f18b0f31e.dxil	cpy -DSRC_F32 -DDST_F32
+64bd201ff93fc488.dxil	ssm_conv -DFUSE_SILU
+a9d47a7715a81260.dxil	rms_norm
+9ffcf30a3f282b69.dxil	binary -DTYPE_F32 -DOP_ADD
+6fa6b9a02be91690.dxil	unary -DTYPE_F32 -DSOFTPLUS
+e3a676a881460974.dxil	binary -DTYPE_F32 -DOP_MUL
+a1f8379311657a1e.dxil	unary -DTYPE_F32 -DSIGMOID
+37da60244c6b7852.dxil	gated_delta_net -DS_V=128 -DSTATE_OUT
+9e21ba800421315f.dxil	unary -DTYPE_F32 -DSILU
+aa50f2fd084a368e.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=2 -DFUSE_ADD
+8ace271c8aa2321f.dxil	glu -DTYPE_F32 -DOP_SWIGLU
+d53d0891d9fdf2f5.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=1 -DFUSE_ADD
+a1332c67773fe444.dxil	rope -DTYPE_F32
+9f0e59694a68c4ba.dxil	set_rows -DDST_F16 -DNO16 -DI64_IDX
+07090bb9af02863d.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DWG_SIZE=64
+79eddd53072c2c27.dxil	flash_attn -DDV=256 -DCOMBINE -DWG_SIZE=64
+155fe7e377c67a85.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=1 -DONE_COL
+0e4f611720d435ec.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=2 -DONE_COL -DFUSE_ADD
+46308b4c689912d3.dxil	flash_attn -DDK=256 -DDV=256 -DK_F16 -DV_F16 -DHAS_MASK -DK_ALIGNED -DV_ALIGNED -DDECODE
+d1cc5de4e429c457.dxil	mul_mat_vec -DSRC0_Q1_0 -DTPR=256 -DN_MATS=1 -DONE_COL -DFUSE_ADD
+62d25d6030d17ccb.dxil	memset -DBYTES_PER_THREAD=16
