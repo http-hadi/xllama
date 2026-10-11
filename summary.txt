@@ -1,0 +1,7 @@
+bench_fa1: exit=0 12s
+gen_cpu: exit=0 1s
+gen_gpu: exit=0 28s
+rejected ops (CPU fallback): none
+baked: files=25 bytes=211828 manifest_unique=25
+SET_ROWS   exit=0  183/183 tests passed
+CPY        exit=0  387/387 tests passed
