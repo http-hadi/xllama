@@ -1,0 +1,8 @@
+bench_fa1: exit=0 676s
+gen_cpu: exit=0 11s
+gen_gpu: exit=0 444s
+ppl_cpu: exit=0 81s
+ppl_gpu: exit=1 10s
+PPL not parsed (cpu=195.5603 gpu=)
+rejected ops (CPU fallback): none
+verify: no missing shaders
