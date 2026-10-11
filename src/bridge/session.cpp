@@ -505,6 +505,16 @@ class LlamaSession final : public Session {
                 cparams.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_ENABLED;
             }
             m_ctx.reset(llama_init_from_model(m_model.get(), cparams));
+            // Whole-graph GPU path: the compute buffers scale with n_ubatch. If the device cannot place them, halve
+            // the micro-batch and retry (no model reload) rather than leaving the model without a context.
+            for (uint32_t ub = cparams.n_ubatch; !m_ctx && g_gpu_full_active && m_gpu_layers > 0 && !for_embedding &&
+                                                  ub > 64;) {
+                ub /= 2;
+                cparams.n_ubatch = ub;
+                cparams.n_batch = std::max(cparams.n_batch, ub);
+                log_output("[xllama] session: GPU context failed - retrying with n_ubatch=" + std::to_string(ub) + "\n");
+                m_ctx.reset(llama_init_from_model(m_model.get(), cparams));
+            }
             if (!m_ctx && m_kv_q8) {
                 log_output("[xllama] session: q8_0 KV context failed — falling back "
                            "to default cache types (#171)\n");

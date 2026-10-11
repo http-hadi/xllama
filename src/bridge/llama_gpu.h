@@ -230,9 +230,16 @@ inline uint32_t gguf_gpu_outputs_max(bool embeddings, bool prompt_lookup) {
 // the pages it touches (#309).
 inline void apply_gguf_gpu_context(int applied_layers, llama_context_params& cparams,
                                    uint32_t outputs_max) {
-    // Whole-graph backend: keep llama.cpp's defaults (KV cache on the device, flash attention AUTO).
-    if (g_gpu_full_active)
+    // Whole-graph backend: keep llama.cpp's defaults (KV cache on the device, flash attention AUTO), except the
+    // logits reserve. The prefill graph is reserved for n_ubatch logits rows by default: 512 x 248320 x 4 B =
+    // 485 MiB on Bonsai 27B, one D3D12 default-heap allocation that failed on the Xbox (HRESULT 0x8007000e)
+    // after the weights were already resident. Generation only reads the last row (plus the draft rows when
+    // prompt lookup is on), exactly what the legacy path already limits it to.
+    if (g_gpu_full_active) {
+        if (applied_layers > 0 && outputs_max > 0)
+            cparams.n_outputs_max = outputs_max;
         return;
+    }
     if (applied_layers > 0) {
         cparams.offload_kqv = false;
         if (cparams.flash_attn_type == LLAMA_FLASH_ATTN_TYPE_AUTO)
