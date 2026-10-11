@@ -1,0 +1,5 @@
+bench_fa1: exit=0 170s
+bench_fa0: exit=0 170s
+bench_kvq8: exit=0 92s
+rejected ops (CPU fallback): none
+verify: no missing shaders
