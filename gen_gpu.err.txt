@@ -1,0 +1,28 @@
+0.00.029.288 W ggml_d3d12: D3D12F0 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+0.00.030.063 W ggml_d3d12: D3D12F1 = Microsoft Basic Render Driver | Direct3D 12 | driver 10.0.20348.5386 | SM 6.2 | 16-bit no | wave 4-4 | UMA | 8189 MiB | build Oct 11 2026 19:49:21
+0.00.039.157 I llama_completion: llama backend init
+0.00.039.194 I llama_completion: load the model and apply lora adapter, if any
+0.01.055.008 W load: control-looking token:    212 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.01.489.229 I cmn          init: llama threadpool init, n_threads = 2
+0.01.492.071 I 
+0.01.492.105 I system_info: n_threads = 2 (n_threads_batch = 2) / 4 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.01.492.106 I 
+0.01.492.451 I sampler seed: 1
+0.01.492.479 I sampler params: 
+	repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000
+	dry_multiplier = 0.000, dry_base = 1.750, dry_allowed_length = 2, dry_penalty_last_n = 64
+	top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000
+	mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000, adaptive_target = -1.000, adaptive_decay = 0.900
+0.01.492.488 I sampler chain: logits -> ?penalties -> ?dry -> ?top-n-sigma -> top-k -> ?typical -> top-p -> min-p -> ?xtc -> temp-ext -> dist 
+0.01.492.489 I generate: n_ctx = 512, n_batch = 2048, n_predict = 16, n_keep = 1
+0.01.492.489 I 
+0.19.763.695 I common_perf_print:    sampling time =       7.95 ms
+0.19.763.703 I common_perf_print:    samplers time =       3.33 ms /    29 tokens
+0.19.763.704 I common_perf_print:        load time =    7092.61 ms
+0.19.763.707 I common_perf_print: prompt eval time =    7092.16 ms /    13 tokens (  545.55 ms per token,     1.83 tokens per second)
+0.19.763.709 I common_perf_print:        eval time =   11170.46 ms /    15 runs   (  744.70 ms per token,     1.34 tokens per second)
+0.19.763.710 I common_perf_print:       total time =   18271.70 ms /    28 tokens
+0.19.763.712 I common_perf_print: unaccounted time =       1.13 ms /   0.0 %      (total - sampling - prompt eval - eval) / (total)
+0.19.763.712 I common_perf_print:    graphs reused =         14
+ggml_d3d12 stats [D3D12F0]: graphs 16, nodes 11616, dispatches 6736, submits 517 (mid-graph flushes: batch 101, arena 0) | graph_compute 18230.2 ms = encode 61.5 (shader compile 129.6 in 23 pipelines) + submit calls 108.6 + fence wait 18060.1 (barriers 5892 of 6736 dispatches) | set_tensor 380 calls 246.7 MB 304.2 ms | get_tensor 16 calls 16.8 MB 10.5 ms
+ggml_d3d12 stats [D3D12F1]: graphs 0, nodes 0, dispatches 0, submits 0 (mid-graph flushes: batch 0, arena 0) | graph_compute 0.0 ms = encode 0.0 (shader compile 0.0 in 0 pipelines) + submit calls 0.0 + fence wait 0.0 (barriers 0 of 0 dispatches) | set_tensor 0 calls 0.0 MB 0.0 ms | get_tensor 0 calls 0.0 MB 0.0 ms

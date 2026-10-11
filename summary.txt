@@ -1,0 +1,10 @@
+bench_fa1: exit=0 53s
+bench_fa0: exit=0 49s
+bench_kvq8: exit=0 9s
+gen_cpu: exit=0 2s
+gen_gpu: exit=0 20s
+ppl_cpu: exit=0 3s
+ppl_gpu: exit=0 36s
+PPL cpu=14.9396 gpu=15.0188 rel_diff=0.5301% -> OK
+rejected ops (CPU fallback): none
+baked: files=38 bytes=377860 manifest_unique=38
