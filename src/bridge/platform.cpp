@@ -47,7 +47,7 @@ int detect_threads_llama() noexcept {
 #ifdef XLLAMA_UWP
 // A process that dies without a word was the reason every GPU failure had to be guessed at: record fatal
 // exceptions, std::terminate and abort() with the working set, so the next crash names itself.
-static LONG CALLBACK xllama_vectored_handler(EXCEPTION_POINTERS* ep) {
+static LONG WINAPI xllama_unhandled_filter(EXCEPTION_POINTERS* ep) {
     const DWORD c = ep->ExceptionRecord->ExceptionCode;
     if (c == 0xC0000005 || c == 0xC00000FD || c == 0xC000001D || c == 0xC0000374 || c == 0xC0000409 ||
         c == 0xC0000094 || c == 0xC000008C || c == 0x80000003 || c == 0xC0000017 || c == 0xC0000142) {
@@ -71,7 +71,7 @@ static void install_crash_logging() {
     if (done)
         return;
     done = true;
-    AddVectoredExceptionHandler(1, xllama_vectored_handler);
+    SetUnhandledExceptionFilter(xllama_unhandled_filter);
     std::set_terminate(xllama_terminate_handler);
     std::signal(SIGABRT, xllama_abort_handler);
 }

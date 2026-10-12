@@ -272,7 +272,6 @@ class OrtSession final : public Session {
     }
 
     InferenceResult generate(const GenerateParams& gp) override {
-        GpuHeartbeat gpu_heartbeat;
         InferenceResult res;
         install_se_translator();
         try {
@@ -568,6 +567,7 @@ class LlamaSession final : public Session {
     }
 
     InferenceResult generate(const GenerateParams& gp) override {
+        GpuHeartbeat gpu_heartbeat;
         InferenceResult res;
 
         if (!ensure_ctx(&res.error_msg))
