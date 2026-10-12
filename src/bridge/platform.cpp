@@ -1,6 +1,8 @@
 // Copyright (c) 2024 Gianluca Mazza
 // SPDX-License-Identifier: MIT
 
+#include <exception>
+#include <csignal>
 #include "xllama/platform.h"
 
 #include <algorithm>
@@ -42,6 +44,39 @@ int detect_threads_llama() noexcept {
 #endif
 }
 
+#ifdef XLLAMA_UWP
+// A process that dies without a word was the reason every GPU failure had to be guessed at: record fatal
+// exceptions, std::terminate and abort() with the working set, so the next crash names itself.
+static LONG CALLBACK xllama_vectored_handler(EXCEPTION_POINTERS* ep) {
+    const DWORD c = ep->ExceptionRecord->ExceptionCode;
+    if (c == 0xC0000005 || c == 0xC00000FD || c == 0xC000001D || c == 0xC0000374 || c == 0xC0000409 ||
+        c == 0xC0000094 || c == 0xC000008C || c == 0x80000003 || c == 0xC0000017 || c == 0xC0000142) {
+        char b[256];
+        std::snprintf(b, sizeof(b), "[xllama] CRASH: exception 0x%08lx at %p (ws=%zu MB, avail=%zu MB)\n",
+                      static_cast<unsigned long>(c), ep->ExceptionRecord->ExceptionAddress, working_set_mb(),
+                      avail_phys_mb());
+        log_output(b);
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+static void xllama_terminate_handler() {
+    log_output("[xllama] CRASH: std::terminate\n");
+    std::abort();
+}
+static void xllama_abort_handler(int) {
+    log_output("[xllama] CRASH: abort()\n");
+}
+static void install_crash_logging() {
+    static bool done = false;
+    if (done)
+        return;
+    done = true;
+    AddVectoredExceptionHandler(1, xllama_vectored_handler);
+    std::set_terminate(xllama_terminate_handler);
+    std::signal(SIGABRT, xllama_abort_handler);
+}
+#endif
+
 void log_output(const char* msg) noexcept {
 #ifdef XLLAMA_UWP
     OutputDebugStringA(msg);
@@ -59,6 +94,8 @@ void log_output(const char* msg) noexcept {
             return nullptr;
         }
     }();
+    static const bool s_crash_logging = (install_crash_logging(), true);
+    (void)s_crash_logging;
     if (s_fp) {
         std::lock_guard<std::mutex> g(s_mtx);
         std::fputs(msg, s_fp); // _IONBF: no CRT buffer, write reaches kernel directly

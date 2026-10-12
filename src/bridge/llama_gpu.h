@@ -17,11 +17,14 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <atomic>
+#include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <thread>
 
 namespace xllama {
 
@@ -42,7 +45,7 @@ inline void gguf_gpu_log(ggml_log_level level, const char* text, void*) {
 // the same stages, so a peak difference can be attributed (#309).
 inline void log_gguf_ws(const char* stage) {
     log_output(std::string("[xllama] ws ") + stage + ": " + std::to_string(working_set_mb()) +
-               " MB\n");
+               " MB (avail phys " + std::to_string(avail_phys_mb()) + " MB)\n");
 }
 
 // token_embd's type and whether the model has its own output.weight, read from
@@ -68,6 +71,40 @@ inline bool gguf_embedding_info(const std::string& path, ggml_type* embd_type, b
 // True while the whole-graph backend (ggml_d3d12_full.h) owns the offload, so the context must
 // NOT use the legacy workarounds (KV on the CPU, host buffers, tied-embedding override).
 inline bool g_gpu_full_active = false;
+// Size of the model on the whole-graph path and the device budget, so the context can be sized to what is left.
+inline std::uint64_t g_gpu_full_file_mb = 0;
+inline std::uint64_t g_gpu_full_total_mb = 0;
+
+// Logs the working set once a second while a GPU generate runs (first 40 ticks). A silent process death
+// otherwise leaves nothing to tell a memory kill (jump, then nothing) from a GPU stall (ticks, then nothing).
+class GpuHeartbeat {
+  public:
+    GpuHeartbeat() {
+        if (!g_gpu_full_active)
+            return;
+        t_ = std::thread([this] {
+            for (int i = 1; i <= 40 && !stop_.load(); ++i) {
+                for (int k = 0; k < 10 && !stop_.load(); ++k)
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                if (stop_.load())
+                    break;
+                log_output("[xllama] hb " + std::to_string(i) + "s ws=" + std::to_string(working_set_mb()) +
+                           " MB avail=" + std::to_string(avail_phys_mb()) + " MB\n");
+            }
+        });
+    }
+    GpuHeartbeat(const GpuHeartbeat&) = delete;
+    GpuHeartbeat& operator=(const GpuHeartbeat&) = delete;
+    ~GpuHeartbeat() {
+        stop_.store(true);
+        if (t_.joinable())
+            t_.join();
+    }
+
+  private:
+    std::atomic<bool> stop_{false};
+    std::thread t_;
+};
 
 // Small text knob from LocalState (trimmed, empty when absent).
 inline std::string read_local_text(const char* name) {
@@ -150,6 +187,8 @@ inline int apply_gguf_gpu_layers_full(int requested, llama_model_params& mparams
     mparams.split_mode = LLAMA_SPLIT_MODE_NONE;
     mparams.main_gpu = 0;
     g_gpu_full_active = true;
+    g_gpu_full_file_mb = ec ? 0 : (file_bytes >> 20);
+    g_gpu_full_total_mb = total_b >> 20;
     return layers;
 }
 
@@ -238,6 +277,17 @@ inline void apply_gguf_gpu_context(int applied_layers, llama_context_params& cpa
     if (g_gpu_full_active) {
         if (applied_layers > 0 && outputs_max > 0)
             cparams.n_outputs_max = outputs_max;
+        // The compute buffers scale with n_ubatch and are committed at the first decode. A model that fills most of
+        // the device budget (Bonsai 27B: 3627 of 4147 MB) has no room for the 512-row default, so cap it.
+        if (applied_layers > 0 && g_gpu_full_total_mb > 0 && outputs_max > 0) {
+            uint32_t cap = 512;
+            if (g_gpu_full_file_mb * 100 > g_gpu_full_total_mb * 75)
+                cap = 64;
+            else if (g_gpu_full_file_mb * 100 > g_gpu_full_total_mb * 40)
+                cap = 128;
+            if (cparams.n_ubatch > cap)
+                cparams.n_ubatch = cap;
+        }
         return;
     }
     if (applied_layers > 0) {

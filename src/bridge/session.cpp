@@ -272,6 +272,7 @@ class OrtSession final : public Session {
     }
 
     InferenceResult generate(const GenerateParams& gp) override {
+        GpuHeartbeat gpu_heartbeat;
         InferenceResult res;
         install_se_translator();
         try {
