@@ -181,6 +181,15 @@ const char* d3d12_full_device_name() {
     return g_device_name.empty() ? nullptr : g_device_name.c_str();
 }
 
+void d3d12_full_note_decode_begin(int n_tokens) {
+    static std::atomic<int> s_n{0};
+    if (!g_sentinel_armed.load(std::memory_order_relaxed) && s_n.load() >= 12)
+        return;
+    const int i = ++s_n;
+    if (i <= 12)
+        log_output("[xllama] d3d12f: decode #" + std::to_string(i) + " n_tokens=" + std::to_string(n_tokens) + "\n");
+}
+
 void d3d12_full_note_decode_ok() {
     if (!g_sentinel_armed.load(std::memory_order_relaxed))
         return;

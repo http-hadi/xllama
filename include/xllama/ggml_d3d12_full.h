@@ -28,6 +28,8 @@ bool d3d12_full_default_on();
 const char* d3d12_full_device_name(); // e.g. "D3D12F0", valid after a successful register
 // Called after every successful llama_decode: the first one clears the crash sentinel.
 void d3d12_full_note_decode_ok();
+// Logs the first few llama_decode calls (token count) so a death mid-generation is placed to the step.
+void d3d12_full_note_decode_begin(int n_tokens);
 #else
 inline bool d3d12_full_register() {
     return false;
@@ -39,6 +41,7 @@ inline const char* d3d12_full_device_name() {
     return nullptr;
 }
 inline void d3d12_full_note_decode_ok() {}
+inline void d3d12_full_note_decode_begin(int) {}
 #endif
 
 // How many layers to put on the GPU. Pure, so it is host-tested.

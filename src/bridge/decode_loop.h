@@ -55,6 +55,7 @@ inline bool prefill_chunked(llama_context* ctx, const llama_token* tokens, int n
     for (int off = 0; off < n_tokens; off += n_batch) {
         llama_batch batch = llama_batch_get_one(const_cast<llama_token*>(tokens) + off,
                                                 std::min(n_batch, n_tokens - off));
+        d3d12_full_note_decode_begin(batch.n_tokens);
         if (llama_decode(ctx, batch) != 0)
             return false;
         d3d12_full_note_decode_ok();
@@ -156,6 +157,7 @@ inline bool stops_at_eog(const DecodeLoopParams& p, llama_token token) {
 // Decode one already-sampled token (classic path).
 inline bool decode_one(llama_context* ctx, llama_token token) {
     llama_batch next = llama_batch_get_one(&token, 1);
+    d3d12_full_note_decode_begin(1);
     const bool ok = llama_decode(ctx, next) == 0;
     if (ok)
         d3d12_full_note_decode_ok();
@@ -180,6 +182,7 @@ inline bool decode_verify_batch(llama_context* ctx, const std::vector<llama_toke
         batch.logits[i] = 1; // need a logit row per position for verification
     }
     batch.n_tokens = static_cast<int32_t>(feed.size());
+    d3d12_full_note_decode_begin(batch.n_tokens);
     const int rc = llama_decode(ctx, batch);
     llama_batch_free(batch);
     return rc == 0;

@@ -30,6 +30,11 @@ namespace xllama {
 
 // llama/ggml log lines worth keeping in xllama.log when layers run on d3d12:
 // placement and buffer sizes, graph splits, and every warning or error.
+// ggml prints GGML_ABORT / GGML_ASSERT messages straight to stderr, which a UWP app never sees: route them to the log.
+inline void gguf_gpu_abort_log(const char* msg) {
+    log_output(std::string("[xllama] GGML ABORT: ") + (msg ? msg : "(null)") + "\n");
+}
+
 inline void gguf_gpu_log(ggml_log_level level, const char* text, void*) {
     if (!text)
         return;
@@ -205,6 +210,7 @@ inline int apply_gguf_gpu_layers(int requested, llama_model_params& mparams,
         return 0;
     log_gguf_ws("before d3d12");
     llama_log_set(gguf_gpu_log, nullptr);
+    ggml_set_abort_callback(gguf_gpu_abort_log);
     // Default: the whole-graph backend. LocalState\d3d12_backend.txt containing "legacy" selects the
     // older matmul-only backend below (kept for A/B comparison).
     if (read_local_text("d3d12_backend.txt") != "legacy")
@@ -241,6 +247,7 @@ inline int apply_gguf_gpu_layers(int requested, llama_model_params& mparams,
     }
     log_gguf_ws("after d3d12 init");
     llama_log_set(gguf_gpu_log, nullptr);
+    ggml_set_abort_callback(gguf_gpu_abort_log);
     log_output("[xllama] gguf gpu layers: " + std::to_string(requested) + " on D3D12\n");
     return requested;
 }
