@@ -190,6 +190,12 @@ void d3d12_full_note_decode_begin(int n_tokens) {
         log_output("[xllama] d3d12f: decode #" + std::to_string(i) + " n_tokens=" + std::to_string(n_tokens) + "\n");
 }
 
+void d3d12_full_trace(const char* what) {
+    static std::atomic<int> s_n{0};
+    if (++s_n <= 40)
+        log_output(std::string("[xllama] d3d12f: trace ") + what + "\n");
+}
+
 void d3d12_full_note_decode_ok() {
     if (!g_sentinel_armed.load(std::memory_order_relaxed))
         return;

@@ -1,6 +1,8 @@
 // Copyright (c) 2024 Gianluca Mazza
 // SPDX-License-Identifier: MIT
 
+#include <string>
+#include <typeinfo>
 #include <exception>
 #include <csignal>
 #include "xllama/platform.h"
@@ -60,7 +62,17 @@ static LONG WINAPI xllama_unhandled_filter(EXCEPTION_POINTERS* ep) {
     return EXCEPTION_CONTINUE_SEARCH;
 }
 static void xllama_terminate_handler() {
-    log_output("[xllama] CRASH: std::terminate\n");
+    std::string msg = "[xllama] CRASH: std::terminate";
+    if (std::exception_ptr ep = std::current_exception()) {
+        try {
+            std::rethrow_exception(ep);
+        } catch (const std::exception& e) {
+            msg += std::string(" uncaught ") + typeid(e).name() + ": " + e.what();
+        } catch (...) {
+            msg += " uncaught non-std exception";
+        }
+    }
+    log_output(msg + "\n");
     std::abort();
 }
 static void xllama_abort_handler(int) {
@@ -76,6 +88,12 @@ static void install_crash_logging() {
     std::signal(SIGABRT, xllama_abort_handler);
 }
 #endif
+
+void install_thread_crash_logging() noexcept {
+#ifdef XLLAMA_UWP
+    std::set_terminate(xllama_terminate_handler);
+#endif
+}
 
 void log_output(const char* msg) noexcept {
 #ifdef XLLAMA_UWP

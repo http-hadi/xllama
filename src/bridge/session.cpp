@@ -568,6 +568,7 @@ class LlamaSession final : public Session {
 
     InferenceResult generate(const GenerateParams& gp) override {
         GpuHeartbeat gpu_heartbeat;
+        install_thread_crash_logging();
         InferenceResult res;
 
         if (!ensure_ctx(&res.error_msg))

@@ -262,7 +262,15 @@ inline DecodeLoopResult decode_loop(const DecodeLoopParams& p, std::string& outp
         if (p.abort_flag && p.abort_flag->load())
             break;
 
+        if (out.n_generated == 0)
+            d3d12_full_trace("synchronize begin");
+        if (out.n_generated == 0) {
+            llama_synchronize(p.ctx);
+            d3d12_full_trace("synchronize done, sampling first token");
+        }
         llama_token token = llama_sampler_sample(p.sampler, p.ctx, -1);
+        if (out.n_generated == 0)
+            d3d12_full_trace("first token sampled");
         if (detail::stops_at_eog(p, token)) {
             log_output("[xllama] EOG after " + std::to_string(out.n_generated) + " tokens\n");
             break;

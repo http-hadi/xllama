@@ -24,6 +24,9 @@ int detect_threads_llama() noexcept;
 
 // Emit a log line. On UWP: OutputDebugStringA; otherwise: stderr.
 void log_output(const char* msg) noexcept;
+// Windows keeps std::terminate handlers per thread: call this at the top of a worker/generation thread so an
+// uncaught exception there is logged (with what()) instead of dying silently in abort().
+void install_thread_crash_logging() noexcept;
 void log_output(const std::string& msg) noexcept;
 
 // Peak working-set size in MB. Returns 0 on platforms where it is unavailable.
