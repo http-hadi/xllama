@@ -17,6 +17,8 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <vector>
+#include <cmath>
 #include <atomic>
 #include <chrono>
 #include <cstdio>
@@ -79,6 +81,41 @@ inline bool g_gpu_full_active = false;
 // Size of the model on the whole-graph path and the device budget, so the context can be sized to what is left.
 inline std::uint64_t g_gpu_full_file_mb = 0;
 inline std::uint64_t g_gpu_full_total_mb = 0;
+
+// Per-layer numeric trace for the first decode(s) of a large GPU model. A tensor that first turns NaN/inf (or
+// explodes) names the layer, and with it the op type and the CPU/GPU side, that the kernel bug lives in.
+inline std::atomic<int> g_trace_left{0};
+
+inline bool gguf_gpu_eval_cb(struct ggml_tensor* t, bool ask, void*) {
+    if (g_trace_left.load() <= 0)
+        return false;
+    const char* n = t->name;
+    const bool want = std::strncmp(n, "l_out-", 6) == 0 || std::strcmp(n, "result_norm") == 0 ||
+                      std::strcmp(n, "result_output") == 0 || std::strcmp(n, "inp_embd") == 0;
+    if (ask)
+        return want;
+    if (!want || t->type != GGML_TYPE_F32 || ggml_nbytes(t) > (size_t(16) << 20))
+        return true;
+    std::vector<float> buf(ggml_nelements(t));
+    ggml_backend_tensor_get(t, buf.data(), 0, ggml_nbytes(t));
+    double sum_abs = 0.0;
+    float mn = 3.4e38f, mx = -3.4e38f;
+    size_t n_nan = 0, n_inf = 0;
+    for (float v : buf) {
+        if (v != v) { ++n_nan; continue; }
+        if (v > 3.0e38f || v < -3.0e38f) { ++n_inf; continue; }
+        mn = std::min(mn, v);
+        mx = std::max(mx, v);
+        sum_abs += std::fabs(v);
+    }
+    const size_t n_ok = buf.size() - n_nan - n_inf;
+    log_output(std::string("[xllama] trace ") + n + " [" + ggml_backend_buffer_name(t->buffer) + "] n=" +
+               std::to_string(buf.size()) + " nan=" + std::to_string(n_nan) + " inf=" + std::to_string(n_inf) +
+               " min=" + std::to_string(mn) + " max=" + std::to_string(mx) + " mean|x|=" +
+               std::to_string(n_ok ? sum_abs / n_ok : 0.0) + "\n");
+    g_trace_left.fetch_sub(1);
+    return true;
+}
 
 // Logs the working set once a second while a GPU generate runs (first 40 ticks). A silent process death
 // otherwise leaves nothing to tell a memory kill (jump, then nothing) from a GPU stall (ticks, then nothing).
@@ -294,6 +331,12 @@ inline void apply_gguf_gpu_context(int applied_layers, llama_context_params& cpa
                 cap = 128;
             if (cparams.n_ubatch > cap)
                 cparams.n_ubatch = cap;
+        }
+        // Trace the first decode of a model that fills the device.
+        if (applied_layers > 0 && g_gpu_full_total_mb > 0 && g_gpu_full_file_mb * 100 > g_gpu_full_total_mb * 40) {
+            g_trace_left.store(160);
+            cparams.cb_eval = gguf_gpu_eval_cb;
+            cparams.cb_eval_user_data = nullptr;
         }
         return;
     }

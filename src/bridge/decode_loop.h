@@ -267,6 +267,34 @@ inline DecodeLoopResult decode_loop(const DecodeLoopParams& p, std::string& outp
         if (out.n_generated == 0) {
             llama_synchronize(p.ctx);
             d3d12_full_trace("synchronize done, sampling first token");
+            // The CPU sampler asserts (and abort()s, silently in a UWP app) on NaN/inf logits. Look first, and
+            // refuse to sample garbage so a device that computes wrong values reports it instead of dying.
+            const float* lg = llama_get_logits_ith(p.ctx, -1);
+            const int nv = llama_vocab_n_tokens(llama_model_get_vocab(llama_get_model(p.ctx)));
+            if (!lg) {
+                log_output("[xllama] logits: none available for the last token - not sampling\n");
+                break;
+            }
+            size_t n_nan = 0, n_inf = 0;
+            float mn = 3.4e38f, mx = -3.4e38f;
+            int arg = 0;
+            for (int i = 0; i < nv; ++i) {
+                const float v = lg[i];
+                if (v != v) { ++n_nan; continue; }
+                if (v > 3.0e38f || v < -3.0e38f) { ++n_inf; continue; }
+                if (v > mx) { mx = v; arg = i; }
+                if (v < mn) mn = v;
+            }
+            static std::atomic<int> s_logit_logs{0};
+            const bool bad = n_nan || n_inf || mx <= mn;
+            if (bad || ++s_logit_logs <= 6)
+                log_output("[xllama] logits: n=" + std::to_string(nv) + " nan=" + std::to_string(n_nan) + " inf=" +
+                           std::to_string(n_inf) + " min=" + std::to_string(mn) + " max=" + std::to_string(mx) +
+                           " argmax=" + std::to_string(arg) + "\n");
+            if (bad) {
+                log_output("[xllama] logits are not usable (device computed invalid values) - not sampling\n");
+                break;
+            }
         }
         llama_token token = llama_sampler_sample(p.sampler, p.ctx, -1);
         if (out.n_generated == 0)
